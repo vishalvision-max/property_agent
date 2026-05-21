@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TODO: Replace with your key or inject via build config; remove hardcoded keys before release. -->
+    <string name="google_maps_key">AIzaSyB9zroafCQGFNKoU1g5-ScptQBJo2FgpKw</string>
+</resources>
