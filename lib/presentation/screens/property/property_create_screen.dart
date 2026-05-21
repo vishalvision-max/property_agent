@@ -59,12 +59,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // ==================== PROPERTY DETAILS ====================
   // Common
-  int _bedrooms = 2;
-  int _bathrooms = 2;
-  int _balconies = 0;
-  int _parking = 1;
-  String _furnishing = 'semi-furnished';
-  String _facing = 'north';
+  int _bedrooms = -1;
+  int _bathrooms = -1;
+  int _balconies = -1;
+  int _parking = -1;
+  String _furnishing = '';
+  String _facing = '';
   final _floor = TextEditingController();
   final _totalFloors = TextEditingController();
   int? _lastTotalFloorsValue;
@@ -75,17 +75,17 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _length = TextEditingController();
   final _breadth = TextEditingController();
   final _floorsAllowed = TextEditingController();
-  int _openSides = 1;
+  int _openSides = -1;
   bool _boundaryWall = false;
   bool _constructionDone = false;
 
-  String _availability = 'ready';
-  String _readyTimeframe = '0_1';
+  String _availability = '';
+  String _readyTimeframe = '';
   final _possessionBy = TextEditingController();
-  String _ownership = 'freehold';
+  String _ownership = '';
 
   // Commercial specific
-  String _commercialType = 'office';
+  String _commercialType = '';
   final _floorPlateArea = TextEditingController();
   final _cabins = TextEditingController();
   final _meetingRooms = TextEditingController();
@@ -96,11 +96,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _preLeased = false;
   final _shopFacade = TextEditingController();
   final _washrooms = TextEditingController();
-  String _parkingType = 'none';
+  String _parkingType = '';
   final _plotType = TextEditingController();
   final _qualityRating = TextEditingController();
   final _rooms = TextEditingController();
-  String _officeType = 'bare_shell';
+  String _officeType = '';
   bool _receptionArea = false;
   bool _pantry = false;
   bool _cafeteria = false;
@@ -115,7 +115,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _officeBookingAmount = TextEditingController();
 
   // Sell -> Commercial -> Shop specific
-  String _shopType = 'retail';
+  String _shopType = '';
   final _shopArea = TextEditingController();
   String _shopAreaUnit = 'sqft';
   final _frontageWidth = TextEditingController();
@@ -123,7 +123,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _mainRoadFacing = false;
   bool _cornerShop = false;
   bool _washroomAvailable = false;
-  String _floorType = 'ground';
+  String _floorType = '';
   final _marketName = TextEditingController();
   final _locality = TextEditingController();
 
@@ -136,16 +136,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _showroomCorner = false;
   bool _showroomWashroom = false;
   final _showroomParkingSlots = TextEditingController();
-  String _showroomFurnishing = 'unfurnished';
-  String _showroomFloorType = 'ground_floor';
+  String _showroomFurnishing = '';
+  String _showroomFloorType = '';
   final _showroomMarketName = TextEditingController();
   final _showroomLocality = TextEditingController();
   final _showroomOwnerName = TextEditingController();
   final _showroomOwnerMobile = TextEditingController();
 
   // Sell -> Commercial -> Warehouse specific
-  String _warehouseType =
-      'warehouse'; // warehouse, factory, industrial_building
+  String _warehouseType = ''; // warehouse, factory, industrial_building
   final _warehousePlotArea = TextEditingController();
   String _warehousePlotAreaUnit = 'sqft';
   final _warehouseCeilingHeight = TextEditingController();
@@ -153,19 +152,18 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _warehouseDockLevelers = TextEditingController();
   final _warehousePowerSupply = TextEditingController();
   bool _warehouseIndustrialLicense = false;
-  String _warehouseTruckAccess = 'heavy'; // heavy, medium, small
+  String _warehouseTruckAccess = ''; // heavy, medium, small
   final _warehouseAreaName = TextEditingController();
   final _warehouseCity = TextEditingController();
 
   // Land specific
-  String _landType = 'residential';
+  String _landType = '';
   final _roadWidth = TextEditingController();
   String _plotAreaUnit = 'sqft';
   bool _plotCorner = false;
   bool _plotRoadAccess = true;
   bool _agriFencing = false;
-  String _agriWaterSource =
-      'borewell'; // borewell, canal, river, tanker, municipal, other
+  String _agriWaterSource = ''; // borewell, canal, river, tanker, municipal, other
 
   // Sell -> Residential -> Flat/Apartment specific
   final Set<String> _additionalRooms = <String>{};
@@ -192,34 +190,26 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _lockInMonths = TextEditingController(text: '0');
   final _noticePeriodValue = TextEditingController(text: '0');
   String _noticePeriodUnit = 'days'; // days, months
-  String _preferredTenant = 'anyone';
-  String _foodPreference = 'any';
+  String _preferredTenant = '';
+  String _foodPreference = '';
   final Set<String> _rentPromotionTypes = <String>{};
 
   // PG / Co-Living specific
-  String _pgGenderBased =
-      'unisex_pg'; // boys_pg, girls_pg, co_living, unisex_pg
-  String _pgOccupancyType =
-      'double_sharing'; // single_sharing, double_sharing, triple_sharing, four_plus_sharing, dormitory
-  final Set<String> _pgTenantTypes =
-      <
-        String
-      >{}; // students, working_professionals, couples_allowed, family_pg, interns_trainees
-  String _pgFoodAvailability =
-      'without_food'; // with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
-  String _pgPropertyType =
-      'hostel'; // independent_house_pg, apartment_pg, hostel, co_living_space, service_apartment
-  String _pgBathroomType = 'common'; // attached, common
-  String _pgSuitableFor = 'both'; // students, working_professionals, both
+  String _pgGenderBased = ''; // boys_pg, girls_pg, co_living, unisex_pg
+  String _pgOccupancyType = ''; // single_sharing, double_sharing, triple_sharing, four_plus_sharing, dormitory
+  final Set<String> _pgTenantTypes = <String>{}; // students, working_professionals, couples_allowed, family_pg, interns_trainees
+  String _pgFoodAvailability = ''; // with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
+  String _pgPropertyType = ''; // independent_house_pg, apartment_pg, hostel, co_living_space, service_apartment
+  String _pgBathroomType = ''; // attached, common
+  String _pgSuitableFor = ''; // students, working_professionals, both
   final _pgBuildingName = TextEditingController();
   final _pgTotalBeds = TextEditingController();
   final _pgAvailableBeds = TextEditingController();
-  String _pgRoomType =
-      'private_room'; // private_room, twin_sharing, triple_sharing, dormitory
+  String _pgRoomType = ''; // private_room, twin_sharing, triple_sharing, dormitory
   bool _pgAttachedBathroom = false;
   bool _pgBalcony = false;
   final _pgRoomSize = TextEditingController();
-  String _pgBedType = 'single'; // single, bunk
+  String _pgBedType = ''; // single, bunk
   bool _pgCupboardAvailable = true;
   bool _pgStudyTableAvailable = false;
   final _pgSecurityDeposit = TextEditingController();
@@ -244,15 +234,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       <
         String
       >{}; // near_metro, near_college, near_office_area, near_market, near_hospital
-  String _pgAvailability =
-      'immediate'; // immediate, next_month, short_term, long_term
-  int _pgSharing =
-      2; // persons per room (fallback if occupancy type isn't explicit)
+  String _pgAvailability = ''; // immediate, next_month, short_term, long_term
+  int _pgSharing = -1; // persons per room (fallback if occupancy type isn't explicit)
   bool _pgSecurity = true;
 
   // Rent/Lease -> Residential -> Independent House/Villa/Independent Floor extras
   final Set<String> _rentVillaOutdoors = <String>{}; // garden_lawn, terrace
-  String _rentVillaWaterSource = 'municipal';
+  String _rentVillaWaterSource = '';
   bool _rentSolarPower = false;
   bool _rentIndependentEntry = false;
 
@@ -262,8 +250,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final Set<String> _rentTenantTypes = <String>{}; // family, bachelor, company
 
   // Rent/Lease -> Residential -> Studio Apartment extras
-  String _studioConfig = '1rk'; // 1rk, studio
-  String _kitchenType = 'open'; // open, closed
+  String _studioConfig = ''; // 1rk, studio
+  String _kitchenType = ''; // open, closed
   final Set<String> _studioTenantPrefs =
       <String>{}; // student, professional, bachelor
 
@@ -285,7 +273,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _gatedCommunity = false;
   final Set<String> _villaParking = <String>{}; // open, covered (multi)
   final Set<String> _outdoors = <String>{};
-  String _waterSource = 'municipal';
+  String _waterSource = '';
   final Set<String> _connections = <String>{};
   bool _villaPriceNegotiable = false;
   final _villaMaintenanceCharges = TextEditingController();

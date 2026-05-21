@@ -3,9 +3,14 @@ import 'package:equatable/equatable.dart';
 import 'property_enums.dart';
 import 'property_furnishing_selection.dart';
 import 'property_video.dart';
+import 'sub_models/property_pg_details.dart';
+import 'sub_models/property_office_details.dart';
+import 'sub_models/property_showroom_details.dart';
+import 'sub_models/property_shop_details.dart';
+import 'sub_models/property_warehouse_details.dart';
 
 class Property extends Equatable {
-  const Property({
+  Property({
     required this.id,
     required this.name,
     required this.ownerName,
@@ -254,7 +259,114 @@ class Property extends Equatable {
     this.pgSharing,
     this.pgSecurity,
     this.pgMaintenanceCharges,
-  });
+  })  : pgDetails = PropertyPgDetails(
+          genderBased: pgGenderBased,
+          occupancyType: pgOccupancyType,
+          tenantTypes: pgTenantTypes,
+          foodAvailability: pgFoodAvailability,
+          propertyType: pgPropertyType,
+          bathroomType: pgBathroomType,
+          suitableFor: pgSuitableFor,
+          buildingName: pgBuildingName,
+          totalBeds: pgTotalBeds,
+          availableBeds: pgAvailableBeds,
+          roomType: pgRoomType,
+          attachedBathroom: pgAttachedBathroom,
+          balcony: pgBalcony,
+          roomSize: pgRoomSize,
+          bedType: pgBedType,
+          cupboardAvailable: pgCupboardAvailable,
+          studyTableAvailable: pgStudyTableAvailable,
+          securityDeposit: pgSecurityDeposit,
+          electricityIncluded: pgElectricityIncluded,
+          waterIncluded: pgWaterIncluded,
+          foodChargesIncluded: pgFoodChargesIncluded,
+          brokerageRequired: pgBrokerageRequired,
+          coupleFriendly: pgCoupleFriendly,
+          idProofRequired: pgIdProofRequired,
+          availableFrom: pgAvailableFrom,
+          minStayDays: pgMinStayDays,
+          noticePeriodDays: pgNoticePeriodDays,
+          preferredTenantAge: pgPreferredTenantAge,
+          smokingAllowed: pgSmokingAllowed,
+          drinkingAllowed: pgDrinkingAllowed,
+          petsAllowed: pgPetsAllowed,
+          visitorsAllowed: pgVisitorsAllowed,
+          curfewTime: pgCurfewTime,
+          gateLockedAtNight: pgGateLockedAtNight,
+          nearbyPreferences: pgNearbyPreferences,
+          availability: pgAvailability,
+          sharing: pgSharing,
+          security: pgSecurity,
+          maintenanceCharges: pgMaintenanceCharges,
+        ),
+        officeDetails = PropertyOfficeDetails(
+          carpetArea: carpetArea,
+          builtUpArea: builtUpArea,
+          superBuiltUpArea: superBuiltUpArea,
+          cabins: cabins,
+          meetingRooms: meetingRooms,
+          seats: seats,
+          maxSeats: maxSeats,
+          conferenceRooms: conferenceRooms,
+          liftAvailable: liftAvailable,
+          preLeased: preLeased,
+          officeType: officeType,
+          receptionArea: receptionArea,
+          pantry: pantry,
+          cafeteria: cafeteria,
+          serverRoom: serverRoom,
+          fireSafetyInstalled: fireSafetyInstalled,
+          centralAC: centralAC,
+          visitorParking: visitorParking,
+          numberOfLifts: numberOfLifts,
+          taxIncluded: taxIncluded,
+          officeNegotiable: officeNegotiable,
+          officeMaintenanceCharges: officeMaintenanceCharges,
+          officeBookingAmount: officeBookingAmount,
+        ),
+        showroomDetails = PropertyShowroomDetails(
+          showroomArea: showroomArea,
+          showroomAreaUnit: showroomAreaUnit,
+          showroomFrontageWidth: showroomFrontageWidth,
+          showroomCeilingHeight: showroomCeilingHeight,
+          showroomMainRoadFacing: showroomMainRoadFacing,
+          showroomCorner: showroomCorner,
+          showroomWashroom: showroomWashroom,
+          showroomParkingSlots: showroomParkingSlots,
+          showroomFurnishing: showroomFurnishing,
+          showroomFloorType: showroomFloorType,
+          showroomMarketName: showroomMarketName,
+          showroomLocality: showroomLocality,
+          showroomOwnerName: showroomOwnerName,
+          showroomOwnerMobile: showroomOwnerMobile,
+        ),
+        shopDetails = PropertyShopDetails(
+          shopType: shopType,
+          shopArea: shopArea,
+          shopAreaUnit: shopAreaUnit,
+          frontageWidth: frontageWidth,
+          ceilingHeight: ceilingHeight,
+          mainRoadFacing: mainRoadFacing,
+          cornerShop: cornerShop,
+          washroomAvailable: washroomAvailable,
+          floorType: floorType,
+          marketName: marketName,
+          locality: locality,
+        ),
+        warehouseDetails = PropertyWarehouseDetails(
+          warehouseType: warehouseType,
+          warehousePlotArea: warehousePlotArea,
+          warehousePlotAreaUnit: warehousePlotAreaUnit,
+          warehouseCeilingHeight: warehouseCeilingHeight,
+          warehouseLoadingBays: warehouseLoadingBays,
+          warehouseDockLevelers: warehouseDockLevelers,
+          warehousePowerSupply: warehousePowerSupply,
+          warehouseIndustrialLicense: warehouseIndustrialLicense,
+          warehouseTruckAccess: warehouseTruckAccess,
+          warehouseAreaName: warehouseAreaName,
+          warehouseCity: warehouseCity,
+        );
 
   final String id;
   final String name;
@@ -521,6 +633,12 @@ class Property extends Equatable {
   final int? pgSharing;
   final bool? pgSecurity;
   final double? pgMaintenanceCharges;
+
+  final PropertyPgDetails pgDetails;
+  final PropertyOfficeDetails officeDetails;
+  final PropertyShowroomDetails showroomDetails;
+  final PropertyShopDetails shopDetails;
+  final PropertyWarehouseDetails warehouseDetails;
 
   Property copyWith({
     String? name,
@@ -1874,5 +1992,10 @@ pgTotalBeds: toInt(
         pgSharing,
         pgSecurity,
         pgMaintenanceCharges,
+        pgDetails,
+        officeDetails,
+        showroomDetails,
+        shopDetails,
+        warehouseDetails,
       ];
 }
