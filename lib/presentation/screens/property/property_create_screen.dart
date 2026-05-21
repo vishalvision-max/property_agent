@@ -1091,6 +1091,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       switch (p.type) {
         case PropertyType.sale:
           _propertyKind = _CreatePropertyKind.sale;
+          break;
         case PropertyType.rent:
           final lt = (p.listingType ?? '').toLowerCase();
           if (lt == 'pg' || lt == 'co_living') {
@@ -1098,6 +1099,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           } else {
             _propertyKind = _CreatePropertyKind.rent;
           }
+          break;
       }
     }
 
@@ -4210,13 +4212,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                         _buildFurnishings(),
                       ),
                     const SizedBox(height: 12),
-                    if (_isSellResidentialApartment)
-                      _buildSection(
-                        'Promotion',
-                        'promotion',
-                        Icons.campaign_outlined,
-                        _buildPromotion(),
-                      ),
+                    // if (_isSellResidentialApartment)
+                    //   _buildSection(
+                    //     'Promotion',
+                    //     'promotion',
+                    //     Icons.campaign_outlined,
+                    //     _buildPromotion(),
+                    //   ),
                     if (_isSellResidentialApartment) const SizedBox(height: 12),
                     _buildSection(
                       'Photos',
@@ -9142,53 +9144,53 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     );
   }
 
-  Widget _buildPromotion() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Boost Listing',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        const Text(
-          'Select promotions to get more visibility.',
-          style: TextStyle(fontSize: 12, color: AppColors.textMuted),
-        ),
-        const SizedBox(height: 10),
-        ..._promotionOptions.map((p) {
-          final selected = _promotionTags.contains(p);
-          final label = p[0].toUpperCase() + p.substring(1);
-          return CheckboxListTile(
-            value: selected,
-            fillColor: WidgetStateProperty.all(AppTheme.gold),
-            // selectedTileColor: AppTheme.gold,
-            onChanged: (v) {
-              setState(() {
-                if (v == true) {
-                  _promotionTags.add(p);
-                } else {
-                  _promotionTags.remove(p);
-                }
-              });
-              _scheduleSaveDraft();
-            },
-            dense: true,
-            controlAffinity: ListTileControlAffinity.leading,
-            title: Text(
-              label,
-              style: const TextStyle(color: AppColors.textPrimary),
-            ),
-            contentPadding: EdgeInsets.zero,
-          );
-        }),
-      ],
-    );
-  }
+  // Widget _buildPromotion() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         'Boost Listing',
+  //         style: TextStyle(
+  //           fontSize: 13,
+  //           fontWeight: FontWeight.w800,
+  //           color: AppColors.textPrimary,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 6),
+  //       const Text(
+  //         'Select promotions to get more visibility.',
+  //         style: TextStyle(fontSize: 12, color: AppColors.textMuted),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       ..._promotionOptions.map((p) {
+  //         final selected = _promotionTags.contains(p);
+  //         final label = p[0].toUpperCase() + p.substring(1);
+  //         return CheckboxListTile(
+  //           value: selected,
+  //           fillColor: WidgetStateProperty.all(AppTheme.gold),
+  //           // selectedTileColor: AppTheme.gold,
+  //           onChanged: (v) {
+  //             setState(() {
+  //               if (v == true) {
+  //                 _promotionTags.add(p);
+  //               } else {
+  //                 _promotionTags.remove(p);
+  //               }
+  //             });
+  //             _scheduleSaveDraft();
+  //           },
+  //           dense: true,
+  //           controlAffinity: ListTileControlAffinity.leading,
+  //           title: Text(
+  //             label,
+  //             style: const TextStyle(color: AppColors.textPrimary),
+  //           ),
+  //           contentPadding: EdgeInsets.zero,
+  //         );
+  //       }),
+  //     ],
+  //   );
+  // }
 
   Widget _buildMediaSection() {
     return Column(

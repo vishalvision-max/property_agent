@@ -899,14 +899,14 @@ class StaffPropertyService implements PropertyService {
 
     _debugLogMultipart(
       dio: dio,
-      method: 'POST',
+      method: 'PUT',
       path: path,
       form: retryForm,
       filePaths: _collectCreateFilePaths(property),
     );
 
     try {
-      res = await dio.post<Map<String, dynamic>>(path, data: retryForm);
+      res = await dio.put<Map<String, dynamic>>(path, data: retryForm);
     } on DioException catch (e) {
       throw _apiException(e);
     }

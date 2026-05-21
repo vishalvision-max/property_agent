@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:property_agent/presentation/screens/property/property_edit_screen.dart';
 
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/theme/app_theme.dart';
@@ -33,6 +34,8 @@ class PropertyDetailsScreen extends ConsumerStatefulWidget {
 class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
   String? _selectedVideoId;
   String? _prefetchedForPropertyId;
+  bool _showAllAmenities = false;
+  bool _showAllFurnishings = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +46,30 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
     const textPrimary = Color(0xFFF8FAFC);
     const textSecondary = Color(0xFFCBD5E1);
 
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: pageBg,
-        body: async.when(
+    return Scaffold(
+      backgroundColor: pageBg,
+      appBar: async.when(
+        loading: () => AppBar(
+          backgroundColor: pageBg,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: textPrimary),
+            onPressed: () => context.pop(),
+          ),
+          title: const Text('Property Details', style: TextStyle(color: textPrimary)),
+        ),
+        error: (e, _) => AppBar(
+          backgroundColor: pageBg,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: textPrimary),
+            onPressed: () => context.pop(),
+          ),
+          title: const Text('Error', style: TextStyle(color: textPrimary)),
+        ),
+        data: (p) => null,
+      ),
+      body: async.when(
           loading: () => const ShimmerList(itemCount: 5),
           error: (e, _) => ErrorState(
             title: 'Failed to load property',
@@ -105,11 +128,15 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
               slivers: [
                 SliverAppBar(
                   pinned: true,
-                  expandedHeight: 280,
+                  expandedHeight: 310,
                   backgroundColor: pageBg,
                   surfaceTintColor: Colors.transparent,
                   foregroundColor: textPrimary,
                   systemOverlayStyle: SystemUiOverlayStyle.light,
+                  leading: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: textPrimary),
+                    onPressed: () => context.pop(),
+                  ),
                   title: Text(
                     p.name,
                     maxLines: 1,
@@ -132,7 +159,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                         left: 16,
                         right: 16,
                         bottom: 12,
-                        top: 72,
+                        top: 96,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,9 +269,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                 textColor: textPrimary,
                               ),
                             ],
-                            if (p.bedrooms != null ||
-                                p.bathrooms != null ||
-                                (p.furnishing ?? '').trim().isNotEmpty) ...[
+                            if (p.bedrooms != null || p.bathrooms != null) ...[
                               AppSpacing.vXs,
                               _InfoRow(
                                 icon: Icons.meeting_room_outlined,
@@ -252,9 +277,16 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                   if (p.bedrooms != null) '${p.bedrooms} bed',
                                   if (p.bathrooms != null)
                                     '${p.bathrooms} bath',
-                                  if ((p.furnishing ?? '').trim().isNotEmpty)
-                                    p.furnishing!.trim(),
                                 ].join(' • '),
+                                iconColor: AppTheme.gold,
+                                textColor: textPrimary,
+                              ),
+                            ],
+                            if ((p.furnishing ?? '').trim().isNotEmpty) ...[
+                              AppSpacing.vXs,
+                              _InfoRow(
+                                icon: Icons.chair_outlined,
+                                label: p.furnishing!.trim(),
                                 iconColor: AppTheme.gold,
                                 textColor: textPrimary,
                               ),
@@ -410,7 +442,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: p.amenities
+                        children: (_showAllAmenities ? p.amenities : p.amenities.take(4).toList())
                             .map(
                               (a) => Chip(
                                 label: Text(a),
@@ -421,11 +453,28 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                 side: BorderSide(
                                   color: AppTheme.gold.withValues(alpha: 0.35),
                                 ),
-                                labelStyle: const TextStyle(color: textPrimary),
+                                labelStyle: const TextStyle(color: Colors.black),
                               ),
                             )
                             .toList(),
                       ),
+                      if (p.amenities.length > 4) ...[
+                        AppSpacing.vXs,
+                        InkWell(
+                          onTap: () => setState(() => _showAllAmenities = !_showAllAmenities),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              _showAllAmenities ? 'Show Less' : 'Show More',
+                              style: const TextStyle(
+                                color: AppTheme.gold,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                       if (furnishingLabels.isNotEmpty) ...[
                         AppSpacing.vLg,
                         Text(
@@ -439,7 +488,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
-                          children: furnishingLabels
+                          children: (_showAllFurnishings ? furnishingLabels : furnishingLabels.take(4).toList())
                               .map(
                                 (f) => Chip(
                                   label: Text(f),
@@ -450,11 +499,28 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                   side: BorderSide(
                                     color: AppTheme.gold.withValues(alpha: 0.35),
                                   ),
-                                  labelStyle: const TextStyle(color: textPrimary),
+                                  labelStyle: const TextStyle(color: Colors.black),
                                 ),
                               )
                               .toList(),
                         ),
+                        if (furnishingLabels.length > 4) ...[
+                          AppSpacing.vXs,
+                          InkWell(
+                            onTap: () => setState(() => _showAllFurnishings = !_showAllFurnishings),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Text(
+                                _showAllFurnishings ? 'Show Less' : 'Show More',
+                                style: const TextStyle(
+                                  color: AppTheme.gold,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                       AppSpacing.vLg,
                       Text(
@@ -555,8 +621,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
             );
           },
         ),
-      ),
-    );
+      );
   }
 
   Future<void> _prefetchMedia(Property p) async {
