@@ -21,6 +21,7 @@ import '../../../data/models/property_furnishing_selection.dart';
 import '../../../providers/lookup_provider.dart';
 import '../../../providers/property_provider.dart';
 import '../../widgets/glass_container.dart';
+import '../../widgets/app_dropdown.dart';
 import '../../../data/services/google_places_service.dart';
 
 class PropertyCreateScreen extends ConsumerStatefulWidget {
@@ -5077,8 +5078,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _buildTextField(
             _pgCurfewTime,
             'Curfew Timing (Optional)',
-            'e.g., 10:00 PM',
+            'Select curfew time',
             Icons.schedule,
+            readOnly: true,
+            onTap: _showCurfewTimePicker,
           ),
           const SizedBox(height: 12),
           Align(
@@ -5145,6 +5148,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                   'e.g., 30',
                   Icons.bed_outlined,
                   keyboardType: TextInputType.number,
+                  onChanged: (val) {
+                    final total = int.tryParse(val.trim()) ?? 0;
+                    final avail = int.tryParse(_pgAvailableBeds.text.trim()) ?? 0;
+                    if (total > 0 && avail > total) {
+                      setState(() {
+                        _pgAvailableBeds.text = total.toString();
+                      });
+                    }
+                    _scheduleSaveDraft();
+                  },
                 ),
               ),
               const SizedBox(width: 12),
@@ -5155,6 +5168,19 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                   'e.g., 5',
                   Icons.event_available_outlined,
                   keyboardType: TextInputType.number,
+                  onChanged: (val) {
+                    final total = int.tryParse(_pgTotalBeds.text.trim()) ?? 0;
+                    final avail = int.tryParse(val.trim()) ?? 0;
+                    if (total > 0 && avail > total) {
+                      setState(() {
+                        _pgAvailableBeds.text = total.toString();
+                        _pgAvailableBeds.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _pgAvailableBeds.text.length),
+                        );
+                      });
+                    }
+                    _scheduleSaveDraft();
+                  },
                 ),
               ),
             ],
@@ -8581,50 +8607,241 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         ? const <int>[]
         : List<int>.generate(total, (i) => i + 1);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Floor No.',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<int>(
-          initialValue: (selected != null && items.contains(selected))
-              ? selected
-              : null,
-          isExpanded: true,
-          decoration: InputDecoration(
-            hintText: total == null
-                ? 'Enter total floors first'
-                : 'Select your floor',
-            prefixIcon: const Icon(Icons.flood),
-          ),
-          style: const TextStyle(color: Colors.white),
-          iconEnabledColor: Colors.white,
-          dropdownColor: Colors.white,
-          items: items
-              .map(
-                (n) => DropdownMenuItem<int>(
-                  value: n,
-                  child: Text(
-                    '$n',
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: const TextStyle(color: Colors.black),
-                  ),
+    return AppDropdown<int>(
+      label: 'Floor No.',
+      hintText: total == null ? 'Enter total floors first' : 'Select your floor',
+      prefixIcon: Icons.flood,
+      value: (selected != null && items.contains(selected))
+          ? selected
+          : null,
+      items: items
+          .map(
+            (n) => DropdownMenuItem<int>(
+              value: n,
+              child: Text(
+                '$n',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style: const TextStyle(color: AppColors.textPrimary),
+              ),
+            ),
+          )
+          .toList(),
+      onChanged: total == null
+          ? null
+          : (v) {
+              setState(() {
+                _floor.text = v?.toString() ?? '';
+                _validateField('floor');
+              });
+              _scheduleSaveDraft();
+            },
+    );
+  }
+
+  Future<void> _showCurfewTimePicker() async {
+    int selectedHour = 10;
+    String selectedPeriod = 'PM';
+
+    final existing = _pgCurfewTime.text.trim().toUpperCase();
+    if (existing.isNotEmpty) {
+      final parts = existing.split(' ');
+      if (parts.isNotEmpty) {
+        final timePart = parts[0];
+        final hourPart = timePart.split(':')[0];
+        selectedHour = int.tryParse(hourPart) ?? 10;
+        if (parts.length > 1) {
+          selectedPeriod = parts[1].startsWith('A') ? 'AM' : 'PM';
+        }
+      }
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.dark2,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              decoration: const BoxDecoration(
+                color: AppColors.dark2,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border(
+                  top: BorderSide(color: AppColors.border, width: 1.5),
                 ),
-              )
-              .toList(),
-          onChanged: total == null
-              ? null
-              : (v) => setState(() => _floor.text = v?.toString() ?? ''),
-        ),
-      ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: 48,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppColors.textSubtle.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Select Curfew Hour',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Select the hour and period. Minutes are set to 00.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: ['AM', 'PM'].map((period) {
+                      final active = selectedPeriod == period;
+                      return GestureDetector(
+                        onTap: () {
+                          setModalState(() => selectedPeriod = period);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: active ? AppColors.gold : AppColors.dark3,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: active ? AppColors.gold : AppColors.border,
+                            ),
+                          ),
+                          child: Text(
+                            period,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: active ? AppColors.dark : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1.3,
+                    ),
+                    itemCount: 12,
+                    itemBuilder: (context, index) {
+                      final hour = index + 1;
+                      final active = selectedHour == hour;
+                      return GestureDetector(
+                        onTap: () {
+                          setModalState(() => selectedHour = hour);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 150),
+                          decoration: BoxDecoration(
+                            color: active ? AppColors.gold.withOpacity(0.15) : AppColors.dark3,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: active ? AppColors.gold : AppColors.border,
+                              width: active ? 2 : 1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '$hour',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: active ? AppColors.gold : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            side: const BorderSide(color: AppColors.border),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: AppColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              _pgCurfewTime.text =
+                                  '${selectedHour.toString().padLeft(2, '0')}:00 $selectedPeriod';
+                            });
+                            _scheduleSaveDraft();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.gold,
+                            foregroundColor: AppColors.dark,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Confirm',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -9839,57 +10056,38 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     final selected = int.tryParse(raw);
     final values = List<int>.generate(max - min + 1, (i) => min + i);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const SizedBox(height: 6),
-        DropdownButtonFormField<int>(
-          value: (selected != null && values.contains(selected))
-              ? selected
-              : null,
-          isExpanded: true,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: Icon(icon, size: 18),
-          ),
-          dropdownColor: Colors.white,
-          iconEnabledColor: Colors.white,
-          style: const TextStyle(color: AppColors.textPrimary),
-          items: [
-            if (allowEmpty)
-              const DropdownMenuItem<int>(
-                value: null,
-                child: Text(
-                  'Select',
-                  style: TextStyle(color: AppColors.textMuted),
-                ),
-              ),
-            ...values.map(
-              (v) => DropdownMenuItem<int>(
-                value: v,
-                child: Text(
-                  '$v',
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: const TextStyle(color: AppColors.dark),
-                ),
-              ),
+    return AppDropdown<int>(
+      label: label,
+      hintText: hint,
+      prefixIcon: icon,
+      value: (selected != null && values.contains(selected))
+          ? selected
+          : null,
+      items: [
+        if (allowEmpty)
+          const DropdownMenuItem<int>(
+            value: null,
+            child: Text(
+              'Select',
+              style: TextStyle(color: AppColors.textMuted),
             ),
-          ],
-          onChanged: (v) {
-            setState(() => controller.text = v?.toString() ?? '');
-            _scheduleSaveDraft();
-          },
+          ),
+        ...values.map(
+          (v) => DropdownMenuItem<int>(
+            value: v,
+            child: Text(
+              '$v',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+          ),
         ),
       ],
+      onChanged: (v) {
+        setState(() => controller.text = v?.toString() ?? '');
+        _scheduleSaveDraft();
+      },
     );
   }
 

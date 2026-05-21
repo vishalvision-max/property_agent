@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/constants/api_constants.dart';
 import '../models/activity.dart';
@@ -21,6 +23,61 @@ class StaffPropertyService implements PropertyService {
   // Debug logging (yellow highlight).
   // Note: Logging auth tokens is sensitive; keep masked by default.
   static const bool _logFullAuthToken = false;
+
+  Future<File> compressImage(File file) async {
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final filename = file.path.split(Platform.pathSeparator).last;
+      final dotIndex = filename.lastIndexOf('.');
+      final ext = dotIndex != -1 ? filename.substring(dotIndex).toLowerCase() : '.jpg';
+      final nameWithoutExt = dotIndex != -1 ? filename.substring(0, dotIndex) : filename;
+
+      CompressFormat format = CompressFormat.jpeg;
+      String targetExt = '.jpg';
+      if (ext == '.webp') {
+        format = CompressFormat.webp;
+        targetExt = '.webp';
+      } else if (ext == '.heic') {
+        format = CompressFormat.heic;
+        targetExt = '.heic';
+      } else if (ext == '.png') {
+        format = CompressFormat.png;
+        targetExt = '.png';
+      }
+
+      final targetPath = '${tempDir.path}/${nameWithoutExt}_compressed_${DateTime.now().millisecondsSinceEpoch}$targetExt';
+      final originalSize = await file.length();
+
+      final XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: 50,
+        minWidth: 1280,
+        minHeight: 720,
+        format: format,
+      );
+
+      if (compressedXFile == null) {
+        debugPrint('[ImageCompress] Compression returned null for: ${file.path}. Using original.');
+        return file;
+      }
+
+      final compressedFile = File(compressedXFile.path);
+      final compressedSize = await compressedFile.length();
+
+      if (kDebugMode) {
+        debugPrint('[ImageCompress] Success: ${file.path}');
+        debugPrint('[ImageCompress] Original size: ${(originalSize / 1024).toStringAsFixed(2)} KB');
+        debugPrint('[ImageCompress] Compressed size: ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+        debugPrint('[ImageCompress] Saved to: $targetPath');
+      }
+
+      return compressedFile;
+    } catch (e) {
+      debugPrint('[ImageCompress] Error compressing ${file.path}: $e. Using original.');
+      return file;
+    }
+  }
 
   String _yellow(String s) => '\x1B[33m$s\x1B[0m';
 
@@ -650,6 +707,8 @@ class StaffPropertyService implements PropertyService {
       }),
     ];
 
+    // Collect ordered paths to compress
+    final orderedPathsToCompress = <String>[];
     for (final path in ordered) {
       if (path.startsWith('http')) continue;
       if (path.contains('image_path:')) continue;
@@ -658,15 +717,28 @@ class StaffPropertyService implements PropertyService {
           _extractImagePathFromString(path) != null) {
         continue;
       }
-      final filename = path.split(Platform.pathSeparator).last;
-      final file = await MultipartFile.fromFile(path, filename: filename);
-      // First valid item is treated as primary image file for backend.
+      orderedPathsToCompress.add(path);
+    }
+
+    // Compress in parallel
+    final compressedOrderedFiles = await Future.wait(
+      orderedPathsToCompress.map((path) => compressImage(File(path))),
+    );
+
+    for (var i = 0; i < orderedPathsToCompress.length; i++) {
+      final originalPath = orderedPathsToCompress[i];
+      final filename = originalPath.split(Platform.pathSeparator).last;
+      final compressedFile = compressedOrderedFiles[i];
+      final file = await MultipartFile.fromFile(compressedFile.path, filename: filename);
       primaryImageFile ??= file;
       images.add(file);
     }
 
     final sectionImageFiles = <MapEntry<String, MultipartFile>>[];
     final sectionImages = property.sectionImagePaths ?? const {};
+    
+    // Flatten and collect section paths
+    final sectionPathsToCompress = <MapEntry<String, String>>[];
     for (final entry in sectionImages.entries) {
       final fieldBase = _normalizeUploadFieldBase(entry.key);
       if (fieldBase.isEmpty) continue;
@@ -679,11 +751,22 @@ class StaffPropertyService implements PropertyService {
             _extractImagePathFromString(path) != null) {
           continue;
         }
-        final filename = path.split(Platform.pathSeparator).last;
-        final file = await MultipartFile.fromFile(path, filename: filename);
-        // Use array style for multiple images per section.
-        sectionImageFiles.add(MapEntry('${fieldBase}[]', file));
+        sectionPathsToCompress.add(MapEntry(fieldBase, path));
       }
+    }
+
+    // Compress section images in parallel
+    final compressedSectionFiles = await Future.wait(
+      sectionPathsToCompress.map((entry) => compressImage(File(entry.value))),
+    );
+
+    for (var i = 0; i < sectionPathsToCompress.length; i++) {
+      final fieldBase = sectionPathsToCompress[i].key;
+      final originalPath = sectionPathsToCompress[i].value;
+      final filename = originalPath.split(Platform.pathSeparator).last;
+      final compressedFile = compressedSectionFiles[i];
+      final file = await MultipartFile.fromFile(compressedFile.path, filename: filename);
+      sectionImageFiles.add(MapEntry('${fieldBase}[]', file));
     }
 
     final documentFiles = <MultipartFile>[];

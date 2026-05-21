@@ -1269,7 +1269,7 @@ class Property extends Equatable {
 
   factory Property.fromJson(Map<String, dynamic> json) {
     final f = json;
-
+final pg = (f['pg_details'] as Map?) ?? {};
     int? toInt(dynamic val) {
       if (val == null) return null;
       if (val is num) return val.toInt();
@@ -1312,14 +1312,18 @@ class Property extends Equatable {
     }
 
     return Property(
+      
       id: (f['id'] ?? '').toString(),
-      name: (f['name'] ?? '').toString(),
-      ownerPhone: f['ownerPhone']?.toString() ??
+name: (f['title'] ?? f['name'] ?? '').toString(),      ownerPhone: f['ownerPhone']?.toString() ??
           f['owner_phone']?.toString() ??
           '',
       ownerName: (f['ownerName'] ?? f['owner_name'] ?? '').toString(),
-      location: (f['location'] ?? '').toString(),
-      price: (f['price'] as num?)?.toDouble() ?? 0,
+location: (
+  f['location'] ??
+  f['address'] ??
+  f['city'] ??
+  ''
+).toString(),      price: (f['price'] as num?)?.toDouble() ?? 0,
       type: PropertyType.values.byName((f['type'] ?? 'rent').toString()),
       amenities: toStringList(f['amenities']),
       
@@ -1586,8 +1590,11 @@ class Property extends Equatable {
       pgBathroomType: f['pgBathroomType']?.toString() ?? f['pg_bathroom_type']?.toString(),
       pgSuitableFor: f['pgSuitableFor']?.toString() ?? f['pg_suitable_for']?.toString(),
       pgBuildingName: f['pgBuildingName']?.toString() ?? f['pg_building_name']?.toString(),
-      pgTotalBeds: toInt(f['pgTotalBeds'] ?? f['pg_total_beds']),
-      pgAvailableBeds: toInt(f['pgAvailableBeds'] ?? f['pg_available_beds']),
+pgTotalBeds: toInt(
+  f['pgTotalBeds'] ??
+  f['pg_total_beds'] ??
+  pg['total_beds'],
+),      pgAvailableBeds: toInt(f['pgAvailableBeds'] ?? f['pg_available_beds']),
       pgRoomType: f['pgRoomType']?.toString() ?? f['pg_room_type']?.toString(),
       pgAttachedBathroom: toBool(f['pgAttachedBathroom'] ?? f['pg_attached_bathroom'] ?? f['attached_bathroom']),
       pgBalcony: toBool(f['pgBalcony'] ?? f['pg_balcony'] ?? f['balcony']),
