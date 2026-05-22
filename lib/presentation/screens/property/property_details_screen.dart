@@ -186,7 +186,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                               StatusBadge(status: p.status),
                               AppSpacing.hSm,
                               Text(
-                                '₹${p.price.toStringAsFixed(0)} • ${p.type.label}',
+                                '₹${p.price.toStringAsFixed(0)} • ${p.displayTag}',
                                 style: Theme.of(context).textTheme.labelMedium
                                     ?.copyWith(
                                       fontWeight: FontWeight.w900,
@@ -229,7 +229,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                             AppSpacing.vXs,
                             _InfoRow(
                               icon: Icons.category_outlined,
-                              label: p.type.label,
+                              label: p.displayTag,
                               iconColor: AppTheme.gold,
                               textColor: textPrimary,
                             ),

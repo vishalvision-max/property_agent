@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:video_player/video_player.dart';
 
 import '../../../core/theme/app_theme.dart';
@@ -59,10 +60,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // ==================== PROPERTY DETAILS ====================
   // Common
-  int _bedrooms = -1;
-  int _bathrooms = -1;
+  int _bedrooms = 0;
+  int _bathrooms = 0;
   int _balconies = -1;
-  int _parking = -1;
+  int _parking = 0;
   String _furnishing = '';
   String _facing = '';
   final _floor = TextEditingController();
@@ -75,7 +76,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _length = TextEditingController();
   final _breadth = TextEditingController();
   final _floorsAllowed = TextEditingController();
-  int _openSides = -1;
+  int _openSides = 0;
   bool _boundaryWall = false;
   bool _constructionDone = false;
 
@@ -235,7 +236,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         String
       >{}; // near_metro, near_college, near_office_area, near_market, near_hospital
   String _pgAvailability = ''; // immediate, next_month, short_term, long_term
-  int _pgSharing = -1; // persons per room (fallback if occupancy type isn't explicit)
+  int _pgSharing = 0; // persons per room (fallback if occupancy type isn't explicit)
   bool _pgSecurity = true;
 
   // Rent/Lease -> Residential -> Independent House/Villa/Independent Floor extras
@@ -411,12 +412,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'mall_floor',
     'high_street',
   ];
-  static const _availabilityTypes = <String>['ready', 'under_construction'];
+  static const _availabilityTypes = <String>['ready_to_move', 'under_construction', 'immediate', 'within_3_months'];
   static const _readyTimeframes = <String>['0_1', '1_5', '5_10', '10_plus'];
   static const _ownershipTypes = <String>[
     'freehold',
     'leasehold',
-    'cooperative_society',
+    'co-operative_society',
     'power_of_attorney',
   ];
   static const _parkingTypes = <String>[
@@ -480,17 +481,17 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   static const _pgResidentialSubcategories = <String>[
     'boys_pg',
     'girls_pg',
-    'co_living_space',
+    // 'co_living_space',
     'student_pg',
     'working_professional_pg',
-    'hostel',
-    'room_sharing_pg',
+    // 'hostel',
+    // 'room_sharing_pg',
     'single_room_pg',
     'twin_sharing_pg',
     'triple_sharing_pg',
     'dormitory',
-    'managed_pg',
-    'luxury_pg',
+    // 'managed_pg',
+    // 'luxury_pg',
   ];
 
   static const _officeTypes = <String>[
@@ -508,10 +509,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   ];
 
   static const _apartmentAdditionalRooms = <String>[
-    'study',
-    'servant',
-    'store',
-    'pooja',
+    'servant_room',
+    'pooja_room',
+    'study_room',
+    'store_room',
   ];
 
   static const _apartmentHighlights = <String>[
@@ -573,10 +574,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   static const _villaOutdoorsOptions = <String>['garden_lawn', 'terrace'];
 
   static const _roomOptions = <String>[
-    'study_room',
     'servant_room',
-    'store_room',
     'pooja_room',
+    'study_room',
+    'store_room',
   ];
 
   static const _preferredTenants = <String>[
@@ -1026,6 +1027,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   // ---------------------------------------------------------------------------
 
   void _prefillFromProperty(Property p) {
+    if (kDebugMode) {
+      debugPrint('[PropertyEdit] Prefilling from property id=${p.id} name="${p.name}"');
+      debugPrint('[PropertyEdit] apiFields keys=${p.apiFields?.keys.toList()}');
+      debugPrint('[PropertyEdit] categoryId=${p.categoryId}, type=${p.type}, kind=${p.propertyKind}');
+    }
     // ── 1. Basic fields from the typed Property model ──────────────────────
     _title.text = p.name;
     _description.text = p.description;
@@ -1129,7 +1135,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
     // ── 5. Common detail fields from apiFields ──────────────────────────────
     _carpetArea.text = _fd(f, ['carpet_area'])?.toString() ?? '';
-    _builtUpArea.text = _fd(f, ['built_up_area'])?.toString() ?? '';
+    _builtUpArea.text = p.builtUpArea?.toString() ?? _fd(f, ['built_up_area'])?.toString() ?? '';
     _superBuiltUpArea.text = _fd(f, ['super_built_up_area'])?.toString() ?? '';
     _plotArea.text = _fd(f, ['plot_area'])?.toString() ?? '';
     _length.text = _fd(f, ['plot_length_ft', 'plot_length'])?.toString() ?? '';
@@ -1139,11 +1145,22 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _openSides = _fi(f, ['open_sides']) ?? _openSides;
     _boundaryWall = _fb(f, ['boundary_wall']);
     _constructionDone = _fb(f, ['construction_done']);
-    _availability = _f(f, ['availability']) ?? _availability;
+    final rawAvail = p.availability ?? _f(f, ['availability', 'possession_status', 'possessionStatus']);
+    if (rawAvail != null && rawAvail.trim().isNotEmpty) {
+      final normalized = rawAvail.trim().toLowerCase().replaceAll('-', '_');
+      if (normalized == 'ready') {
+        _availability = 'ready_to_move';
+      } else {
+        _availability = normalized;
+      }
+    }
     _readyTimeframe = _f(f, ['ready_timeframe']) ?? _readyTimeframe;
-    _possessionBy.text = _f(f, ['possession_by']) ?? '';
-    _ownership = _f(f, ['ownership']) ?? _ownership;
-    _balconies = _fi(f, ['balconies']) ?? _balconies;
+    _possessionBy.text = p.possessionBy ?? _f(f, ['possession_by']) ?? '';
+    final rawOwner = p.ownership ?? _f(f, ['ownership']);
+    if (rawOwner != null && rawOwner.trim().isNotEmpty) {
+      _ownership = rawOwner.trim().toLowerCase().replaceAll('-', '_');
+    }
+    _balconies = p.balconies ?? _fi(f, ['balconies']) ?? _balconies;
     _ownerName.text = _f(f, ['owner_name']) ?? '';
     _ownerPhone.text = _f(f, ['owner_mobile', 'owner_phone']) ?? '';
 
@@ -1174,7 +1191,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           'maintenance_charges',
         ])?.toString() ??
         '';
-    _officeBookingAmount.text =
+    _officeBookingAmount.text = p.bookingAmount?.toString() ??
         _fd(f, ['booking_amount_office', 'booking_amount'])?.toString() ?? '';
 
     // Shop
@@ -1250,12 +1267,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     // ── 8. Sell → Residential → Apartment ──────────────────────────────────
     _additionalRooms
       ..clear()
-      ..addAll(_fl(f, ['additional_rooms']));
+      ..addAll(p.additionalRooms ?? _fl(f, ['additional_rooms']));
     _cornerProperty = _fb(f, ['corner_property']);
     _priceNegotiable = _fb(f, ['price_negotiable']);
     _maintenanceCharges.text =
         _fd(f, ['maintenance_charges'])?.toString() ?? '';
-    _bookingAmount.text = _fd(f, ['booking_amount'])?.toString() ?? '';
+    _bookingAmount.text = p.bookingAmount?.toString() ?? _fd(f, ['booking_amount'])?.toString() ?? '';
     _propertyHighlights
       ..clear()
       ..addAll(_fl(f, ['property_highlights']));
@@ -1267,7 +1284,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     // ── 9. Rent/Lease → Residential → Apartment ────────────────────────────
     _rentAdditionalRooms
       ..clear()
-      ..addAll(_fl(f, ['rent_additional_rooms']));
+      ..addAll(p.additionalRooms ?? _fl(f, ['rent_additional_rooms']));
     _rentCornerProperty = _fb(f, ['rent_corner_property']);
     _petFriendly = _fb(f, ['pet_friendly']);
     _wheelchairFriendly = _fb(f, ['wheelchair_friendly']);
@@ -1333,7 +1350,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     // ── 14. Sell → Residential → Villa / House ─────────────────────────────
     _villaAdditionalRooms
       ..clear()
-      ..addAll(_fl(f, ['villa_additional_rooms']));
+      ..addAll(p.additionalRooms ?? _fl(f, ['villa_additional_rooms']));
     _villaCornerProperty = _fb(f, ['villa_corner_property']);
     _gatedCommunity = _fb(f, ['gated_community']);
     _villaParking
@@ -1350,7 +1367,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _villaPriceNegotiable = _fb(f, ['villa_price_negotiable']);
     _villaMaintenanceCharges.text =
         _fd(f, ['villa_maintenance_charges'])?.toString() ?? '';
-    _villaBookingAmount.text =
+    _villaBookingAmount.text = p.bookingAmount?.toString() ??
         _fd(f, ['villa_booking_amount'])?.toString() ?? '';
 
     // ── 15. Sell → Residential → Builder Floor ─────────────────────────────
@@ -2397,7 +2414,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           (decoded['furnishingQuantities'] as Map?)?.entries
                   .map(
                     (e) => MapEntry(
-                      int.tryParse(e.key.toString()) ?? -1,
+                      int.tryParse(e.key.toString()) ?? 0,
                       (e.value as num).toInt(),
                     ),
                   )
@@ -3050,6 +3067,32 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       facing: _facing,
       floor: isLandPlot ? null : floor,
       totalFloors: isLandPlot ? null : totalFloors,
+      balconies: _isResidential ? (_balconies >= 0 ? _balconies : 0) : null,
+      builtUpArea: double.tryParse(_builtUpArea.text.trim()),
+      availability: _availability,
+      possessionBy: _possessionBy.text.trim().isEmpty ? null : _possessionBy.text.trim(),
+      ownership: _ownership.isEmpty ? null : _ownership,
+      additionalRooms: () {
+        if (!_isResidential) return null;
+        final rooms = (_isSellResidentialApartment
+                ? _additionalRooms
+                : _isSellResidentialVillaHouse
+                    ? _villaAdditionalRooms
+                    : _isRentLeaseResidentialApartment
+                        ? _rentAdditionalRooms
+                        : <String>{})
+            .toList(growable: false);
+        return rooms.isNotEmpty ? rooms : null;
+      }(),
+      bookingAmount: (isCommercial && _commercialType == 'office')
+          ? double.tryParse(_officeBookingAmount.text.trim())
+          : _isResidential
+              ? double.tryParse((_isSellResidentialVillaHouse
+                      ? _villaBookingAmount
+                      : _bookingAmount)
+                  .text
+                  .trim())
+              : null,
       possessionStatus: 'ready',
       bedrooms: (isLandPlot || isCommercial) ? null : _bedrooms,
       bathrooms: (isLandPlot || isCommercial) ? null : _bathrooms,
@@ -3129,7 +3172,29 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         ? _shopAreaUnit
         : (_showroomAreaUnit.trim().isNotEmpty ? _showroomAreaUnit : _areaUnit);
 
+    final String resolvedType;
+    switch (_propertyKind) {
+      case _CreatePropertyKind.sale:
+        resolvedType = 'sale';
+        break;
+      case _CreatePropertyKind.rent:
+        resolvedType = 'rent';
+        break;
+      case _CreatePropertyKind.lease:
+        resolvedType = 'lease';
+        break;
+      case _CreatePropertyKind.pg:
+        resolvedType = 'pg';
+        break;
+      case _CreatePropertyKind.coLiving:
+        resolvedType = 'co_living';
+        break;
+      default:
+        resolvedType = _type.name;
+    }
+
     return {
+      'type': resolvedType,
       'property_kind': isPgCoLiving
           ? 'pg'
           : (isLandPlot
@@ -3195,7 +3260,17 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           : null,
       'maintenance_charges': isPgCoLiving
           ? double.tryParse(_pgMaintenanceCharges.text.trim())
-          : null,
+          : (isCommercial && _commercialType == 'office')
+              ? double.tryParse(_officeMaintenanceCharges.text.trim())
+              : _isResidential
+                  ? double.tryParse((_isSellResidentialVillaHouse
+                          ? _villaMaintenanceCharges
+                          : _isRentLeaseResidentialApartment
+                              ? _rentMaintenanceCharges
+                              : _maintenanceCharges)
+                      .text
+                      .trim())
+                  : null,
       'pg_electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'pg_water_included': isPgCoLiving ? _pgWaterIncluded : null,
@@ -3244,8 +3319,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       'possession_by': _possessionBy.text.trim().isEmpty
           ? null
           : _possessionBy.text.trim(),
-      'ownership': _ownership,
-      'balconies': _balconies,
+      'ownership': _ownership.isEmpty ? null : _ownership,
+      'balconies': _isResidential ? (_balconies >= 0 ? _balconies : 0) : null,
       'commercial_type': isCommercial ? _commercialType : null,
       'floor_plate_area': isCommercial
           ? double.tryParse(_floorPlateArea.text.trim())
@@ -3306,15 +3381,18 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeMaintenanceCharges.text.trim())
           : null,
-      'maintenance_charges': (isCommercial && _commercialType == 'office')
-          ? double.tryParse(_officeMaintenanceCharges.text.trim())
-          : null,
       'booking_amount_office': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
           : null,
       'booking_amount': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
-          : null,
+          : _isResidential
+              ? double.tryParse((_isSellResidentialVillaHouse
+                      ? _villaBookingAmount
+                      : _bookingAmount)
+                  .text
+                  .trim())
+              : null,
       'floor_plate_area_unit': (isCommercial && _commercialType == 'office')
           ? _areaUnit
           : null,
@@ -3353,9 +3431,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           : null,
       'main_road_facing': (isCommercial && _commercialType == 'shop')
           ? _mainRoadFacing
-          : null,
-      'corner_shop': (isCommercial && _commercialType == 'shop')
-          ? _cornerShop
           : null,
       'washroom_available': (isCommercial && _commercialType == 'shop')
           ? _washroomAvailable
@@ -3399,9 +3474,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       'showroom_main_road_facing':
           (isCommercial && _commercialType == 'showroom')
           ? _showroomMainRoadFacing
-          : null,
-      'corner_showroom': (isCommercial && _commercialType == 'showroom')
-          ? _showroomCorner
           : null,
       'showroom_washroom_available':
           (isCommercial && _commercialType == 'showroom')
@@ -3497,8 +3569,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? double.tryParse(_roadWidth.text.trim())
           : null,
       'plot_area_unit': isLandPlot ? _plotAreaUnit : null,
-      'corner_plot': isLandPlot ? _plotCorner : null,
-      'plot_corner': isLandPlot ? _plotCorner : null,
       'road_access': isLandPlot ? _plotRoadAccess : null,
       'fencing': (isLandPlot && _landType == 'agricultural')
           ? _agriFencing
@@ -3532,29 +3602,33 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           : null,
 
       // Sell -> Residential -> Flat/Apartment extra fields
-      'additional_rooms': _isSellResidentialApartment
-          ? _additionalRooms.toList(growable: false)
-          : null,
-      'corner_property': _isSellResidentialApartment ? _cornerProperty : null,
+      'corner_property': _cornerProperty ||
+          _rentCornerProperty ||
+          _villaCornerProperty ||
+          _builderCornerProperty ||
+          _duplexCornerPlot ||
+          _cornerShop ||
+          _showroomCorner ||
+          _plotCorner,
       'price_negotiable': _isSellResidentialApartment ? _priceNegotiable : null,
-      'maintenance_charges': _isSellResidentialApartment
-          ? double.tryParse(_maintenanceCharges.text.trim())
-          : null,
-      'booking_amount': _isSellResidentialApartment
-          ? double.tryParse(_bookingAmount.text.trim())
-          : null,
+      'additional_rooms': () {
+        if (!_isResidential) return null;
+        final rooms = (_isSellResidentialApartment
+                ? _additionalRooms
+                : _isSellResidentialVillaHouse
+                    ? _villaAdditionalRooms
+                    : _isRentLeaseResidentialApartment
+                        ? _rentAdditionalRooms
+                        : <String>{})
+            .toList(growable: false);
+        return rooms.isNotEmpty ? rooms : null;
+      }(),
       'property_highlights': _isSellResidentialApartment
           ? _propertyHighlights.toList(growable: false)
           : null,
       'whatsapp_updates': _isSellResidentialApartment ? _whatsappUpdates : null,
       'promotion': _isSellResidentialApartment
           ? _promotionTags.toList(growable: false)
-          : null,
-      'rent_additional_rooms': _isRentLeaseResidentialApartment
-          ? _rentAdditionalRooms.toList(growable: false)
-          : null,
-      'rent_corner_property': _isRentLeaseResidentialApartment
-          ? _rentCornerProperty
           : null,
       'pet_friendly': _isRentLeaseResidentialApartment ? _petFriendly : null,
       'wheelchair_friendly': _isRentLeaseResidentialApartment
@@ -3565,9 +3639,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           : null,
       'security_deposit': _isRentLeaseResidentialApartment
           ? double.tryParse(_securityDeposit.text.trim())
-          : null,
-      'maintenance_charges_rent': _isRentLeaseResidentialApartment
-          ? double.tryParse(_rentMaintenanceCharges.text.trim())
           : null,
       'brokerage': _isRentLeaseResidentialApartment
           ? double.tryParse(_brokerage.text.trim())
@@ -3656,12 +3727,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           : null,
 
       // Sell -> Residential -> Independent House / Villa extra fields
-      'villa_additional_rooms': _isSellResidentialVillaHouse
-          ? _villaAdditionalRooms.toList(growable: false)
-          : null,
-      'villa_corner_property': _isSellResidentialVillaHouse
-          ? _villaCornerProperty
-          : null,
       'gated_community': _isSellResidentialVillaHouse ? _gatedCommunity : null,
       'parking_types': _isSellResidentialVillaHouse
           ? _villaParking.toList(growable: false)
@@ -3676,17 +3741,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       'villa_price_negotiable': _isSellResidentialVillaHouse
           ? _villaPriceNegotiable
           : null,
-      'villa_maintenance_charges': _isSellResidentialVillaHouse
-          ? double.tryParse(_villaMaintenanceCharges.text.trim())
-          : null,
-      'villa_booking_amount': _isSellResidentialVillaHouse
-          ? double.tryParse(_villaBookingAmount.text.trim())
-          : null,
 
       // Sell -> Residential -> Builder Floor extra fields
-      'builder_corner_property': _isSellResidentialBuilderFloor
-          ? _builderCornerProperty
-          : null,
       'builder_gated_society': _isSellResidentialBuilderFloor
           ? _builderGatedSociety
           : null,
@@ -3702,7 +3758,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       'negotiable': _isSellResidentialBuilderFloor ? _builderNegotiable : null,
 
       // Sell -> Residential -> Duplex extra fields
-      'duplex_corner_plot': _isSellResidentialDuplex ? _duplexCornerPlot : null,
       'duplex_gated_community': _isSellResidentialDuplex
           ? _duplexGatedCommunity
           : null,
@@ -5011,54 +5066,51 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _simpleFilterChip(
-                  label: 'SMOKING ALLOWED',
-                  selected: _pgSmokingAllowed,
-                  onSelected: (s) {
-                    setState(() => _pgSmokingAllowed = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
-                _simpleFilterChip(
-                  label: 'DRINKING ALLOWED',
-                  selected: _pgDrinkingAllowed,
-                  onSelected: (s) {
-                    setState(() => _pgDrinkingAllowed = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
-                _simpleFilterChip(
-                  label: 'PETS ALLOWED',
-                  selected: _pgPetsAllowed,
-                  onSelected: (s) {
-                    setState(() => _pgPetsAllowed = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
-                _simpleFilterChip(
-                  label: 'VISITOR ALLOWED',
-                  selected: _pgVisitorsAllowed,
-                  onSelected: (s) {
-                    setState(() => _pgVisitorsAllowed = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
-                _simpleFilterChip(
-                  label: 'GATE LOCKED AT NIGHT',
-                  selected: _pgGateLockedAtNight,
-                  onSelected: (s) {
-                    setState(() => _pgGateLockedAtNight = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
-                _simpleFilterChip(
-                  label: 'SECURITY',
-                  selected: _pgSecurity,
-                  onSelected: (s) {
-                    setState(() => _pgSecurity = s);
-                    _scheduleSaveDraft();
-                  },
-                ),
+_buildMultiChoiceChipRow(
+  'Restrictions',
+  [
+    'SMOKING ALLOWED',
+    'DRINKING ALLOWED',
+    'PETS ALLOWED',
+    'VISITOR ALLOWED',
+    'GATE LOCKED AT NIGHT',
+    'SECURITY',
+  ],
+  {
+    'SMOKING ALLOWED': _pgSmokingAllowed,
+    'DRINKING ALLOWED': _pgDrinkingAllowed,
+    'PETS ALLOWED': _pgPetsAllowed,
+    'VISITOR ALLOWED': _pgVisitorsAllowed,
+    'GATE LOCKED AT NIGHT': _pgGateLockedAtNight,
+    'SECURITY': _pgSecurity,
+  },
+  (label, value) {
+    setState(() {
+      switch (label) {
+        case 'SMOKING ALLOWED':
+          _pgSmokingAllowed = value;
+          break;
+        case 'DRINKING ALLOWED':
+          _pgDrinkingAllowed = value;
+          break;
+        case 'PETS ALLOWED':
+          _pgPetsAllowed = value;
+          break;
+        case 'VISITOR ALLOWED':
+          _pgVisitorsAllowed = value;
+          break;
+        case 'GATE LOCKED AT NIGHT':
+          _pgGateLockedAtNight = value;
+          break;
+        case 'SECURITY':
+          _pgSecurity = value;
+          break;
+      }
+    });
+
+    _scheduleSaveDraft();
+  },
+),
               ],
             ),
           ),
@@ -5066,10 +5118,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _buildTextField(
             _pgCurfewTime,
             'Curfew Timing (Optional)',
-            'Select curfew time',
+            'Enter curfew time manually (e.g. 10:00 PM)',
             Icons.schedule,
-            readOnly: true,
-            onTap: _showCurfewTimePicker,
+            readOnly: false,
           ),
           const SizedBox(height: 12),
           Align(
@@ -5619,7 +5670,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
               _availability,
               (v) => setState(() => _availability = v),
             ),
-            if (_availability != 'ready') ...[
+            if (_availability != 'ready_to_move' && _availability != 'immediate') ...[
               const SizedBox(height: 12),
               _buildTextField(
                 _possessionBy,
@@ -6579,7 +6630,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _availability,
                 (v) => setState(() => _availability = v),
               ),
-              if (_availability == 'ready') ...[
+              if (_availability == 'ready_to_move' || _availability == 'immediate') ...[
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
                   'Property Age',
@@ -8563,7 +8614,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _availability,
                 (v) => setState(() => _availability = v),
               ),
-              if (_availability != 'ready') ...[
+              if (_availability != 'ready_to_move' && _availability != 'immediate') ...[
                 const SizedBox(height: 12),
                 _buildTextField(
                   _possessionBy,
@@ -8689,14 +8740,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Select the hour and period. Minutes are set to 00.',
+                    'Select the hour on the clock face below.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textMuted,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: ['AM', 'PM'].map((period) {
@@ -8732,45 +8783,77 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                     }).toList(),
                   ),
                   const SizedBox(height: 24),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 1.3,
-                    ),
-                    itemCount: 12,
-                    itemBuilder: (context, index) {
-                      final hour = index + 1;
-                      final active = selectedHour == hour;
-                      return GestureDetector(
-                        onTap: () {
-                          setModalState(() => selectedHour = hour);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 150),
-                          decoration: BoxDecoration(
-                            color: active ? AppColors.gold.withOpacity(0.15) : AppColors.dark3,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: active ? AppColors.gold : AppColors.border,
-                              width: active ? 2 : 1,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '$hour',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: active ? AppColors.gold : AppColors.textPrimary,
-                            ),
-                          ),
+                  Center(
+                    child: Container(
+                      width: 220,
+                      height: 220,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.04),
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.5),
+                          width: 1.5,
                         ),
-                      );
-                    },
+                      ),
+                      child: Stack(
+                        children: [
+                          // Positioned.fill(
+                          //   // child: CustomPaint(
+                          //   //   painter: ClockHandPainter(selectedHour: selectedHour),
+                          //   // ),
+                          // ),
+                          ...List.generate(12, (index) {
+                            final hour = index + 1;
+                            final active = selectedHour == hour;
+                            final angle = (hour * 30 - 90) * math.pi / 180;
+                            const radius = 84.0;
+                            final x = 110 + radius * math.cos(angle) - 20;
+                            final y = 110 + radius * math.sin(angle) - 20;
+
+                            return Positioned(
+                              left: x,
+                              top: y,
+                              width: 40,
+                              height: 40,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setModalState(() => selectedHour = hour);
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 150),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: active ? AppTheme.gold : AppColors.dark3,
+                                    border: Border.all(
+                                      color: active ? AppTheme.gold : AppColors.border,
+                                      width: active ? 2 : 1,
+                                    ),
+                                    boxShadow: active
+                                        ? [
+                                            BoxShadow(
+                                              color: AppTheme.gold.withValues(alpha: 0.4),
+                                              blurRadius: 10,
+                                              spreadRadius: 1,
+                                            )
+                                          ]
+                                        : null,
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    '$hour',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: active ? const Color(0xFF070B14) : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 32),
                   Row(
@@ -9700,25 +9783,39 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // ==================== UI Helper Widgets ====================
 
-  FilterChip _simpleFilterChip({
+  Widget _simpleFilterChip({
     required String label,
     required bool selected,
     required ValueChanged<bool> onSelected,
   }) {
-    return FilterChip(
-      label: Text(label),
+    return ChoiceChip(
+      label: Text(
+        label,
+        maxLines: 2,
+        softWrap: true,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: selected ? const Color(0xFF070B14) : AppColors.dark2,
+        ),
+      ),
       selected: selected,
+      onSelected: onSelected,
       showCheckmark: false,
       selectedColor: AppTheme.gold,
       backgroundColor: Colors.white.withValues(alpha: 0.08),
-      labelStyle: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        color: selected ? const Color(0xFF070B14) : AppColors.dark2,
-      ),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
-      onSelected: onSelected,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      labelPadding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 0,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      side: BorderSide(
+        color: selected ? AppTheme.gold : Colors.transparent,
+      ),
     );
   }
 
@@ -9845,6 +9942,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     ValueChanged<String> onChanged, {
     String Function(String opt)? displayFor,
   }) {
+    bool isSelected(String opt) {
+      final normSel = selected.trim().toLowerCase().replaceAll('-', '_');
+      final normOpt = opt.trim().toLowerCase().replaceAll('-', '_');
+      return normSel == normOpt;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -9878,12 +9981,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: selected == opt
+                          color: isSelected(opt)
                               ? const Color(0xFF070B14)
                               : AppColors.dark2,
                         ),
                       ),
-                      selected: selected == opt,
+                      selected: isSelected(opt),
                       onSelected: (_) => onChanged(opt),
                       visualDensity: VisualDensity.compact,
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -10161,7 +10264,82 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ),
     );
   }
-}
+
+  Widget _buildMultiChoiceChipRow(
+    String label,
+    List<String> options,
+    Map<String, bool> selectedValues,
+    Function(String option, bool value) onChanged, {
+    String Function(String opt)? displayFor,
+  }) {
+    bool isSelected(String opt) {
+      return selectedValues[opt] ?? false;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            runAlignment: WrapAlignment.start,
+            spacing: 6,
+            runSpacing: 6,
+            children: options.map((opt) {
+              final selected = isSelected(opt);
+
+              return Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: ChoiceChip(
+                  showCheckmark: false,
+                  label: Text(
+                    displayFor != null
+                        ? displayFor(opt)
+                        : opt.replaceAll('_', ' ').toUpperCase(),
+                    maxLines: 2,
+                    softWrap: true,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: selected
+                          ? const Color(0xFF070B14)
+                          : AppColors.dark2,
+                    ),
+                  ),
+                  selected: selected,
+                  onSelected: (value) => onChanged(opt, value),
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  labelPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 0,
+                  ),
+                  selectedColor: AppTheme.gold,
+                  backgroundColor: Colors.white.withValues(alpha: 0.08),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  side: BorderSide(
+                    color: selected ? AppTheme.gold : Colors.transparent,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
 
 // ==================== Helper Classes ====================
 
@@ -10348,3 +10526,4 @@ class _QuantityStepper extends StatelessWidget {
     );
   }
 }
+

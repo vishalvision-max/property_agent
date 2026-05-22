@@ -165,18 +165,25 @@ class StaffPropertyService implements PropertyService {
 
   Property _fromApi(Map<String, dynamic> json) {
     try {
+      final copy = Map<String, dynamic>.from(json);
+
       final title = (json['title'] ?? json['name'] ?? '').toString();
-      final description = (json['description'] ?? '').toString();
+      copy['title'] = title.isEmpty ? 'Property' : title;
+
       final city = (json['city'] ?? '').toString();
+      copy['city'] = city;
+
       final price =
           (json['price'] as num?)?.toDouble() ??
           double.tryParse((json['price'] ?? '0').toString()) ??
           0;
+      copy['price'] = price;
 
       final typeStr = (json['type'] ?? 'rent').toString();
       final type = PropertyType.values.any((e) => e.name == typeStr)
           ? PropertyType.values.byName(typeStr)
           : PropertyType.rent;
+      copy['type'] = type.name;
 
       final imagesRaw = json['images'] is List
           ? (json['images'] as List)
@@ -197,7 +204,6 @@ class StaffPropertyService implements PropertyService {
             if (s.startsWith('http')) return s;
 
             // Defensive: some layers may stringify the image object map.
-            // Example: "{id: 1, ..., image_path: properties/21/images/x.webp, ...}"
             if (s.contains('image_path:')) {
               final match = RegExp(r'image_path:\s*([^,}]+)').firstMatch(s);
               final extracted = match?.group(1)?.trim();
@@ -218,6 +224,7 @@ class StaffPropertyService implements PropertyService {
           })
           .where((s) => s.trim().isNotEmpty)
           .toList(growable: false);
+      copy['images'] = images;
 
       final videosRaw = json['videos'] is List
           ? (json['videos'] as List)
@@ -241,29 +248,29 @@ class StaffPropertyService implements PropertyService {
                     : thumbUrl;
                 thumbUrl = '${ApiConstants.publicOrigin}/storage/$normalized';
               }
-              return PropertyVideo(
-                id: (m['id'] ?? '').toString(),
-                url: url,
-                type: m['type']?.toString(),
-                title: m['title']?.toString(),
-                thumbnailUrl: thumbUrl,
-                isFeatured: m['is_featured'] is bool
+              return {
+                'id': (m['id'] ?? '').toString(),
+                'url': url,
+                'type': m['type']?.toString(),
+                'title': m['title']?.toString(),
+                'thumbnail': thumbUrl,
+                'is_featured': m['is_featured'] is bool
                     ? m['is_featured'] as bool
                     : (m['is_featured'] == 1 ||
                           m['is_featured'] == '1' ||
                           m['is_featured']?.toString().toLowerCase() == 'true'),
-              );
+              };
             }
             final s = e.toString();
             if (s.isEmpty) return null;
             final url = s.startsWith('http')
                 ? s
                 : '${ApiConstants.publicOrigin}/storage/${s.startsWith('/') ? s.substring(1) : s}';
-            return PropertyVideo(id: '', url: url);
+            return {'id': '', 'url': url};
           })
-          .whereType<PropertyVideo>()
-          .where((v) => v.url.trim().isNotEmpty)
-          .toList(growable: false);
+          .where((v) => v != null)
+          .toList();
+      copy['videos'] = videos;
 
       final approval = (json['approval_status'] ?? json['approvalStatus'] ?? '')
           .toString();
@@ -277,10 +284,24 @@ class StaffPropertyService implements PropertyService {
           _ => PropertyStatus.pending,
         },
       };
+      copy['status'] = status.name;
 
       final amenitiesRaw = json['amenities'] is List
           ? (json['amenities'] as List)
           : const [];
+
+      final amenityIds = amenitiesRaw
+          .map((e) {
+            if (e is Map) {
+              final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
+              return idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
+            }
+            return int.tryParse(e.toString());
+          })
+          .whereType<int>()
+          .toList();
+      copy['amenity_ids'] = amenityIds;
+
       final amenities = amenitiesRaw
           .map((e) {
             if (e is Map) {
@@ -290,168 +311,39 @@ class StaffPropertyService implements PropertyService {
           })
           .where((s) => s.trim().isNotEmpty)
           .toList(growable: false);
+      copy['amenities'] = amenities;
 
-      return Property(
-        id: (json['id'] ?? '').toString(),
-        name: title.isEmpty ? 'Property' : title,
-        ownerName: (json['owner_name'] ?? json['ownerName'] ?? 'Owner')
-            .toString(),
-        location: city.isEmpty ? (json['location'] ?? '').toString() : city,
-        price: price,
-        type: type,
-        amenities: amenities,
-        images: images,
-        videos: videos,
-        description: description,
-        status: status,
-        slug: json['slug']?.toString(),
-        listingType:
-            json['listingType']?.toString() ?? json['listing_type']?.toString(),
-        area: json['area'] is num
-            ? (json['area'] as num).toDouble()
-            : double.tryParse(json['area']?.toString() ?? ''),
-        areaUnit: json['areaUnit']?.toString() ?? json['area_unit']?.toString(),
-        propertyAge: json['propertyAge'] is num
-            ? (json['propertyAge'] as num).toInt()
-            : json['property_age'] is num
-            ? (json['property_age'] as num).toInt()
-            : int.tryParse(
-                json['property_age']?.toString() ??
-                    json['propertyAge']?.toString() ??
-                    '',
-              ),
-        facing: json['facing']?.toString(),
-        floor: json['floor'] is num
-            ? (json['floor'] as num).toInt()
-            : int.tryParse(json['floor']?.toString() ?? ''),
-        totalFloors: json['totalFloors'] is num
-            ? (json['totalFloors'] as num).toInt()
-            : json['total_floors'] is num
-            ? (json['total_floors'] as num).toInt()
-            : int.tryParse(
-                json['total_floors']?.toString() ??
-                    json['totalFloors']?.toString() ??
-                    '',
-              ),
-        possessionStatus:
-            json['possessionStatus']?.toString() ??
-            json['possession_status']?.toString(),
-        bedrooms: json['bedrooms'] is num
-            ? (json['bedrooms'] as num).toInt()
-            : int.tryParse(json['bedrooms']?.toString() ?? ''),
-        bathrooms: json['bathrooms'] is num
-            ? (json['bathrooms'] as num).toInt()
-            : int.tryParse(json['bathrooms']?.toString() ?? ''),
-        furnishing: json['furnishing']?.toString(),
-        parking: json['parking'] is num
-            ? (json['parking'] as num).toInt()
-            : int.tryParse(json['parking']?.toString() ?? ''),
-        address: json['address']?.toString(),
-        city: json['city']?.toString() ?? city,
-        state: json['state']?.toString(),
-        pincode: json['pincode']?.toString(),
-        latitude: json['latitude'] is num
-            ? (json['latitude'] as num).toDouble()
-            : double.tryParse(json['latitude']?.toString() ?? ''),
-        longitude: json['longitude'] is num
-            ? (json['longitude'] as num).toDouble()
-            : double.tryParse(json['longitude']?.toString() ?? ''),
-        primaryImageIndex: json['primaryImageIndex'] is num
-            ? (json['primaryImageIndex'] as num).toInt()
-            : json['primary_image_index'] is num
-            ? (json['primary_image_index'] as num).toInt()
-            : int.tryParse(
-                json['primary_image_index']?.toString() ??
-                    json['primaryImageIndex']?.toString() ??
-                    '',
-              ),
-        rejectionReason:
-            json['rejectionReason']?.toString() ??
-            json['rejection_reason']?.toString(),
-        updatedAt: json['updated_at'] == null
-            ? null
-            : DateTime.tryParse(json['updated_at'].toString()),
-        createdAt: json['created_at'] == null
-            ? null
-            : DateTime.tryParse(json['created_at'].toString()),
-        categoryId: (json['category_id'] ?? '').toString(),
-        userId: json['user_id'] is num
-            ? (json['user_id'] as num).toInt()
-            : int.tryParse(json['user_id']?.toString() ?? ''),
-        isFeatured: json['is_featured'] is bool
-            ? json['is_featured'] as bool
-            : (json['is_featured'] == 1 ||
-                  json['is_featured'] == '1' ||
-                  json['is_featured']?.toString().toLowerCase() == 'true'),
-        featuredExpiry: json['featured_expiry'] == null
-            ? null
-            : DateTime.tryParse(json['featured_expiry'].toString()),
-        amenityIds: () {
-          final list =
-              json['amenityIds'] as List? ??
-              json['amenity_ids'] as List? ??
-              json['amenities'] as List?;
-          if (list == null) return <int>[];
-          return list
-              .map((e) {
-                if (e is Map) {
-                  final idVal = e['id'];
-                  return idVal is num
-                      ? idVal.toInt()
-                      : int.tryParse(idVal?.toString() ?? '');
-                }
-                if (e is num) return e.toInt();
-                return int.tryParse(e.toString());
-              })
-              .whereType<int>()
-              .toList();
-        }(),
-        documents:
-            (json['documents'] is List ? (json['documents'] as List) : const [])
-                .map((e) {
-                  if (e is Map) {
-                    final m = Map<String, dynamic>.from(e);
-                    final path = (m['document_path'] ?? m['url'] ?? '')
-                        .toString();
-                    if (path.startsWith('http')) return path;
-                    if (path.isEmpty) return '';
-                    final normalized = path.startsWith('/')
-                        ? path.substring(1)
-                        : path;
-                    return '${ApiConstants.publicOrigin}/storage/$normalized';
-                  }
-                  final s = e.toString();
-                  if (s.startsWith('http')) return s;
-                  if (s.startsWith('documents/')) {
-                    return '${ApiConstants.publicOrigin}/storage/$s';
-                  }
-                  return s;
-                })
-                .where((s) => s.trim().isNotEmpty)
-                .toList(growable: false),
-        furnishingSelections: () {
-          final list = json['furnishings'] as List? ??
-              json['furnishing_selections'] as List? ??
-              json['furnishingSelections'] as List?;
-          if (list == null) return <PropertyFurnishingSelection>[];
-          return list
-              .map((e) {
-                if (e is Map) {
-                  final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
-                  final id = idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
-                  final qVal = e['quantity'] ?? (e['pivot'] as Map?)?['quantity'];
-                  final quantity = qVal is num ? qVal.toInt() : int.tryParse(qVal?.toString() ?? '') ?? 1;
-                  if (id != null) {
-                    return PropertyFurnishingSelection(id: id, quantity: quantity);
-                  }
-                }
-                return null;
-              })
-              .whereType<PropertyFurnishingSelection>()
-              .toList();
-        }(),
-        apiFields: json,
-      );
+      final documentsRaw = json['documents'] is List
+          ? (json['documents'] as List)
+          : const [];
+      final documents = documentsRaw
+          .map((e) {
+            if (e is Map) {
+              final m = Map<String, dynamic>.from(e);
+              final path = (m['document_path'] ?? m['url'] ?? '')
+                  .toString();
+              if (path.startsWith('http')) return path;
+              if (path.isEmpty) return '';
+              final normalized = path.startsWith('/')
+                  ? path.substring(1)
+                  : path;
+              return '${ApiConstants.publicOrigin}/storage/$normalized';
+            }
+            final s = e.toString();
+            if (s.startsWith('http')) return s;
+            if (s.startsWith('documents/')) {
+              return '${ApiConstants.publicOrigin}/storage/$s';
+            }
+            return s;
+          })
+          .where((s) => s.trim().isNotEmpty)
+          .toList(growable: false);
+      copy['documents'] = documents;
+
+      // Retain the raw API fields mapping
+      copy['apiFields'] = json;
+
+      return Property.fromJson(copy);
     } catch (e, st) {
       print('Error parsing property JSON: $e');
       print('JSON structure: $json');
@@ -794,7 +686,7 @@ class StaffPropertyService implements PropertyService {
       'description': property.description,
       if (property.slug != null && property.slug!.trim().isNotEmpty)
         'slug': property.slug!.trim(),
-      'type': property.type.name, // "rent" or "sale"
+      'type': property.apiFields?['type']?.toString() ?? property.type.name,
       if (_normalizeListingType(property.listingType) != null)
         'listing_type': _normalizeListingType(property.listingType),
       'price': property.price.toStringAsFixed(0),
@@ -804,8 +696,15 @@ class StaffPropertyService implements PropertyService {
       if (property.propertyAge != null) 'property_age': property.propertyAge,
       if (_normalizeFacing(property.facing) != null)
         'facing': _normalizeFacing(property.facing),
-      if (property.floor != null) 'floor': property.floor,
-      if (property.totalFloors != null) 'total_floors': property.totalFloors,
+      'balconies': property.balconies?.toString() ?? '',
+      'floor': property.floor?.toString() ?? '',
+      'total_floors': property.totalFloors?.toString() ?? '',
+      'built_up_area': property.builtUpArea?.toString() ?? '',
+      'availability': property.availability ?? '',
+      'possession_by': property.possessionBy ?? '',
+      'ownership': property.ownership ?? '',
+      'additional_rooms': property.additionalRooms?.join(',') ?? '',
+      'booking_amount': property.bookingAmount?.toString() ?? '',
       if (property.possessionStatus != null &&
           property.possessionStatus!.trim().isNotEmpty)
         'possession_status': property.possessionStatus!.trim(),
@@ -860,6 +759,7 @@ class StaffPropertyService implements PropertyService {
       'facing', 'floor', 'total_floors', 'bedrooms', 'bathrooms',
       'furnishing', 'parking', 'address', 'city', 'state', 'pincode',
       'latitude', 'longitude', 'category_id',
+      'balconies', 'built_up_area', 'availability', 'possession_by', 'ownership', 'additional_rooms', 'booking_amount',
     };
     for (final e in extra.entries) {
       final key = e.key.trim();
@@ -930,7 +830,8 @@ class StaffPropertyService implements PropertyService {
   @override
   Future<Property> createProperty(Property property) async {
     final dio = await _dioFuture;
-    final form = await _toCreateForm(property);
+    final formData = await _toCreateForm(property);
+    debugPrint(formData.fields.toString());
     if (kDebugMode) {
       // Note: Authorization is set per-request by the interceptor, not in
       // dio.options.headers. Log a reminder rather than a misleading "null".
@@ -944,14 +845,14 @@ class StaffPropertyService implements PropertyService {
       dio: dio,
       method: 'POST',
       path: '/staff/properties',
-      form: form,
+      form: formData,
       filePaths: _collectCreateFilePaths(property),
     );
     Response<Map<String, dynamic>> res;
     try {
       res = await dio.post<Map<String, dynamic>>(
         '/staff/properties',
-        data: form,
+        data: formData,
       );
     } on DioException catch (e) {
       if (kDebugMode) {
@@ -975,21 +876,23 @@ class StaffPropertyService implements PropertyService {
 
     // PHP/Laravel backends natively expect method override for multipart PUT/PATCH requests.
     // By using POST with '_method: PUT', we ensure robust, native PHP parsing of all fields and files.
-    final retryForm = FormData();
-    retryForm.fields.add(const MapEntry('_method', 'PUT'));
-    retryForm.fields.addAll(form.fields);
-    retryForm.files.addAll(form.files);
+    final formData = FormData();
+    formData.fields.add(const MapEntry('_method', 'PUT'));
+    formData.fields.addAll(form.fields);
+    formData.files.addAll(form.files);
+
+    debugPrint(formData.fields.toString());
 
     _debugLogMultipart(
       dio: dio,
       method: 'PUT',
       path: path,
-      form: retryForm,
+      form: formData,
       filePaths: _collectCreateFilePaths(property),
     );
 
     try {
-      res = await dio.put<Map<String, dynamic>>(path, data: retryForm);
+      res = await dio.put<Map<String, dynamic>>(path, data: formData);
     } on DioException catch (e) {
       throw _apiException(e);
     }
@@ -999,11 +902,25 @@ class StaffPropertyService implements PropertyService {
   @override
   Future<Property> getPropertyById(String id) async {
     final dio = await _dioFuture;
-    final res = await dio.get<Map<String, dynamic>>('/properties/$id');
+    // Use the staff endpoint so all custom category-specific fields are
+    // returned (corner_property, maintenance_charges, availability, etc.).
+    // The public /properties/{id} endpoint only returns base fields.
+    Response<Map<String, dynamic>> res;
+    try {
+      res = await dio.get<Map<String, dynamic>>('/staff/properties/$id');
+    } on DioException catch (_) {
+      // Fallback to public endpoint if staff endpoint is unavailable.
+      res = await dio.get<Map<String, dynamic>>('/properties/$id');
+    }
     final body = res.data ?? const <String, dynamic>{};
     final data = body['data'];
-    if (data is Map<String, dynamic>) return _fromApi(data);
-    return _fromApi(body);
+    final rawData = data is Map<String, dynamic> ? data : body;
+    if (kDebugMode) {
+      debugPrint(
+        _yellow('[StaffPropertyService] getPropertyById($id) keys=${rawData.keys.toList()}'),
+      );
+    }
+    return _fromApi(rawData);
   }
 
   @override

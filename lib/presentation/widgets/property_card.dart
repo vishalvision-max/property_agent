@@ -135,7 +135,7 @@ class PropertyCard extends StatelessWidget {
                                   ),
                                 ),
                                 child: Text(
-                                  property.type.label,
+                                  property.displayTag,
                                   style: t.labelSmall?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     color: textPrimary,

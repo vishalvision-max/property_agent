@@ -25,6 +25,7 @@ class Property extends Equatable {
     required this.status,
     this.slug,
     this.listingType,
+    this.propertyKind,
     this.area,
     this.areaUnit,
     this.propertyAge,
@@ -118,7 +119,7 @@ class Property extends Equatable {
     this.showroomFloorType,
     this.showroomMarketName,
     this.showroomLocality,
-    this.showroomOwnerName,
+    this.showroomOwneLeaserName,
     this.showroomOwnerMobile,
     this.warehouseType,
     this.warehousePlotArea,
@@ -258,7 +259,7 @@ class Property extends Equatable {
     this.pgAvailability,
     this.pgSharing,
     this.pgSecurity,
-    this.pgMaintenanceCharges,
+    this.pgMaintenanceCharges,  this.showroomOwnerName,
   })  : pgDetails = PropertyPgDetails(
           genderBased: pgGenderBased,
           occupancyType: pgOccupancyType,
@@ -368,6 +369,16 @@ class Property extends Equatable {
           warehouseCity: warehouseCity,
         );
 
+  String get displayTag {
+    final pk = propertyKind?.toLowerCase();
+    if (pk == 'pg') return 'PG';
+    if (pk == 'co_living' || pk == 'co-living') return 'Co-Living';
+    if (pk == 'lease') return 'Lease';
+    if (pk == 'sale') return 'Sale';
+    if (pk == 'rent') return 'Rent';
+    return type.label;
+  }
+
   final String id;
   final String name;
   final String ownerName;
@@ -381,6 +392,7 @@ class Property extends Equatable {
   final PropertyStatus status;
   final String? slug;
   final String? listingType;
+  final String? propertyKind;
   final double? area;
   final String? areaUnit;
   final int? propertyAge;
@@ -639,6 +651,8 @@ class Property extends Equatable {
   final PropertyShowroomDetails showroomDetails;
   final PropertyShopDetails shopDetails;
   final PropertyWarehouseDetails warehouseDetails;
+  
+  var showroomOwneLeaserName;
 
   Property copyWith({
     String? name,
@@ -654,6 +668,7 @@ class Property extends Equatable {
     PropertyStatus? status,
     String? slug,
     String? listingType,
+    String? propertyKind,
     double? area,
     String? areaUnit,
     int? propertyAge,
@@ -903,6 +918,7 @@ class Property extends Equatable {
       status: status ?? this.status,
       slug: slug ?? this.slug,
       listingType: listingType ?? this.listingType,
+      propertyKind: propertyKind ?? this.propertyKind,
       area: area ?? this.area,
       areaUnit: areaUnit ?? this.areaUnit,
       propertyAge: propertyAge ?? this.propertyAge,
@@ -1154,6 +1170,7 @@ class Property extends Equatable {
         'status': status.name,
         'slug': slug,
         'listing_type': listingType,
+        'property_kind': propertyKind,
         'area': area,
         'area_unit': areaUnit,
         'property_age': propertyAge,
@@ -1426,6 +1443,9 @@ final pg = (f['pg_details'] as Map?) ?? {};
       if (val is List) {
         return val.map((e) => e.toString().trim()).where((s) => s.isNotEmpty).toList();
       }
+      if (val is String && val.trim().isNotEmpty) {
+        return val.split(',').map((e) => e.trim()).where((s) => s.isNotEmpty).toList();
+      }
       return const [];
     }
 
@@ -1464,6 +1484,7 @@ location: (
       status: PropertyStatus.values.byName((f['status'] ?? 'pending').toString()),
       slug: f['slug']?.toString(),
       listingType: f['listingType']?.toString() ?? f['listing_type']?.toString(),
+      propertyKind: f['propertyKind']?.toString() ?? f['property_kind']?.toString(),
       area: f['area'] is num
           ? (f['area'] as num).toDouble()
           : double.tryParse(f['area']?.toString() ?? ''),
@@ -1496,8 +1517,22 @@ location: (
       isFeatured: toBool(f['isFeatured'] ?? f['is_featured']),
       featuredExpiry: f['featuredExpiry'] == null ? (f['featured_expiry'] == null ? null : DateTime.tryParse(f['featured_expiry'].toString())) : DateTime.tryParse(f['featuredExpiry'].toString()),
       documents: toStringList(f['documents']),
-      amenityIds: (f['amenityIds'] as List?)?.whereType<num>().map((e) => e.toInt()).toList() ??
-          (f['amenity_ids'] as List?)?.whereType<num>().map((e) => e.toInt()).toList(),
+      amenityIds: () {
+        final list1 = f['amenityIds'] as List? ?? f['amenity_ids'] as List?;
+        if (list1 != null) {
+          return list1
+              .map((e) {
+                if (e is Map) {
+                  final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
+                  return idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
+                }
+                return e is num ? e.toInt() : int.tryParse(e.toString());
+              })
+              .whereType<int>()
+              .toList();
+        }
+        return <int>[];
+      }(),
       furnishingSelections: () {
         final list = f['furnishings'] as List? ??
             f['furnishing_selections'] as List? ??
@@ -1537,7 +1572,7 @@ location: (
       readyTimeframe: f['readyTimeframe']?.toString() ?? f['ready_timeframe']?.toString(),
       possessionBy: f['possessionBy']?.toString() ?? f['possession_by']?.toString(),
       ownership: f['ownership']?.toString(),
-      balconies: toInt(f['balconies']),
+      balconies: toInt(f['balconies'] ?? f['balcony']),
 
       commercialType: f['commercialType']?.toString() ?? f['commercial_type']?.toString(),
       floorPlateArea: toDouble(f['floorPlateArea'] ?? f['floor_plate_area']),
@@ -1636,7 +1671,7 @@ location: (
       rentNegotiable: toBool(f['rentNegotiable'] ?? f['rent_negotiable']),
       availableFrom: f['availableFrom']?.toString() ?? f['available_from']?.toString(),
       leaseDurationMonths: toInt(f['leaseDurationMonths'] ?? f['lease_duration_months']),
-      lockInMonths: toInt(f['lockInMonths'] ?? f['lock_in_months']),
+      lockInMonths: toInt(f['lockInMonths'] ?? f['lock_in_months'] ?? f['lock_in_period']),
       noticePeriodValue: toInt(f['noticePeriodValue'] ?? f['notice_period_value']),
       noticePeriodUnit: f['noticePeriodUnit']?.toString() ?? f['notice_period_unit']?.toString(),
       preferredTenant: f['preferredTenant']?.toString() ?? f['preferred_tenant']?.toString(),
@@ -1759,6 +1794,7 @@ pgTotalBeds: toInt(
         status,
         slug,
         listingType,
+        propertyKind,
         area,
         areaUnit,
         propertyAge,
