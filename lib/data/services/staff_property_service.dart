@@ -29,8 +29,12 @@ class StaffPropertyService implements PropertyService {
       final tempDir = await getTemporaryDirectory();
       final filename = file.path.split(Platform.pathSeparator).last;
       final dotIndex = filename.lastIndexOf('.');
-      final ext = dotIndex != -1 ? filename.substring(dotIndex).toLowerCase() : '.jpg';
-      final nameWithoutExt = dotIndex != -1 ? filename.substring(0, dotIndex) : filename;
+      final ext = dotIndex != -1
+          ? filename.substring(dotIndex).toLowerCase()
+          : '.jpg';
+      final nameWithoutExt = dotIndex != -1
+          ? filename.substring(0, dotIndex)
+          : filename;
 
       CompressFormat format = CompressFormat.jpeg;
       String targetExt = '.jpg';
@@ -45,20 +49,24 @@ class StaffPropertyService implements PropertyService {
         targetExt = '.png';
       }
 
-      final targetPath = '${tempDir.path}/${nameWithoutExt}_compressed_${DateTime.now().millisecondsSinceEpoch}$targetExt';
+      final targetPath =
+          '${tempDir.path}/${nameWithoutExt}_compressed_${DateTime.now().millisecondsSinceEpoch}$targetExt';
       final originalSize = await file.length();
 
-      final XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
-        file.absolute.path,
-        targetPath,
-        quality: 50,
-        minWidth: 1280,
-        minHeight: 720,
-        format: format,
-      );
+      final XFile? compressedXFile =
+          await FlutterImageCompress.compressAndGetFile(
+            file.absolute.path,
+            targetPath,
+            quality: 50,
+            minWidth: 1280,
+            minHeight: 720,
+            format: format,
+          );
 
       if (compressedXFile == null) {
-        debugPrint('[ImageCompress] Compression returned null for: ${file.path}. Using original.');
+        debugPrint(
+          '[ImageCompress] Compression returned null for: ${file.path}. Using original.',
+        );
         return file;
       }
 
@@ -67,14 +75,20 @@ class StaffPropertyService implements PropertyService {
 
       if (kDebugMode) {
         debugPrint('[ImageCompress] Success: ${file.path}');
-        debugPrint('[ImageCompress] Original size: ${(originalSize / 1024).toStringAsFixed(2)} KB');
-        debugPrint('[ImageCompress] Compressed size: ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+        debugPrint(
+          '[ImageCompress] Original size: ${(originalSize / 1024).toStringAsFixed(2)} KB',
+        );
+        debugPrint(
+          '[ImageCompress] Compressed size: ${(compressedSize / 1024).toStringAsFixed(2)} KB',
+        );
         debugPrint('[ImageCompress] Saved to: $targetPath');
       }
 
       return compressedFile;
     } catch (e) {
-      debugPrint('[ImageCompress] Error compressing ${file.path}: $e. Using original.');
+      debugPrint(
+        '[ImageCompress] Error compressing ${file.path}: $e. Using original.',
+      );
       return file;
     }
   }
@@ -294,7 +308,9 @@ class StaffPropertyService implements PropertyService {
           .map((e) {
             if (e is Map) {
               final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
-              return idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
+              return idVal is num
+                  ? idVal.toInt()
+                  : int.tryParse(idVal?.toString() ?? '');
             }
             return int.tryParse(e.toString());
           })
@@ -320,8 +336,7 @@ class StaffPropertyService implements PropertyService {
           .map((e) {
             if (e is Map) {
               final m = Map<String, dynamic>.from(e);
-              final path = (m['document_path'] ?? m['url'] ?? '')
-                  .toString();
+              final path = (m['document_path'] ?? m['url'] ?? '').toString();
               if (path.startsWith('http')) return path;
               if (path.isEmpty) return '';
               final normalized = path.startsWith('/')
@@ -621,14 +636,17 @@ class StaffPropertyService implements PropertyService {
       final originalPath = orderedPathsToCompress[i];
       final filename = originalPath.split(Platform.pathSeparator).last;
       final compressedFile = compressedOrderedFiles[i];
-      final file = await MultipartFile.fromFile(compressedFile.path, filename: filename);
+      final file = await MultipartFile.fromFile(
+        compressedFile.path,
+        filename: filename,
+      );
       primaryImageFile ??= file;
       images.add(file);
     }
 
     final sectionImageFiles = <MapEntry<String, MultipartFile>>[];
     final sectionImages = property.sectionImagePaths ?? const {};
-    
+
     // Flatten and collect section paths
     final sectionPathsToCompress = <MapEntry<String, String>>[];
     for (final entry in sectionImages.entries) {
@@ -657,7 +675,10 @@ class StaffPropertyService implements PropertyService {
       final originalPath = sectionPathsToCompress[i].value;
       final filename = originalPath.split(Platform.pathSeparator).last;
       final compressedFile = compressedSectionFiles[i];
-      final file = await MultipartFile.fromFile(compressedFile.path, filename: filename);
+      final file = await MultipartFile.fromFile(
+        compressedFile.path,
+        filename: filename,
+      );
       sectionImageFiles.add(MapEntry('${fieldBase}[]', file));
     }
 
@@ -759,7 +780,13 @@ class StaffPropertyService implements PropertyService {
       'facing', 'floor', 'total_floors', 'bedrooms', 'bathrooms',
       'furnishing', 'parking', 'address', 'city', 'state', 'pincode',
       'latitude', 'longitude', 'category_id',
-      'balconies', 'built_up_area', 'availability', 'possession_by', 'ownership', 'additional_rooms', 'booking_amount',
+      'balconies',
+      'built_up_area',
+      'availability',
+      'possession_by',
+      'ownership',
+      'additional_rooms',
+      'booking_amount',
     };
     for (final e in extra.entries) {
       final key = e.key.trim();
@@ -885,14 +912,13 @@ class StaffPropertyService implements PropertyService {
 
     _debugLogMultipart(
       dio: dio,
-      method: 'PUT',
+      method: 'POST',
       path: path,
       form: formData,
       filePaths: _collectCreateFilePaths(property),
     );
-
     try {
-      res = await dio.put<Map<String, dynamic>>(path, data: formData);
+      res = await dio.post<Map<String, dynamic>>(path, data: formData);
     } on DioException catch (e) {
       throw _apiException(e);
     }
@@ -917,7 +943,9 @@ class StaffPropertyService implements PropertyService {
     final rawData = data is Map<String, dynamic> ? data : body;
     if (kDebugMode) {
       debugPrint(
-        _yellow('[StaffPropertyService] getPropertyById($id) keys=${rawData.keys.toList()}'),
+        _yellow(
+          '[StaffPropertyService] getPropertyById($id) keys=${rawData.keys.toList()}',
+        ),
       );
     }
     return _fromApi(rawData);

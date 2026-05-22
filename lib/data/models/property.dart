@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 import 'property_enums.dart';
@@ -260,7 +261,8 @@ class Property extends Equatable {
     this.pgSharing,
     this.pgSecurity,
     this.pgMaintenanceCharges,  this.showroomOwnerName,
-  })  : pgDetails = PropertyPgDetails(
+    PropertyPgDetails? pgDetails,
+  })  : pgDetails = pgDetails ?? PropertyPgDetails(
           genderBased: pgGenderBased,
           occupancyType: pgOccupancyType,
           tenantTypes: pgTenantTypes,
@@ -1440,11 +1442,24 @@ final pg = (f['pg_details'] as Map?) ?? {};
     }
 
     List<String> toStringList(dynamic val) {
+      if (val == null) return const [];
       if (val is List) {
         return val.map((e) => e.toString().trim()).where((s) => s.isNotEmpty).toList();
       }
-      if (val is String && val.trim().isNotEmpty) {
-        return val.split(',').map((e) => e.trim()).where((s) => s.isNotEmpty).toList();
+      if (val is String) {
+        final s = val.trim();
+        if (s.isEmpty) return const [];
+        if (s.startsWith('[') && s.endsWith(']')) {
+          try {
+            final parsed = jsonDecode(s);
+            if (parsed is List) {
+              return parsed.map((e) => e.toString().trim()).where((x) => x.isNotEmpty).toList();
+            }
+          } catch (_) {}
+        }
+        return s.split(',').map((e) {
+          return e.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').replaceAll("'", "").trim();
+        }).where((e) => e.isNotEmpty).toList();
       }
       return const [];
     }
@@ -1640,7 +1655,7 @@ location: (
       washrooms: toInt(f['washrooms']),
       parkingType: f['parkingType']?.toString() ?? f['parking_type']?.toString(),
       plotType: f['plotType']?.toString() ?? f['plot_type']?.toString(),
-      rooms: toInt(f['rooms'] ?? f['pg_total_rooms']),
+      rooms: toInt(f['rooms'] ?? f['pg_total_rooms'] ?? pg['total_rooms']),
       qualityRating: toDouble(f['qualityRating'] ?? f['quality_rating']),
 
       landType: f['landType']?.toString() ?? f['land_type']?.toString(),
@@ -1735,48 +1750,48 @@ location: (
       village: f['village']?.toString(),
       landmark: f['landmark']?.toString(),
 
-      pgGenderBased: f['pgGenderBased']?.toString() ?? f['pg_gender_based']?.toString(),
-      pgOccupancyType: f['pgOccupancyType']?.toString() ?? f['pg_occupancy_type']?.toString(),
-      pgTenantTypes: toStringList(f['pgTenantTypes'] ?? f['pg_tenant_types']),
-      pgFoodAvailability: f['pgFoodAvailability']?.toString() ?? f['pg_food_availability']?.toString(),
-      pgPropertyType: f['pgPropertyType']?.toString() ?? f['pg_property_type']?.toString(),
-      pgBathroomType: f['pgBathroomType']?.toString() ?? f['pg_bathroom_type']?.toString(),
-      pgSuitableFor: f['pgSuitableFor']?.toString() ?? f['pg_suitable_for']?.toString(),
-      pgBuildingName: f['pgBuildingName']?.toString() ?? f['pg_building_name']?.toString(),
-pgTotalBeds: toInt(
-  f['pgTotalBeds'] ??
-  f['pg_total_beds'] ??
-  pg['total_beds'],
-),      pgAvailableBeds: toInt(f['pgAvailableBeds'] ?? f['pg_available_beds']),
-      pgRoomType: f['pgRoomType']?.toString() ?? f['pg_room_type']?.toString(),
-      pgAttachedBathroom: toBool(f['pgAttachedBathroom'] ?? f['pg_attached_bathroom'] ?? f['attached_bathroom']),
-      pgBalcony: toBool(f['pgBalcony'] ?? f['pg_balcony'] ?? f['balcony']),
-      pgRoomSize: f['pgRoomSize']?.toString() ?? f['pg_room_size']?.toString() ?? f['room_size']?.toString(),
-      pgBedType: f['pgBedType']?.toString() ?? f['pg_bed_type']?.toString() ?? f['bed_type']?.toString(),
-      pgCupboardAvailable: toBool(f['pgCupboardAvailable'] ?? f['pg_cupboard_available'] ?? f['cupboard_available']),
-      pgStudyTableAvailable: toBool(f['pgStudyTableAvailable'] ?? f['pg_study_table_available'] ?? f['study_table_available']),
-      pgSecurityDeposit: toDouble(f['pgSecurityDeposit'] ?? f['pg_security_deposit'] ?? f['security_deposit']),
-      pgElectricityIncluded: toBool(f['pgElectricityIncluded'] ?? f['pg_electricity_included'] ?? f['electricity_included']),
-      pgWaterIncluded: toBool(f['pgWaterIncluded'] ?? f['pg_water_included'] ?? f['water_included']),
-      pgFoodChargesIncluded: toBool(f['pgFoodChargesIncluded'] ?? f['pg_food_charges_included'] ?? f['food_charges_included']),
-      pgBrokerageRequired: toBool(f['pgBrokerageRequired'] ?? f['pg_brokerage_required']),
-      pgCoupleFriendly: toBool(f['pgCoupleFriendly'] ?? f['pg_couple_friendly']),
-      pgIdProofRequired: toBool(f['pgIdProofRequired'] ?? f['pg_id_proof_required']),
-      pgAvailableFrom: f['pgAvailableFrom']?.toString() ?? f['pg_available_from']?.toString(),
-      pgMinStayDays: toInt(f['pgMinStayDays'] ?? f['pg_min_stay_days']),
-      pgNoticePeriodDays: toInt(f['pgNoticePeriodDays'] ?? f['pg_notice_period_days']),
-      pgPreferredTenantAge: toInt(f['pgPreferredTenantAge'] ?? f['pg_preferred_tenant_age']),
-      pgSmokingAllowed: toBool(f['pgSmokingAllowed'] ?? f['pg_smoking_allowed']),
-      pgDrinkingAllowed: toBool(f['pgDrinkingAllowed'] ?? f['pg_drinking_allowed']),
-      pgPetsAllowed: toBool(f['pgPetsAllowed'] ?? f['pg_pets_allowed']),
-      pgVisitorsAllowed: toBool(f['pgVisitorsAllowed'] ?? f['pg_visitors_allowed']),
-      pgCurfewTime: f['pgCurfewTime']?.toString() ?? f['pg_curfew_time']?.toString(),
-      pgGateLockedAtNight: toBool(f['pgGateLockedAtNight'] ?? f['pg_gate_locked_at_night']),
-      pgNearbyPreferences: toStringList(f['pgNearbyPreferences'] ?? f['pg_nearby_preferences']),
-      pgAvailability: f['pgAvailability']?.toString() ?? f['pg_availability']?.toString(),
-      pgSharing: toInt(f['pgSharing'] ?? f['pg_sharing']),
-      pgSecurity: toBool(f['pgSecurity'] ?? f['pg_security']),
-      pgMaintenanceCharges: toDouble(f['pgMaintenanceCharges'] ?? f['pg_maintenance_charges'] ?? f['maintenance_charges']),
+      pgGenderBased: f['pgGenderBased']?.toString() ?? f['pg_gender_based']?.toString() ?? pg['gender_based']?.toString(),
+      pgOccupancyType: f['pgOccupancyType']?.toString() ?? f['pg_occupancy_type']?.toString() ?? pg['occupancy_type']?.toString(),
+      pgTenantTypes: toStringList(f['pgTenantTypes'] ?? f['pg_tenant_types'] ?? pg['tenant_types']),
+      pgFoodAvailability: f['pgFoodAvailability']?.toString() ?? f['pg_food_availability']?.toString() ?? pg['food_available']?.toString() ?? pg['food_availability']?.toString(),
+      pgPropertyType: f['pgPropertyType']?.toString() ?? f['pg_property_type']?.toString() ?? pg['property_type']?.toString(),
+      pgBathroomType: f['pgBathroomType']?.toString() ?? f['pg_bathroom_type']?.toString() ?? pg['bathroom_type']?.toString(),
+      pgSuitableFor: f['pgSuitableFor']?.toString() ?? f['pg_suitable_for']?.toString() ?? pg['suitable_for']?.toString(),
+      pgBuildingName: f['pgBuildingName']?.toString() ?? f['pg_building_name']?.toString() ?? pg['building_name']?.toString(),
+      pgTotalBeds: toInt(f['pgTotalBeds'] ?? f['pg_total_beds'] ?? pg['total_beds']),
+      pgAvailableBeds: toInt(f['pgAvailableBeds'] ?? f['pg_available_beds'] ?? pg['available_beds']),
+      pgRoomType: f['pgRoomType']?.toString() ?? f['pg_room_type']?.toString() ?? pg['room_type']?.toString(),
+      pgAttachedBathroom: toBool(f['pgAttachedBathroom'] ?? f['pg_attached_bathroom'] ?? f['attached_bathroom'] ?? pg['attached_bathroom']),
+      pgBalcony: toBool(f['pgBalcony'] ?? f['pg_balcony'] ?? f['balcony'] ?? pg['balcony']),
+      pgRoomSize: f['pgRoomSize']?.toString() ?? f['pg_room_size']?.toString() ?? f['room_size']?.toString() ?? pg['room_size']?.toString(),
+      pgBedType: f['pgBedType']?.toString() ?? f['pg_bed_type']?.toString() ?? f['bed_type']?.toString() ?? pg['bed_type']?.toString(),
+      pgCupboardAvailable: toBool(f['pgCupboardAvailable'] ?? f['pg_cupboard_available'] ?? f['cupboard_available'] ?? pg['cupboard_available']),
+      pgStudyTableAvailable: toBool(f['pgStudyTableAvailable'] ?? f['pg_study_table_available'] ?? f['study_table_available'] ?? pg['study_table_available']),
+      pgSecurityDeposit: toDouble(f['pgSecurityDeposit'] ?? f['pg_security_deposit'] ?? f['security_deposit'] ?? pg['security_deposit']),
+      pgElectricityIncluded: toBool(f['pgElectricityIncluded'] ?? f['pg_electricity_included'] ?? f['electricity_included'] ?? pg['electricity_included']),
+      pgWaterIncluded: toBool(f['pgWaterIncluded'] ?? f['pg_water_included'] ?? f['water_included'] ?? pg['water_included']),
+      pgFoodChargesIncluded: toBool(f['pgFoodChargesIncluded'] ?? f['pg_food_charges_included'] ?? f['food_charges_included'] ?? pg['food_charges_included']),
+      pgBrokerageRequired: toBool(f['pgBrokerageRequired'] ?? f['pg_brokerage_required'] ?? pg['brokerage_required']),
+      pgCoupleFriendly: toBool(f['pgCoupleFriendly'] ?? f['pg_couple_friendly'] ?? pg['couple_friendly']),
+      pgIdProofRequired: toBool(f['pgIdProofRequired'] ?? f['pg_id_proof_required'] ?? pg['id_proof_required']),
+      pgAvailableFrom: f['pgAvailableFrom']?.toString() ?? f['pg_available_from']?.toString() ?? pg['available_from']?.toString(),
+      pgMinStayDays: toInt(f['pgMinStayDays'] ?? f['pg_min_stay_days'] ?? pg['min_stay_days']),
+      pgNoticePeriodDays: toInt(f['pgNoticePeriodDays'] ?? f['pg_notice_period_days'] ?? pg['notice_period_days']),
+      pgPreferredTenantAge: toInt(f['pgPreferredTenantAge'] ?? f['pg_preferred_tenant_age'] ?? pg['preferred_tenant_age']),
+      pgSmokingAllowed: toBool(f['pgSmokingAllowed'] ?? f['pg_smoking_allowed'] ?? pg['smoking_allowed']),
+      pgDrinkingAllowed: toBool(f['pgDrinkingAllowed'] ?? f['pg_drinking_allowed'] ?? pg['drinking_allowed']),
+      pgPetsAllowed: toBool(f['pgPetsAllowed'] ?? f['pg_pets_allowed'] ?? pg['pets_allowed']),
+      pgVisitorsAllowed: toBool(f['pgVisitorsAllowed'] ?? f['pg_visitors_allowed'] ?? pg['visitors_allowed']),
+      pgCurfewTime: f['pgCurfewTime']?.toString() ?? f['pg_curfew_time']?.toString() ?? pg['curfew_time']?.toString(),
+      pgGateLockedAtNight: toBool(f['pgGateLockedAtNight'] ?? f['pg_gate_locked_at_night'] ?? pg['gate_locked_at_night']),
+      pgNearbyPreferences: toStringList(f['pgNearbyPreferences'] ?? f['pg_nearby_preferences'] ?? pg['nearby_preferences']),
+      pgAvailability: f['pgAvailability']?.toString() ?? f['pg_availability']?.toString() ?? pg['availability_status']?.toString() ?? pg['availability']?.toString(),
+      pgSharing: toInt(f['pgSharing'] ?? f['pg_sharing'] ?? pg['pg_sharing'] ?? pg['sharing']),
+      pgSecurity: toBool(f['pgSecurity'] ?? f['pg_security'] ?? pg['security_features'] ?? pg['security']),
+      pgMaintenanceCharges: toDouble(f['pgMaintenanceCharges'] ?? f['pg_maintenance_charges'] ?? f['maintenance_charges'] ?? pg['maintenance_charges']),
+      pgDetails: f['pg_details'] != null
+          ? PropertyPgDetails.fromJson(f['pg_details'] as Map<String, dynamic>)
+          : null,
     );
   }
 
