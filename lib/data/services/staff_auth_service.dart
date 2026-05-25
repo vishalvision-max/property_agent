@@ -33,9 +33,24 @@ class StaffAuthService implements AuthService {
     }
 
     final body = res.data ?? const <String, dynamic>{};
-    final data = (body['data'] is Map<String, dynamic>) ? (body['data'] as Map<String, dynamic>) : body;
+    print('[StaffAuthService] Login response body: $body');
 
-    final token = (data['token'] ?? body['token'] ?? '').toString();
+    String token = '';
+    Map<String, dynamic> data;
+    if (body['data'] is String) {
+      token = body['data'].toString();
+      data = body;
+    } else {
+      data = (body['data'] is Map<String, dynamic>) ? (body['data'] as Map<String, dynamic>) : body;
+      token = (data['token'] ??
+              data['access_token'] ??
+              data['token_type'] ??
+              body['token'] ??
+              body['access_token'] ??
+              '')
+          .toString();
+    }
+
     if (token.isEmpty) {
       throw Exception('Login succeeded but token missing');
     }
@@ -54,5 +69,28 @@ class StaffAuthService implements AuthService {
       token: token,
       image: imageRaw.isEmpty ? null : imageRaw,
     );
+  }
+
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    try {
+      final identifier = email.trim();
+      await _dio.post<Map<String, dynamic>>(
+        '/staff/forget/password',
+        data: {
+          'email': identifier,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {
+            'email': identifier,
+          },
+        ),
+      );
+    } on DioException catch (e) {
+      final data = e.response?.data;
+      final msg = (data is Map<String, dynamic> ? data['message'] : null)?.toString();
+      throw Exception((msg == null || msg.isEmpty) ? 'Forgot password request failed' : msg);
+    }
   }
 }

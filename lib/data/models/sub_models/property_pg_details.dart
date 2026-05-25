@@ -226,7 +226,7 @@ class PropertyPgDetails extends Equatable {
           json['gate_locked_at_night'] == true ||
           json['gate_locked_at_night'] == 1,
       nearbyPreferences: _toStringList(json['nearby_preferences']),
-      availability: json['availability_status']?.toString(),
+      availability: json['availability_status']?.toString() ?? json['availability']?.toString(),
       sharing: int.tryParse(json['pg_sharing']?.toString() ?? ''),
       security: json['pg_security'] == true || json['pg_security'] == 1,
       maintenanceCharges: double.tryParse(

@@ -11,6 +11,7 @@ import '../models/property.dart';
 import '../models/property_enums.dart';
 import '../models/property_video.dart';
 import '../models/property_furnishing_selection.dart';
+import '../models/dashboard_counts.dart';
 import 'api_dio.dart';
 import 'property_service.dart';
 
@@ -166,7 +167,7 @@ class StaffPropertyService implements PropertyService {
   String? _normalizeFacing(String? value) {
     final v = value?.trim();
     if (v == null || v.isEmpty) return null;
-    return v.toLowerCase().replaceAll('-', '_');
+    return v.toLowerCase().replaceAll('_', '-');
   }
 
   String? _extractImagePathFromString(String s) {
@@ -721,11 +722,21 @@ class StaffPropertyService implements PropertyService {
       'floor': property.floor?.toString() ?? '',
       'total_floors': property.totalFloors?.toString() ?? '',
       'built_up_area': property.builtUpArea?.toString() ?? '',
-      'availability': property.availability ?? '',
-      'possession_by': property.possessionBy ?? '',
-      'ownership': property.ownership ?? '',
-      'additional_rooms': property.additionalRooms?.join(',') ?? '',
-      'booking_amount': property.bookingAmount?.toString() ?? '',
+      if (property.availability != null &&
+          property.availability!.trim().isNotEmpty)
+        'availability': property.availability!.trim(),
+      if (property.possessionBy != null &&
+          property.possessionBy!.trim().isNotEmpty)
+        'possession_by': property.possessionBy!.trim(),
+      if (property.ownership != null && property.ownership!.trim().isNotEmpty)
+        'ownership': property.ownership!.trim(),
+      if (property.additionalRooms != null &&
+          property.additionalRooms!.isNotEmpty)
+        'additional_rooms': property.additionalRooms!.join(','),
+      if (property.bookingAmount != null)
+        'booking_amount': property.bookingAmount!.toStringAsFixed(0),
+      if (property.maintenanceCharges != null)
+        'maintenance_charges': property.maintenanceCharges!.toStringAsFixed(0),
       if (property.possessionStatus != null &&
           property.possessionStatus!.trim().isNotEmpty)
         'possession_status': property.possessionStatus!.trim(),
@@ -787,6 +798,7 @@ class StaffPropertyService implements PropertyService {
       'ownership',
       'additional_rooms',
       'booking_amount',
+      'maintenance_charges',
     };
     for (final e in extra.entries) {
       final key = e.key.trim();
@@ -833,8 +845,10 @@ class StaffPropertyService implements PropertyService {
 
     final amenityIds = property.amenityIds ?? const <int>[];
     for (final id in amenityIds) {
-      form.fields.add(MapEntry('amenities[]', id.toString()));
+      // Send both amenity_ids[] and amenities[] because different backend versions/controllers
+      // might look for either field. Both fields contain the exact same valid integer IDs.
       form.fields.add(MapEntry('amenity_ids[]', id.toString()));
+      form.fields.add(MapEntry('amenities[]', id.toString()));
     }
 
     final furnishingSelections = property.furnishingSelections ?? const [];
@@ -858,7 +872,13 @@ class StaffPropertyService implements PropertyService {
   Future<Property> createProperty(Property property) async {
     final dio = await _dioFuture;
     final formData = await _toCreateForm(property);
-    debugPrint(formData.fields.toString());
+    debugPrint(
+      '[StaffPropertyService] createProperty fields=' +
+          formData.fields
+              .map((e) => '${e.key}: ${e.value}')
+              .toList()
+              .toString(),
+    );
     if (kDebugMode) {
       // Note: Authorization is set per-request by the interceptor, not in
       // dio.options.headers. Log a reminder rather than a misleading "null".
@@ -908,7 +928,14 @@ class StaffPropertyService implements PropertyService {
     formData.fields.addAll(form.fields);
     formData.files.addAll(form.files);
 
-    debugPrint(formData.fields.toString());
+    debugPrint('[StaffPropertyService] updateProperty path=$path');
+    debugPrint(
+      '[StaffPropertyService] updateProperty fields=' +
+          formData.fields
+              .map((e) => '${e.key}: ${e.value}')
+              .toList()
+              .toString(),
+    );
 
     _debugLogMultipart(
       dio: dio,
@@ -991,8 +1018,76 @@ class StaffPropertyService implements PropertyService {
   }
 
   @override
-  Future<Map<PropertyStatus, int>> getStatusCounts() async {
-    return {for (final s in PropertyStatus.values) s: 0};
+  Future<DashboardCounts> getStatusCounts() async {
+    try {
+      final dio = await _dioFuture;
+      final res = await dio.get<Map<String, dynamic>>('/staff/dashboard');
+      final body = res.data ?? const <String, dynamic>{};
+      debugPrint('[StaffPropertyService] getStatusCounts API response: $body');
+
+      // Handle nesting: support { "data": { ... } } or raw root map
+      final data = (body['data'] is Map<String, dynamic>)
+          ? (body['data'] as Map<String, dynamic>)
+          : body;
+
+      final assignedCount =
+          int.tryParse(
+            (data['lead_assigned'] ??
+                    data['assigned_properties'] ??
+                    data['assignedProperties'] ??
+                    data['assigned'] ??
+                    data['total_properties'] ??
+                    data['totalProperties'] ??
+                    '0')
+                .toString(),
+          ) ??
+          0;
+
+      final pendingCount =
+          int.tryParse(
+            (data['pending'] ??
+                    data['pending_properties'] ??
+                    data['pendingProperties'] ??
+                    '0')
+                .toString(),
+          ) ??
+          0;
+
+      final listedCount =
+          int.tryParse(
+            (data['total_listed'] ??
+                    data['totalListed'] ??
+                    data['listed'] ??
+                    data['listed_properties'] ??
+                    data['listedProperties'] ??
+                    data['approved'] ??
+                    data['approved_properties'] ??
+                    data['approvedProperties'] ??
+                    '0')
+                .toString(),
+          ) ??
+          0;
+
+      final rejectedCount =
+          int.tryParse(
+            (data['rejected'] ??
+                    data['rejected_properties'] ??
+                    data['rejectedProperties'] ??
+                    '0')
+                .toString(),
+          ) ??
+          0;
+
+      return DashboardCounts(
+        assigned: assignedCount,
+        listed: listedCount,
+        pending: pendingCount,
+        rejected: rejectedCount,
+      );
+    } catch (e) {
+      debugPrint('[StaffPropertyService] getStatusCounts error: $e');
+      return DashboardCounts.zero();
+    }
   }
 
   @override

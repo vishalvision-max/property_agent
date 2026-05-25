@@ -6,7 +6,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../data/models/property_enums.dart';
 import '../../../providers/connectivity_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../../routes/route_names.dart';
@@ -162,7 +161,6 @@ class DashboardScreen extends ConsumerWidget {
                 ),
                 data: (data) {
                   final counts = data.counts;
-                  final total = counts.values.fold<int>(0, (a, b) => a + b);
 
                   return RefreshIndicator(
                     onRefresh: () async => ref.invalidate(dashboardProvider),
@@ -173,10 +171,10 @@ class DashboardScreen extends ConsumerWidget {
                         const _PageHeader(),
                         const SizedBox(height: 16),
                         _StatsGrid(
-                          assigned: total,
-                          listed: counts[PropertyStatus.listed] ?? 0,
-                          pending: counts[PropertyStatus.pending] ?? 0,
-                          rejected: counts[PropertyStatus.rejected] ?? 0,
+                          assigned: counts.assigned,
+                          listed: counts.listed,
+                          pending: counts.pending,
+                          rejected: counts.rejected,
                         ),
                         const SizedBox(height: 14),
                         _ActionButtons(

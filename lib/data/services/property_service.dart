@@ -1,6 +1,6 @@
 import '../models/property.dart';
-import '../models/property_enums.dart';
 import '../models/activity.dart';
+import '../models/dashboard_counts.dart';
 
 abstract class PropertyService {
   Future<List<Property>> getAssignedProperties();
@@ -13,6 +13,6 @@ abstract class PropertyService {
   });
   Future<Property> publishProperty(String id);
   Future<Property> rejectProperty({required String id, required String reason});
-  Future<Map<PropertyStatus, int>> getStatusCounts();
+  Future<DashboardCounts> getStatusCounts();
   Future<List<ActivityItem>> getDashboardActivity();
 }

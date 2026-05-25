@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_snackbar.dart';
-import '../../../data/models/property_enums.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../../core/constants/api_constants.dart';
@@ -18,10 +17,10 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(authProvider).valueOrNull;
     final dash = ref.watch(dashboardProvider).valueOrNull;
-    final counts = dash?.counts ?? const {};
-    final total = counts.values.fold<int>(0, (a, b) => a + b);
-    final listed = counts[PropertyStatus.listed] ?? 0;
-    final pending = counts[PropertyStatus.pending] ?? 0;
+    final counts = dash?.counts;
+    final total = counts?.assigned ?? 0;
+    final listed = counts?.listed ?? 0;
+    final pending = counts?.pending ?? 0;
 
     final nameRaw = state?.agent?.name.trim();
     final userName = (nameRaw != null && nameRaw.isNotEmpty) ? nameRaw : 'Agent';

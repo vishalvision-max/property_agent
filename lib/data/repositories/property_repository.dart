@@ -1,6 +1,6 @@
 import '../models/activity.dart';
 import '../models/property.dart';
-import '../models/property_enums.dart';
+import '../models/dashboard_counts.dart';
 import '../services/mock_property_service.dart';
 import '../services/property_service.dart';
 
@@ -30,7 +30,7 @@ class PropertyRepository {
     required String id,
     required String reason,
   }) => propertyService.rejectProperty(id: id, reason: reason);
-  Future<Map<PropertyStatus, int>> getStatusCounts() =>
+  Future<DashboardCounts> getStatusCounts() =>
       propertyService.getStatusCounts();
   Future<List<ActivityItem>> getDashboardActivity() =>
       propertyService.getDashboardActivity();

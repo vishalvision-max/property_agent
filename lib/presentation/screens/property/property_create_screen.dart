@@ -111,7 +111,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _visitorParking = false;
   final _numberOfLifts = TextEditingController();
   bool _taxIncluded = false;
-  bool _officeNegotiable = false;
+  bool? _officeNegotiable;
   final _officeMaintenanceCharges = TextEditingController();
   final _officeBookingAmount = TextEditingController();
 
@@ -162,14 +162,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _roadWidth = TextEditingController();
   String _plotAreaUnit = 'sqft';
   bool _plotCorner = false;
-  bool _plotRoadAccess = true;
+  bool? _plotRoadAccess;
   bool _agriFencing = false;
-  String _agriWaterSource = ''; // borewell, canal, river, tanker, municipal, other
+  String _agriWaterSource =
+      ''; // borewell, canal, river, tanker, municipal, other
 
   // Sell -> Residential -> Flat/Apartment specific
   final Set<String> _additionalRooms = <String>{};
   bool _cornerProperty = false;
-  bool _priceNegotiable = false;
+  bool? _priceNegotiable;
   final _maintenanceCharges = TextEditingController();
   final _bookingAmount = TextEditingController();
   final Set<String> _propertyHighlights = <String>{};
@@ -185,7 +186,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _securityDeposit = TextEditingController();
   final _rentMaintenanceCharges = TextEditingController();
   final _brokerage = TextEditingController();
-  bool _rentNegotiable = false;
+  bool? _rentNegotiable;
   final _availableFrom = TextEditingController(); // yyyy-mm-dd
   final _leaseDurationMonths = TextEditingController(text: '11');
   final _lockInMonths = TextEditingController(text: '0');
@@ -197,16 +198,23 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // PG / Co-Living specific
   String _pgGenderBased = ''; // boys_pg, girls_pg, co_living, unisex_pg
-  String _pgOccupancyType = ''; // single_sharing, double_sharing, triple_sharing, four_plus_sharing, dormitory
-  final Set<String> _pgTenantTypes = <String>{}; // students, working_professionals, couples_allowed, family_pg, interns_trainees
-  String _pgFoodAvailability = ''; // with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
-  String _pgPropertyType = ''; // independent_house_pg, apartment_pg, hostel, co_living_space, service_apartment
+  String _pgOccupancyType =
+      ''; // single_sharing, double_sharing, triple_sharing, four_plus_sharing, dormitory
+  final Set<String> _pgTenantTypes =
+      <
+        String
+      >{}; // students, working_professionals, couples_allowed, family_pg, interns_trainees
+  String _pgFoodAvailability =
+      ''; // with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
+  String _pgPropertyType =
+      ''; // independent_house_pg, apartment_pg, hostel, co_living_space, service_apartment
   String _pgBathroomType = ''; // attached, common
   String _pgSuitableFor = ''; // students, working_professionals, both
   final _pgBuildingName = TextEditingController();
   final _pgTotalBeds = TextEditingController();
   final _pgAvailableBeds = TextEditingController();
-  String _pgRoomType = ''; // private_room, twin_sharing, triple_sharing, dormitory
+  String _pgRoomType =
+      ''; // private_room, twin_sharing, triple_sharing, dormitory
   bool _pgAttachedBathroom = false;
   bool _pgBalcony = false;
   final _pgRoomSize = TextEditingController();
@@ -236,7 +244,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         String
       >{}; // near_metro, near_college, near_office_area, near_market, near_hospital
   String _pgAvailability = ''; // immediate, next_month, short_term, long_term
-  int _pgSharing = 0; // persons per room (fallback if occupancy type isn't explicit)
+  int _pgSharing =
+      0; // persons per room (fallback if occupancy type isn't explicit)
   bool _pgSecurity = true;
 
   // Rent/Lease -> Residential -> Independent House/Villa/Independent Floor extras
@@ -276,26 +285,26 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final Set<String> _outdoors = <String>{};
   String _waterSource = '';
   final Set<String> _connections = <String>{};
-  bool _villaPriceNegotiable = false;
+  bool? _villaPriceNegotiable;
   final _villaMaintenanceCharges = TextEditingController();
   final _villaBookingAmount = TextEditingController();
 
   // Sell -> Residential -> Builder Floor specific
   bool _builderCornerProperty = false;
   bool _builderGatedSociety = false;
-  bool _constructionAllowed = true;
+  bool? _constructionAllowed;
   final Set<String> _builderUtilities = <String>{};
   final _pricePerSqft = TextEditingController();
-  bool _builderNegotiable = false;
+  bool? _builderNegotiable;
 
   // Sell -> Residential -> Duplex specific (plot-style details)
   bool _duplexCornerPlot = false;
   bool _duplexGatedCommunity = false;
-  bool _duplexConstructionAllowed = true;
-  bool _duplexWaterConnection = true;
-  bool _duplexElectricityConnection = true;
-  bool _duplexNegotiable = false;
-  bool _duplexRoadAccess = true;
+  bool? _duplexConstructionAllowed;
+  bool? _duplexWaterConnection;
+  bool? _duplexElectricityConnection;
+  bool? _duplexNegotiable;
+  bool? _duplexRoadAccess;
   final Set<String> _duplexNearbyFacilities = <String>{};
 
   // Sell -> Residential -> Farmhouse specific
@@ -412,7 +421,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'mall_floor',
     'high_street',
   ];
-  static const _availabilityTypes = <String>['ready_to_move', 'under_construction', 'immediate', 'within_3_months'];
+  static const _availabilityTypes = <String>[
+    'ready_to_move',
+    'under_construction',
+    'immediate',
+    'within_3_months',
+  ];
   static const _readyTimeframes = <String>['0_1', '1_5', '5_10', '10_plus'];
   static const _ownershipTypes = <String>[
     'freehold',
@@ -700,12 +714,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     if (!isRentLease) return false;
     if (!_isResidential) return false;
     final slug = (_selectedCategorySlug ?? '').toLowerCase();
+    if (slug.contains('floor') || slug.contains('builder')) return false;
+    if (slug.contains('farm') || slug.contains('farmhouse')) return false;
     return slug.contains('villa') ||
         slug.contains('independent') ||
-        slug.contains('house') ||
-        slug.contains('independent-floor') ||
-        slug.contains('independent_floor') ||
-        slug.contains('independentfloor');
+        slug.contains('house');
   }
 
   String get _rentLeaseHouseVillaTitle {
@@ -767,12 +780,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     if (_propertyKind != _CreatePropertyKind.sale) return false;
     if (!_isResidential) return false;
     final slug = (_selectedCategorySlug ?? '').toLowerCase();
+    if (slug.contains('floor') || slug.contains('builder')) return false;
+    if (slug.contains('farm') || slug.contains('farmhouse')) return false;
     return slug.contains('villa') ||
         slug.contains('independent') ||
-        slug.contains('house') ||
-        slug.contains('independent-floor') ||
-        slug.contains('independent_floor') ||
-        slug.contains('independentfloor');
+        slug.contains('house');
   }
 
   bool get _isSellResidentialBuilderFloor {
@@ -839,9 +851,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   void _syncTypeAndResetInvalidCategorySelection() {
     final kind = _propertyKind;
     if (kind == null) return;
-    _type = kind == _CreatePropertyKind.sale
-        ? PropertyType.sale
-        : PropertyType.rent;
+    if (kind == _CreatePropertyKind.sale) {
+      _type = PropertyType.sale;
+    } else if (kind == _CreatePropertyKind.lease) {
+      _type = PropertyType.lease;
+    } else {
+      _type = PropertyType.rent;
+    }
 
     if (_segmentLockedToResidential) {
       final parentSlug = (_selectedParentCategorySlug ?? '').trim();
@@ -918,8 +934,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             name: parent.name,
           );
           _selectedCategoryId = parent.id;
-          if (_propertyKind == _CreatePropertyKind.pg || _propertyKind == _CreatePropertyKind.coLiving) {
-            _selectedCategorySlug = _pgGenderBased.isNotEmpty ? _pgGenderBased : parent.slug;
+          if (_propertyKind == _CreatePropertyKind.pg ||
+              _propertyKind == _CreatePropertyKind.coLiving) {
+            _selectedCategorySlug = _pgGenderBased.isNotEmpty
+                ? _pgGenderBased
+                : parent.slug;
           } else {
             _selectedCategorySlug = parent.slug;
           }
@@ -938,8 +957,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
               name: parent.name,
             );
             _selectedCategoryId = child.id;
-            if (_propertyKind == _CreatePropertyKind.pg || _propertyKind == _CreatePropertyKind.coLiving) {
-              _selectedCategorySlug = _pgGenderBased.isNotEmpty ? _pgGenderBased : child.slug;
+            if (_propertyKind == _CreatePropertyKind.pg ||
+                _propertyKind == _CreatePropertyKind.coLiving) {
+              _selectedCategorySlug = _pgGenderBased.isNotEmpty
+                  ? _pgGenderBased
+                  : child.slug;
             } else {
               _selectedCategorySlug = child.slug;
             }
@@ -958,8 +980,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 name: parent.name,
               );
               _selectedCategoryId = grandchild.id;
-              if (_propertyKind == _CreatePropertyKind.pg || _propertyKind == _CreatePropertyKind.coLiving) {
-                _selectedCategorySlug = _pgGenderBased.isNotEmpty ? _pgGenderBased : grandchild.slug;
+              if (_propertyKind == _CreatePropertyKind.pg ||
+                  _propertyKind == _CreatePropertyKind.coLiving) {
+                _selectedCategorySlug = _pgGenderBased.isNotEmpty
+                    ? _pgGenderBased
+                    : grandchild.slug;
               } else {
                 _selectedCategorySlug = grandchild.slug;
               }
@@ -1009,6 +1034,38 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     return fallback;
   }
 
+  bool? _fbNullable(Map<String, dynamic> f, List<String> keys) {
+    for (final k in keys) {
+      final v = f[k];
+      if (v == null) continue;
+      if (v is bool) return v;
+      if (v is num) return v != 0;
+      if (v is String) {
+        final s = v.trim().toLowerCase();
+        if (s == 'true' || s == '1' || s == 'yes' || s == 'available')
+          return true;
+        if (s == 'false' || s == '0' || s == 'no' || s == 'not_available')
+          return false;
+      }
+    }
+    return null;
+  }
+
+  bool? _fbNullableInverted(Map<String, dynamic> f, List<String> keys) {
+    for (final k in keys) {
+      final v = f[k];
+      if (v == null) continue;
+      if (v is bool) return v;
+      if (v is num) return v == 0;
+      if (v is String) {
+        final s = v.trim().toLowerCase();
+        if (s == 'true' || s == '0' || s == 'yes') return true;
+        if (s == 'false' || s == '1' || s == 'no') return false;
+      }
+    }
+    return null;
+  }
+
   int? _fi(Map<String, dynamic> f, List<String> keys) {
     for (final k in keys) {
       final v = f[k];
@@ -1032,7 +1089,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       final v = f[k];
       if (v == null) continue;
       if (v is List) {
-        return v.map((e) => e.toString().trim()).where((s) => s.isNotEmpty).toList();
+        return v
+            .map((e) => e.toString().trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
       }
       if (v is String) {
         final s = v.trim();
@@ -1041,13 +1101,25 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           try {
             final parsed = jsonDecode(s);
             if (parsed is List) {
-              return parsed.map((e) => e.toString().trim()).where((x) => x.isNotEmpty).toList();
+              return parsed
+                  .map((e) => e.toString().trim())
+                  .where((x) => x.isNotEmpty)
+                  .toList();
             }
           } catch (_) {}
         }
-        return s.split(',').map((e) {
-          return e.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').replaceAll("'", "").trim();
-        }).where((e) => e.isNotEmpty).toList();
+        return s
+            .split(',')
+            .map((e) {
+              return e
+                  .replaceAll('[', '')
+                  .replaceAll(']', '')
+                  .replaceAll('"', '')
+                  .replaceAll("'", "")
+                  .trim();
+            })
+            .where((e) => e.isNotEmpty)
+            .toList();
       }
     }
     return const [];
@@ -1057,9 +1129,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   void _prefillFromProperty(Property p) {
     if (kDebugMode) {
-      debugPrint('[PropertyEdit] Prefilling from property id=${p.id} name="${p.name}"');
+      debugPrint(
+        '[PropertyEdit] Prefilling from property id=${p.id} name="${p.name}"',
+      );
       debugPrint('[PropertyEdit] apiFields keys=${p.apiFields?.keys.toList()}');
-      debugPrint('[PropertyEdit] categoryId=${p.categoryId}, type=${p.type}, kind=${p.propertyKind}');
+      debugPrint(
+        '[PropertyEdit] categoryId=${p.categoryId}, type=${p.type}, kind=${p.propertyKind}',
+      );
     }
     // ── 1. Basic fields from the typed Property model ──────────────────────
     _title.text = p.name;
@@ -1093,208 +1169,209 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _latitudeController.text = p.latitude?.toString() ?? '';
     _longitudeController.text = p.longitude?.toString() ?? '';
 
-    // ── 2. Category / kind — restore so the correct section is shown ────────
-    // Only set the leaf category ID here. The parent ID and slugs are resolved
-    // later in _resolveCategoryFromList() once categoriesProvider has loaded,
-    // because the API only returns category_id (not the full parent tree).
-    final catId = int.tryParse((p.categoryId ?? '').toString());
-    if (catId != null) _selectedCategoryId = catId;
-
     // The raw API JSON is stored in apiFields. Use it to restore every field.
     final f = Map<String, dynamic>.from(
       p.apiFields ?? const <String, dynamic>{},
     );
+
+    // ── 2. Category / kind — restore so the correct section is shown ────────
+    final isFarmhouse = f.containsKey('farm_land_area') ||
+        f.containsKey('farm_land_area_rent') ||
+        f.containsKey('farm_built_up_area') ||
+        f.containsKey('farm_rooms') ||
+        f.containsKey('farm_rooms_rent') ||
+        f.containsKey('farm_monthly_charges') ||
+        f.containsKey('farm_daily_charges') ||
+        f.containsKey('farm_event_charges');
+
+    if (isFarmhouse) {
+      _selectedCategoryId = -9999;
+      _selectedCategorySlug = 'farmhouse';
+      _categoryResolved = true;
+      _selectedParentCategoryId = 1;
+      _selectedParentCategorySlug = 'residential';
+    } else {
+      final catId = int.tryParse((p.categoryId ?? '').toString());
+      if (catId != null) _selectedCategoryId = catId;
+    }
+
+    _plotArea.text = _fd(f, ['plot_area'])?.toString() ?? '';
+    _selectedAmenityIds
+      ..clear()
+      ..addAll(p.amenityIds ?? const []);
+    _maintenanceCharges.text =
+        _fd(f, ['maintenance_charges'])?.toString() ?? '';
     final pg = Map<String, dynamic>.from(
-      f['pg_details'] is Map ? f['pg_details'] as Map : const <String, dynamic>{},
+      f['pg_details'] is Map
+          ? f['pg_details'] as Map
+          : const <String, dynamic>{},
     );
-// ───────────── PG PREFILL ─────────────
+    final office = Map<String, dynamic>.from(
+      f['office_details'] is Map
+          ? f['office_details'] as Map
+          : const <String, dynamic>{},
+    );
+    final shop = Map<String, dynamic>.from(
+      f['shop_details'] is Map
+          ? f['shop_details'] as Map
+          : const <String, dynamic>{},
+    );
+    final showroom = Map<String, dynamic>.from(
+      f['showroom_details'] is Map
+          ? f['showroom_details'] as Map
+          : const <String, dynamic>{},
+    );
+    final warehouse = Map<String, dynamic>.from(
+      f['warehouse_details'] is Map
+          ? f['warehouse_details'] as Map
+          : const <String, dynamic>{},
+    );
+    final plot = Map<String, dynamic>.from(
+      f['plot_details'] is Map
+          ? f['plot_details'] as Map
+          : const <String, dynamic>{},
+    );
+    // ───────────── PG PREFILL ─────────────
 
-_pgGenderBased =
-    _f(f, ['pg_gender_based']) ??
-    _f(pg, ['gender_based']) ??
-    '';
+    _pgGenderBased =
+        _f(f, ['pg_gender_based']) ?? _f(pg, ['gender_based']) ?? '';
 
-_pgOccupancyType =
-    _f(f, ['pg_occupancy_type']) ??
-    _f(pg, ['occupancy_type']) ??
-    '';
+    _pgOccupancyType =
+        _f(f, ['pg_occupancy_type']) ?? _f(pg, ['occupancy_type']) ?? '';
 
-_pgFoodAvailability =
-    _f(f, ['pg_food_availability']) ??
-    _f(pg, ['food_available']) ??
-    '';
+    _pgFoodAvailability =
+        _f(f, ['pg_food_availability']) ?? _f(pg, ['food_available']) ?? '';
 
-_pgPropertyType =
-    _f(f, ['pg_property_type']) ??
-    _f(pg, ['property_type']) ??
-    '';
+    _pgPropertyType =
+        _f(f, ['pg_property_type']) ?? _f(pg, ['property_type']) ?? '';
 
-_pgBathroomType =
-    _f(f, ['pg_bathroom_type']) ??
-    _f(pg, ['bathroom_type']) ??
-    '';
+    _pgBathroomType =
+        _f(f, ['pg_bathroom_type']) ?? _f(pg, ['bathroom_type']) ?? '';
 
-_pgSuitableFor =
-    _f(f, ['pg_suitable_for']) ??
-    _f(pg, ['suitable_for']) ??
-    '';
+    _pgSuitableFor =
+        _f(f, ['pg_suitable_for']) ?? _f(pg, ['suitable_for']) ?? '';
 
-_pgRoomType =
-    _f(f, ['pg_room_type']) ??
-    _f(pg, ['room_type']) ??
-    '';
+    _pgRoomType = _f(f, ['pg_room_type']) ?? _f(pg, ['room_type']) ?? '';
 
-_pgBedType =
-    _f(f, ['pg_bed_type']) ??
-    _f(pg, ['bed_type']) ??
-    '';
+    _pgBedType = _f(f, ['pg_bed_type']) ?? _f(pg, ['bed_type']) ?? '';
 
-_pgAvailability =
-    _f(f, ['pg_availability']) ??
-    _f(pg, ['availability_status']) ??
-    '';
+    _pgAvailability =
+        _f(f, ['pg_availability']) ?? _f(pg, ['availability_status']) ?? '';
 
-_pgBuildingName.text =
-    _f(f, ['pg_building_name']) ??
-    _f(pg, ['building_name']) ??
-    '';
+    _pgBuildingName.text =
+        _f(f, ['pg_building_name']) ?? _f(pg, ['building_name']) ?? '';
 
-_pgCurfewTime.text =
-    _f(f, ['pg_curfew_time']) ??
-    _f(pg, ['curfew_time']) ??
-    '';
+    _pgCurfewTime.text =
+        _f(f, ['pg_curfew_time']) ?? _f(pg, ['curfew_time']) ?? '';
 
-_pgRoomSize.text =
-    _f(f, ['pg_room_size']) ??
-    _f(pg, ['room_size']) ??
-    '';
+    _pgRoomSize.text = _f(f, ['pg_room_size']) ?? _f(pg, ['room_size']) ?? '';
 
-_pgTotalBeds.text =
-    _fi(f, ['pg_total_beds'])?.toString() ??
-    _fi(pg, ['total_beds'])?.toString() ??
-    '';
+    _pgTotalBeds.text =
+        _fi(f, ['pg_total_beds'])?.toString() ??
+        _fi(pg, ['total_beds'])?.toString() ??
+        '';
 
-_pgAvailableBeds.text =
-    _fi(f, ['pg_available_beds'])?.toString() ??
-    _fi(pg, ['available_beds'])?.toString() ??
-    '';
+    _pgAvailableBeds.text =
+        _fi(f, ['pg_available_beds'])?.toString() ??
+        _fi(pg, ['available_beds'])?.toString() ??
+        '';
 
-_pgSecurityDeposit.text =
-    _fd(f, ['pg_security_deposit'])?.toString() ??
-    _fd(pg, ['security_deposit'])?.toString() ??
-    '';
+    _pgSecurityDeposit.text =
+        _fd(f, ['pg_security_deposit'])?.toString() ??
+        _fd(pg, ['security_deposit'])?.toString() ??
+        '';
 
-_pgMaintenanceCharges.text =
-    _fd(f, ['pg_maintenance_charges'])?.toString() ??
-    _fd(pg, ['maintenance_charges'])?.toString() ??
-    '';
+    _pgMaintenanceCharges.text =
+        _fd(f, ['pg_maintenance_charges'])?.toString() ??
+        _fd(pg, ['maintenance_charges'])?.toString() ??
+        '';
 
-_pgAvailableFrom.text =
-    _f(f, ['pg_available_from']) ??
-    _f(pg, ['available_from']) ??
-    '';
+    _pgAvailableFrom.text =
+        _f(f, ['pg_available_from']) ?? _f(pg, ['available_from']) ?? '';
 
-_pgMinStayDays.text =
-    _fi(f, ['pg_min_stay_days'])?.toString() ??
-    _fi(pg, ['min_stay_days'])?.toString() ??
-    '';
+    _pgMinStayDays.text =
+        _fi(f, ['pg_min_stay_days'])?.toString() ??
+        _fi(pg, ['min_stay_days'])?.toString() ??
+        '';
 
-_pgNoticePeriodDays.text =
-    _fi(f, ['pg_notice_period_days'])?.toString() ??
-    _fi(pg, ['notice_period_days'])?.toString() ??
-    '';
+    _pgNoticePeriodDays.text =
+        _fi(f, ['pg_notice_period_days'])?.toString() ??
+        _fi(pg, ['notice_period_days'])?.toString() ??
+        '';
 
-_pgPreferredTenantAge.text =
-    _fi(f, ['pg_preferred_tenant_age'])?.toString() ??
-    _fi(pg, ['preferred_tenant_age'])?.toString() ??
-    '';
+    _pgPreferredTenantAge.text =
+        _fi(f, ['pg_preferred_tenant_age'])?.toString() ??
+        _fi(pg, ['preferred_tenant_age'])?.toString() ??
+        '';
 
-_pgSharing =
-    _fi(f, ['pg_sharing']) ??
-    _fi(pg, ['pg_sharing']) ??
-    0;
+    _pgSharing = _fi(f, ['pg_sharing']) ?? _fi(pg, ['pg_sharing']) ?? 0;
 
-_pgAttachedBathroom =
-    _fb(f, ['pg_attached_bathroom']) ||
-    _fb(pg, ['attached_bathroom']);
+    _pgAttachedBathroom =
+        _fb(f, ['pg_attached_bathroom']) || _fb(pg, ['attached_bathroom']);
 
-_pgBalcony =
-    _fb(f, ['pg_balcony']) ||
-    _fb(pg, ['balcony']);
+    _pgBalcony = _fb(f, ['pg_balcony']) || _fb(pg, ['balcony']);
 
-_pgCupboardAvailable =
-    _fb(f, ['pg_cupboard_available']) ||
-    _fb(pg, ['cupboard_available']);
+    _pgCupboardAvailable =
+        _fb(f, ['pg_cupboard_available']) || _fb(pg, ['cupboard_available']);
 
-_pgStudyTableAvailable =
-    _fb(f, ['pg_study_table_available']) ||
-    _fb(pg, ['study_table_available']);
+    _pgStudyTableAvailable =
+        _fb(f, ['pg_study_table_available']) ||
+        _fb(pg, ['study_table_available']);
 
-_pgElectricityIncluded =
-    _fb(f, ['pg_electricity_included']) ||
-    _fb(pg, ['electricity_included']);
+    _pgElectricityIncluded =
+        _fb(f, ['pg_electricity_included']) ||
+        _fb(pg, ['electricity_included']);
 
-_pgWaterIncluded =
-    _fb(f, ['pg_water_included']) ||
-    _fb(pg, ['water_included']);
+    _pgWaterIncluded =
+        _fb(f, ['pg_water_included']) || _fb(pg, ['water_included']);
 
-_pgFoodChargesIncluded =
-    _fb(f, ['pg_food_charges_included']) ||
-    _fb(pg, ['food_charges_included']);
+    _pgFoodChargesIncluded =
+        _fb(f, ['pg_food_charges_included']) ||
+        _fb(pg, ['food_charges_included']);
 
-_pgBrokerageRequired =
-    _fb(f, ['pg_brokerage_required']) ||
-    _fb(pg, ['brokerage_required']);
+    _pgBrokerageRequired =
+        _fb(f, ['pg_brokerage_required']) || _fb(pg, ['brokerage_required']);
 
-_pgCoupleFriendly =
-    _fb(f, ['pg_couple_friendly']) ||
-    _fb(pg, ['couple_friendly']);
+    _pgCoupleFriendly =
+        _fb(f, ['pg_couple_friendly']) || _fb(pg, ['couple_friendly']);
 
-_pgIdProofRequired =
-    _fb(f, ['pg_id_proof_required']) ||
-    _fb(pg, ['id_proof_required']);
+    _pgIdProofRequired =
+        _fb(f, ['pg_id_proof_required']) || _fb(pg, ['id_proof_required']);
 
-_pgSmokingAllowed =
-    _fb(f, ['pg_smoking_allowed']) ||
-    _fb(pg, ['smoking_allowed']);
+    _pgSmokingAllowed =
+        _fb(f, ['pg_smoking_allowed']) || _fb(pg, ['smoking_allowed']);
 
-_pgDrinkingAllowed =
-    _fb(f, ['pg_drinking_allowed']) ||
-    _fb(pg, ['drinking_allowed']);
+    _pgDrinkingAllowed =
+        _fb(f, ['pg_drinking_allowed']) || _fb(pg, ['drinking_allowed']);
 
-_pgPetsAllowed =
-    _fb(f, ['pg_pets_allowed']) ||
-    _fb(pg, ['pets_allowed']);
+    _pgPetsAllowed = _fb(f, ['pg_pets_allowed']) || _fb(pg, ['pets_allowed']);
 
-_pgVisitorsAllowed =
-    _fb(f, ['pg_visitors_allowed']) ||
-    _fb(pg, ['visitors_allowed']);
+    _pgVisitorsAllowed =
+        _fb(f, ['pg_visitors_allowed']) || _fb(pg, ['visitors_allowed']);
 
-_pgGateLockedAtNight =
-    _fb(f, ['pg_gate_locked_at_night']) ||
-    _fb(pg, ['gate_locked_at_night']);
+    _pgGateLockedAtNight =
+        _fb(f, ['pg_gate_locked_at_night']) ||
+        _fb(pg, ['gate_locked_at_night']);
 
-_pgSecurity =
-    _fb(f, ['pg_security']) ||
-    _fb(pg, ['pg_security']);
+    _pgSecurity = _fb(f, ['pg_security']) || _fb(pg, ['pg_security']);
 
-_pgTenantTypes
-  ..clear()
-  ..addAll(
-    _fl(f, ['pg_tenant_types']).isNotEmpty
-        ? _fl(f, ['pg_tenant_types'])
-        : _fl(pg, ['tenant_types']),
-  );
+    _pgTenantTypes
+      ..clear()
+      ..addAll(
+        _fl(f, ['pg_tenant_types']).isNotEmpty
+            ? _fl(f, ['pg_tenant_types'])
+            : _fl(pg, ['tenant_types']),
+      );
 
-_pgNearbyPreferences
-  ..clear()
-  ..addAll(
-    _fl(f, ['pg_nearby_preferences']).isNotEmpty
-        ? _fl(f, ['pg_nearby_preferences'])
-        : _fl(pg, ['nearby_preferences']),
-  );
+    _pgNearbyPreferences
+      ..clear()
+      ..addAll(
+        _fl(f, ['pg_nearby_preferences']).isNotEmpty
+            ? _fl(f, ['pg_nearby_preferences'])
+            : _fl(pg, ['nearby_preferences']),
+      );
 
-// ───────────── END PG PREFILL ─────────────
+    // ───────────── END PG PREFILL ─────────────
     // Derive _propertyKind from property type + property_kind field.
     final rawKind = _f(f, ['property_kind', 'propertyKind']) ?? '';
     if (rawKind == 'pg' || rawKind == 'co_living' || rawKind == 'coliving') {
@@ -1312,6 +1389,14 @@ _pgNearbyPreferences
             _propertyKind = _CreatePropertyKind.pg;
           } else {
             _propertyKind = _CreatePropertyKind.rent;
+          }
+          break;
+        case PropertyType.lease:
+          final lt = (p.listingType ?? '').toLowerCase();
+          if (lt == 'pg' || lt == 'co_living') {
+            _propertyKind = _CreatePropertyKind.pg;
+          } else {
+            _propertyKind = _CreatePropertyKind.lease;
           }
           break;
       }
@@ -1354,17 +1439,38 @@ _pgNearbyPreferences
 
     // ── 5. Common detail fields from apiFields ──────────────────────────────
     _carpetArea.text = _fd(f, ['carpet_area'])?.toString() ?? '';
-    _builtUpArea.text = p.builtUpArea?.toString() ?? _fd(f, ['built_up_area'])?.toString() ?? '';
+    _builtUpArea.text =
+        p.builtUpArea?.toString() ??
+        _fd(f, ['built_up_area'])?.toString() ??
+        '';
     _superBuiltUpArea.text = _fd(f, ['super_built_up_area'])?.toString() ?? '';
-    _plotArea.text = _fd(f, ['plot_area'])?.toString() ?? '';
-    _length.text = _fd(f, ['plot_length_ft', 'plot_length'])?.toString() ?? '';
+    final _plot = Map<String, dynamic>.from((f['plot_details'] as Map?) ?? {});
+    _plotArea.text =
+        p.plotArea?.toString() ??
+        _fd(f, ['plot_area'])?.toString() ??
+        _fd(_plot, ['plot_area'])?.toString() ??
+        '';
+    _length.text =
+        p.plotLength?.toString() ??
+        _fd(f, ['plot_length_ft', 'plot_length'])?.toString() ??
+        _fd(_plot, ['plot_length', 'plot_length_ft'])?.toString() ??
+        '';
     _breadth.text =
-        _fd(f, ['plot_breadth_ft', 'plot_breadth'])?.toString() ?? '';
+        p.plotBreadth?.toString() ??
+        _fd(f, ['plot_breadth_ft', 'plot_breadth', 'plot_width'])?.toString() ??
+        _fd(_plot, [
+          'plot_breadth',
+          'plot_breadth_ft',
+          'plot_width',
+        ])?.toString() ??
+        '';
     _floorsAllowed.text = _fi(f, ['floors_allowed'])?.toString() ?? '';
     _openSides = _fi(f, ['open_sides']) ?? _openSides;
     _boundaryWall = _fb(f, ['boundary_wall']);
     _constructionDone = _fb(f, ['construction_done']);
-    final rawAvail = p.availability ?? _f(f, ['availability', 'possession_status', 'possessionStatus']);
+    final rawAvail =
+        p.availability ??
+        _f(f, ['availability', 'possession_status', 'possessionStatus']);
     if (rawAvail != null && rawAvail.trim().isNotEmpty) {
       final normalized = rawAvail.trim().toLowerCase().replaceAll('-', '_');
       if (normalized == 'ready') {
@@ -1373,7 +1479,31 @@ _pgNearbyPreferences
         _availability = normalized;
       }
     }
-    _readyTimeframe = _f(f, ['ready_timeframe']) ?? _readyTimeframe;
+    final rawAge = _f(f, [
+      'ready_timeframe',
+      'property_age',
+      'property_age_years',
+      'property_age_range',
+    ]);
+    if (rawAge != null) {
+      final s = rawAge.trim().toLowerCase().replaceAll('-', '_');
+      if (s == '0_1' || s == '1_5' || s == '5_10' || s == '10_plus') {
+        _readyTimeframe = s;
+      } else {
+        final years = int.tryParse(s) ?? double.tryParse(s)?.toInt();
+        if (years != null) {
+          if (years <= 1) {
+            _readyTimeframe = '0_1';
+          } else if (years <= 5) {
+            _readyTimeframe = '1_5';
+          } else if (years <= 10) {
+            _readyTimeframe = '5_10';
+          } else {
+            _readyTimeframe = '10_plus';
+          }
+        }
+      }
+    }
     _possessionBy.text = p.possessionBy ?? _f(f, ['possession_by']) ?? '';
     final rawOwner = p.ownership ?? _f(f, ['ownership']);
     if (rawOwner != null && rawOwner.trim().isNotEmpty) {
@@ -1385,113 +1515,290 @@ _pgNearbyPreferences
 
     // ── 6. Commercial fields ────────────────────────────────────────────────
     _commercialType = _f(f, ['commercial_type']) ?? _commercialType;
-    _floorPlateArea.text = _fd(f, ['floor_plate_area'])?.toString() ?? '';
-    _cabins.text = _fi(f, ['cabins'])?.toString() ?? '';
-    _meetingRooms.text = _fi(f, ['meeting_rooms'])?.toString() ?? '';
-    _seats.text = _fi(f, ['seats'])?.toString() ?? '';
-    _maxSeats.text = _fi(f, ['max_seats'])?.toString() ?? '';
-    _conferenceRooms.text = _fi(f, ['conference_rooms'])?.toString() ?? '';
-    _liftAvailable = _fb(f, ['lift_available', 'goods_lift'], fallback: true);
-    _preLeased = _fb(f, ['pre_leased']);
-    _officeType = _f(f, ['office_type']) ?? _officeType;
-    _receptionArea = _fb(f, ['reception_area']);
-    _pantry = _fb(f, ['pantry']);
-    _cafeteria = _fb(f, ['cafeteria']);
-    _serverRoom = _fb(f, ['server_room']);
-    _fireSafetyInstalled = _fb(f, ['fire_safety_installed']);
-    _centralAC = _fb(f, ['central_ac']);
-    _visitorParking = _fb(f, ['visitor_parking', 'commercial_parking']);
-    _numberOfLifts.text = _fi(f, ['number_of_lifts'])?.toString() ?? '';
-    _taxIncluded = _fb(f, ['tax_included']);
-    _officeNegotiable = _fb(f, ['price_negotiable_office', 'negotiable']);
-    _officeMaintenanceCharges.text =
-        _fd(f, [
-          'maintenance_charges_office',
-          'maintenance_charges',
-        ])?.toString() ??
+    _floorPlateArea.text =
+        (_fd(f, ['floor_plate_area']) ?? _fd(office, ['floor_plate_area']))
+            ?.toString() ??
         '';
-    _officeBookingAmount.text = p.bookingAmount?.toString() ??
-        _fd(f, ['booking_amount_office', 'booking_amount'])?.toString() ?? '';
+    _cabins.text =
+        (_fi(f, ['cabins']) ?? _fi(office, ['cabins']))?.toString() ?? '';
+    _meetingRooms.text =
+        (_fi(f, ['meeting_rooms']) ?? _fi(office, ['meeting_rooms']))
+            ?.toString() ??
+        '';
+    _seats.text =
+        (_fi(f, ['seats']) ?? _fi(office, ['seats']))?.toString() ?? '';
+    _maxSeats.text =
+        (_fi(f, ['max_seats']) ?? _fi(office, ['max_seats']))?.toString() ?? '';
+    _conferenceRooms.text =
+        (_fi(f, ['conference_rooms']) ?? _fi(office, ['conference_rooms']))
+            ?.toString() ??
+        '';
+    _liftAvailable = _fb(f, [
+      'lift_available',
+      'goods_lift',
+    ], fallback: _fb(office, ['lift_available', 'goods_lift'], fallback: true));
+    _preLeased = _fb(f, ['pre_leased'], fallback: _fb(office, ['pre_leased']));
+    _officeType =
+        _f(f, ['office_type']) ?? _f(office, ['office_type']) ?? _officeType;
+    _receptionArea = _fb(f, [
+      'reception_area',
+    ], fallback: _fb(office, ['reception_area']));
+    _pantry = _fb(f, ['pantry'], fallback: _fb(office, ['pantry']));
+    _cafeteria = _fb(f, ['cafeteria'], fallback: _fb(office, ['cafeteria']));
+    _serverRoom = _fb(f, [
+      'server_room',
+    ], fallback: _fb(office, ['server_room']));
+    _fireSafetyInstalled = _fb(f, [
+      'fire_safety_installed',
+    ], fallback: _fb(office, ['fire_safety_installed']));
+    _centralAC = _fb(f, ['central_ac'], fallback: _fb(office, ['central_ac']));
+    _visitorParking = _fb(f, [
+      'visitor_parking',
+      'commercial_parking',
+    ], fallback: _fb(office, ['visitor_parking', 'commercial_parking']));
+    _numberOfLifts.text =
+        (_fi(f, ['number_of_lifts']) ?? _fi(office, ['number_of_lifts']))
+            ?.toString() ??
+        '';
+    _taxIncluded = _fb(f, [
+      'tax_included',
+    ], fallback: _fb(office, ['tax_included']));
+    _officeNegotiable =
+        p.priceNegotiable ??
+        _fbNullableInverted(f, ['price_negotiable_office', 'negotiable']) ??
+        _fbNullableInverted(office, ['price_negotiable_office', 'negotiable']);
+    _officeMaintenanceCharges.text =
+        (_fd(f, ['maintenance_charges_office', 'maintenance_charges']) ??
+                _fd(office, [
+                  'maintenance_charges_office',
+                  'maintenance_charges',
+                ]))
+            ?.toString() ??
+        '';
+    _officeBookingAmount.text =
+        p.bookingAmount?.toString() ??
+        (_fd(f, ['booking_amount_office', 'booking_amount']) ??
+                _fd(office, ['booking_amount_office', 'booking_amount']))
+            ?.toString() ??
+        '';
 
     // Shop
-    _shopType = _f(f, ['shop_type']) ?? _shopType;
-    _shopArea.text = _fd(f, ['shop_area'])?.toString() ?? '';
-    _shopAreaUnit = _f(f, ['shop_area_unit']) ?? _shopAreaUnit;
+    _shopType = _f(f, ['shop_type']) ?? _f(shop, ['shop_type']) ?? _shopType;
+    _shopArea.text =
+        (_fd(f, ['shop_area']) ?? _fd(shop, ['shop_area']))?.toString() ?? '';
+    _shopAreaUnit =
+        _f(f, ['shop_area_unit']) ??
+        _f(shop, ['shop_area_unit']) ??
+        _shopAreaUnit;
     _frontageWidth.text =
-        _fd(f, ['frontage_width_ft', 'frontage_width'])?.toString() ?? '';
+        (_fd(f, ['frontage_width_ft', 'frontage_width']) ??
+                _fd(shop, ['frontage_width_ft', 'frontage_width']))
+            ?.toString() ??
+        '';
     _ceilingHeight.text =
-        _fd(f, ['ceiling_height_ft', 'ceiling_height'])?.toString() ?? '';
-    _mainRoadFacing = _fb(f, ['main_road_facing']);
-    _cornerShop = _fb(f, ['corner_shop']);
-    _washroomAvailable = _fb(f, ['washroom_available']);
-    _floorType = _f(f, ['floor_type']) ?? _floorType;
-    _marketName.text = _f(f, ['market_name']) ?? '';
-    _locality.text = _f(f, ['locality']) ?? '';
+        (_fd(f, ['ceiling_height_ft', 'ceiling_height']) ??
+                _fd(shop, ['ceiling_height_ft', 'ceiling_height']))
+            ?.toString() ??
+        '';
+    _mainRoadFacing = _fb(f, [
+      'main_road_facing',
+    ], fallback: _fb(shop, ['main_road_facing']));
+    _cornerShop =
+        p.cornerShop ??
+        _fb(f, ['corner_shop'], fallback: _fb(shop, ['corner_shop']));
+    _washroomAvailable = _fb(f, [
+      'washroom_available',
+    ], fallback: _fb(shop, ['washroom_available']));
+    _floorType =
+        _f(f, ['floor_type']) ?? _f(shop, ['floor_type']) ?? _floorType;
+    _marketName.text =
+        _f(f, ['market_name']) ?? _f(shop, ['market_name']) ?? '';
+    _locality.text = _f(f, ['locality']) ?? _f(shop, ['locality']) ?? '';
 
     // Showroom
-    _showroomArea.text = _fd(f, ['showroom_area'])?.toString() ?? '';
-    _showroomAreaUnit = _f(f, ['showroom_area_unit']) ?? _showroomAreaUnit;
+    _showroomArea.text =
+        (_fd(f, ['showroom_area']) ?? _fd(showroom, ['showroom_area']))
+            ?.toString() ??
+        '';
+    _showroomAreaUnit =
+        _f(f, ['showroom_area_unit']) ??
+        _f(showroom, ['showroom_area_unit']) ??
+        _showroomAreaUnit;
     _showroomFrontageWidth.text =
-        _fd(f, ['showroom_frontage_width_ft'])?.toString() ?? '';
+        (_fd(f, ['showroom_frontage_width_ft']) ??
+                _fd(showroom, ['showroom_frontage_width_ft']))
+            ?.toString() ??
+        '';
     _showroomCeilingHeight.text =
-        _fd(f, ['showroom_ceiling_height_ft'])?.toString() ?? '';
-    _showroomMainRoadFacing = _fb(f, ['showroom_main_road_facing']);
-    _showroomCorner = _fb(f, ['corner_showroom']);
-    _showroomWashroom = _fb(f, ['showroom_washroom_available']);
+        (_fd(f, ['showroom_ceiling_height_ft']) ??
+                _fd(showroom, ['showroom_ceiling_height_ft']))
+            ?.toString() ??
+        '';
+    _showroomMainRoadFacing = _fb(f, [
+      'showroom_main_road_facing',
+    ], fallback: _fb(showroom, ['showroom_main_road_facing']));
+    _showroomCorner =
+        p.showroomCorner ??
+        _fb(f, [
+          'corner_showroom',
+        ], fallback: _fb(showroom, ['corner_showroom']));
+    _showroomWashroom = _fb(f, [
+      'showroom_washroom_available',
+    ], fallback: _fb(showroom, ['showroom_washroom_available']));
     _showroomParkingSlots.text =
-        _fi(f, ['showroom_parking_slots'])?.toString() ?? '';
+        (_fi(f, ['showroom_parking_slots']) ??
+                _fi(showroom, ['showroom_parking_slots']))
+            ?.toString() ??
+        '';
     _showroomFurnishing =
-        _f(f, ['showroom_furnishing_status']) ?? _showroomFurnishing;
-    _showroomFloorType = _f(f, ['showroom_floor_type']) ?? _showroomFloorType;
-    _showroomMarketName.text = _f(f, ['showroom_market_name']) ?? '';
-    _showroomLocality.text = _f(f, ['showroom_locality']) ?? '';
+        _f(f, ['showroom_furnishing_status']) ??
+        _f(showroom, ['showroom_furnishing_status']) ??
+        _showroomFurnishing;
+    _showroomFloorType =
+        _f(f, ['showroom_floor_type']) ??
+        _f(showroom, ['showroom_floor_type']) ??
+        _showroomFloorType;
+    _showroomMarketName.text =
+        _f(f, ['showroom_market_name']) ??
+        _f(showroom, ['showroom_market_name']) ??
+        '';
+    _showroomLocality.text =
+        _f(f, ['showroom_locality']) ??
+        _f(showroom, ['showroom_locality']) ??
+        '';
     _showroomOwnerName.text =
-        _f(f, ['showroom_owner_name', 'owner_name']) ?? '';
+        _f(f, ['showroom_owner_name', 'owner_name']) ??
+        _f(showroom, ['showroom_owner_name', 'owner_name']) ??
+        '';
     _showroomOwnerMobile.text =
-        _f(f, ['showroom_owner_mobile', 'owner_mobile']) ?? '';
+        _f(f, ['showroom_owner_mobile', 'owner_mobile']) ??
+        _f(showroom, ['showroom_owner_mobile', 'owner_mobile']) ??
+        '';
 
     // Warehouse
-    _warehouseType = _f(f, ['warehouse_type']) ?? _warehouseType;
-    _warehousePlotArea.text = _fd(f, ['warehouse_plot_area'])?.toString() ?? '';
+    _warehouseType =
+        _f(f, ['warehouse_type']) ??
+        _f(warehouse, ['warehouse_type']) ??
+        _warehouseType;
+    _warehousePlotArea.text =
+        (_fd(f, ['warehouse_plot_area']) ??
+                _fd(warehouse, ['warehouse_plot_area']))
+            ?.toString() ??
+        '';
     _warehousePlotAreaUnit =
-        _f(f, ['warehouse_plot_area_unit']) ?? _warehousePlotAreaUnit;
+        _f(f, ['warehouse_plot_area_unit']) ??
+        _f(warehouse, ['warehouse_plot_area_unit']) ??
+        _warehousePlotAreaUnit;
     _warehouseCeilingHeight.text =
-        _fd(f, ['warehouse_ceiling_height_ft'])?.toString() ?? '';
-    _warehouseLoadingBays.text = _fi(f, ['loading_bays'])?.toString() ?? '';
-    _warehouseDockLevelers.text = _fi(f, ['dock_levelers'])?.toString() ?? '';
-    _warehousePowerSupply.text = _f(f, ['power_supply']) ?? '';
-    _warehouseIndustrialLicense = _fb(f, ['industrial_license']);
-    _warehouseTruckAccess = _f(f, ['truck_access']) ?? _warehouseTruckAccess;
-    _warehouseAreaName.text = _f(f, ['industrial_area_name']) ?? '';
-    _warehouseCity.text = _f(f, ['industrial_area_city']) ?? '';
+        (_fd(f, ['warehouse_ceiling_height_ft']) ??
+                _fd(warehouse, ['warehouse_ceiling_height_ft']))
+            ?.toString() ??
+        '';
+    _warehouseLoadingBays.text =
+        (_fi(f, ['loading_bays']) ?? _fi(warehouse, ['loading_bays']))
+            ?.toString() ??
+        '';
+    _warehouseDockLevelers.text =
+        (_fi(f, ['dock_levelers']) ?? _fi(warehouse, ['dock_levelers']))
+            ?.toString() ??
+        '';
+    _warehousePowerSupply.text =
+        _f(f, ['power_supply']) ?? _f(warehouse, ['power_supply']) ?? '';
+    _warehouseIndustrialLicense = _fb(f, [
+      'industrial_license',
+    ], fallback: _fb(warehouse, ['industrial_license']));
+    _warehouseTruckAccess =
+        _f(f, ['truck_access']) ??
+        _f(warehouse, ['truck_access']) ??
+        _warehouseTruckAccess;
+    _warehouseAreaName.text =
+        _f(f, ['industrial_area_name']) ??
+        _f(warehouse, ['industrial_area_name']) ??
+        '';
+    _warehouseCity.text =
+        _f(f, ['industrial_area_city']) ??
+        _f(warehouse, ['industrial_area_city']) ??
+        '';
 
     // Common commercial
-    _shopFacade.text = _f(f, ['shop_facade']) ?? '';
-    _washrooms.text = _fi(f, ['washrooms'])?.toString() ?? '';
-    _parkingType = _f(f, ['parking_type']) ?? _parkingType;
-    _plotType.text = _f(f, ['plot_type']) ?? '';
-    _rooms.text = (_fi(f, ['rooms', 'pg_total_rooms']) ?? _fi(pg, ['total_rooms', 'rooms']))?.toString() ?? '';
-    _qualityRating.text = _fd(f, ['quality_rating'])?.toString() ?? '';
+    _shopFacade.text =
+        _f(f, ['shop_facade']) ?? _f(shop, ['shop_facade']) ?? '';
+    _washrooms.text =
+        (_fi(f, ['washrooms']) ??
+                _fi(office, ['washrooms']) ??
+                _fi(shop, ['washrooms']) ??
+                _fi(showroom, ['washrooms']))
+            ?.toString() ??
+        '';
+    _parkingType =
+        _f(f, ['parking_type']) ??
+        _f(office, ['parking_type']) ??
+        _f(shop, ['parking_type']) ??
+        _f(showroom, ['parking_type']) ??
+        _parkingType;
+    _plotType.text = _f(f, ['plot_type']) ?? _f(plot, ['plot_type']) ?? '';
+    _rooms.text =
+        (_fi(f, ['rooms', 'pg_total_rooms']) ??
+                _fi(pg, ['total_rooms', 'rooms']))
+            ?.toString() ??
+        '';
+    _qualityRating.text =
+        (_fd(f, ['quality_rating']) ??
+                _fd(office, ['quality_rating']) ??
+                _fd(shop, ['quality_rating']) ??
+                _fd(showroom, ['quality_rating']) ??
+                _fd(warehouse, ['quality_rating']))
+            ?.toString() ??
+        '';
 
     // ── 7. Land / Plot fields ───────────────────────────────────────────────
-    _landType = _f(f, ['land_type']) ?? _landType;
-    _roadWidth.text = _fd(f, ['road_width_ft', 'road_width'])?.toString() ?? '';
-    _plotAreaUnit = _f(f, ['plot_area_unit']) ?? _plotAreaUnit;
-    _plotCorner = _fb(f, ['corner_plot', 'plot_corner']);
-    _plotRoadAccess = _fb(f, ['road_access'], fallback: true);
-    _agriFencing = _fb(f, ['fencing', 'agri_fencing']);
+    _landType = _f(f, ['land_type']) ?? _f(plot, ['land_type']) ?? _landType;
+    _roadWidth.text =
+        (_fd(f, ['road_width_ft', 'road_width']) ??
+                _fd(plot, ['road_width_ft', 'road_width']))
+            ?.toString() ??
+        '';
+    _plotAreaUnit =
+        _f(f, ['plot_area_unit']) ??
+        _f(plot, ['plot_area_unit']) ??
+        _plotAreaUnit;
+    _plotCorner =
+        p.plotCorner ??
+        _fb(f, [
+          'corner_plot',
+          'plot_corner',
+        ], fallback: _fb(plot, ['corner_plot', 'plot_corner']));
+    _plotRoadAccess =
+        p.plotRoadAccess ??
+        _fbNullable(f, ['road_access']) ??
+        _fbNullable(plot, ['road_access']);
+    _agriFencing = _fb(f, [
+      'fencing',
+      'agri_fencing',
+    ], fallback: _fb(plot, ['fencing', 'agri_fencing']));
     _agriWaterSource =
-        _f(f, ['water_source', 'agri_water_source']) ?? _agriWaterSource;
+        _f(f, ['water_source', 'agri_water_source']) ??
+        _f(plot, ['water_source', 'agri_water_source']) ??
+        _agriWaterSource;
 
     // ── 8. Sell → Residential → Apartment ──────────────────────────────────
     _additionalRooms
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['additional_rooms']));
-    _cornerProperty = _fb(f, ['corner_property']);
-    _priceNegotiable = _fb(f, ['price_negotiable']);
+    _cornerProperty = p.cornerProperty ?? _fb(f, ['corner_property']);
+    _priceNegotiable =
+        p.priceNegotiable ??
+        _fbNullableInverted(f, ['negotiable']) ??
+        _fbNullableInverted(f, ['villa_price_negotiable']) ??
+        _fbNullableInverted(f, ['duplex_negotiable']);
     _maintenanceCharges.text =
-        _fd(f, ['maintenance_charges'])?.toString() ?? '';
-    _bookingAmount.text = p.bookingAmount?.toString() ?? _fd(f, ['booking_amount'])?.toString() ?? '';
+        p.maintenanceCharges?.toString() ??
+        _fd(f, ['maintenance_charges'])?.toString() ??
+        '';
+    _bookingAmount.text =
+        p.bookingAmount?.toString() ??
+        _fd(f, ['booking_amount'])?.toString() ??
+        '';
     _propertyHighlights
       ..clear()
       ..addAll(_fl(f, ['property_highlights']));
@@ -1504,15 +1811,22 @@ _pgNearbyPreferences
     _rentAdditionalRooms
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['rent_additional_rooms']));
-    _rentCornerProperty = _fb(f, ['rent_corner_property']);
+    _rentCornerProperty =
+        p.rentCornerProperty ?? _fb(f, ['rent_corner_property']);
     _petFriendly = _fb(f, ['pet_friendly']);
     _wheelchairFriendly = _fb(f, ['wheelchair_friendly']);
     _rentGatedSociety = _fb(f, ['gated_society_rent']);
     _securityDeposit.text = _fd(f, ['security_deposit'])?.toString() ?? '';
     _rentMaintenanceCharges.text =
-        _fd(f, ['maintenance_charges_rent'])?.toString() ?? '';
+        _fd(f, [
+          'maintenance_charges',
+          'maintenance_charges_rent',
+        ])?.toString() ??
+        '';
     _brokerage.text = _fd(f, ['brokerage'])?.toString() ?? '';
-    _rentNegotiable = _fb(f, ['rent_negotiable']);
+    _rentNegotiable =
+        p.rentNegotiable ??
+        _fbNullable(f, ['rent_negotiable', 'price_negotiable']);
     _availableFrom.text = _f(f, ['available_from']) ?? '';
     _leaseDurationMonths.text =
         _fi(f, ['lease_duration_months'])?.toString() ??
@@ -1570,52 +1884,127 @@ _pgNearbyPreferences
     _villaAdditionalRooms
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['villa_additional_rooms']));
-    _villaCornerProperty = _fb(f, ['villa_corner_property']);
-    _gatedCommunity = _fb(f, ['gated_community']);
+    _villaCornerProperty =
+        p.villaCornerProperty ??
+        p.cornerProperty ??
+        _fb(f, ['villa_corner_property', 'corner_property']);
+    _gatedCommunity =
+        p.gatedCommunity ?? _fb(f, ['gated_community', 'gated_society']);
     _villaParking
       ..clear()
-      ..addAll(_fl(f, ['parking_types']));
+      ..addAll(p.villaParking ?? _fl(f, ['parking_types']));
     _outdoors
       ..clear()
-      ..addAll(_fl(f, ['outdoors']));
+      ..addAll(p.outdoors ?? _fl(f, ['outdoors']));
     _waterSource =
-        _f(f, ['villa_water_source', 'water_source']) ?? _waterSource;
+        p.waterSource ??
+        _f(f, ['villa_water_source', 'water_source']) ??
+        _waterSource;
     _connections
       ..clear()
-      ..addAll(_fl(f, ['connections']));
-    _villaPriceNegotiable = _fb(f, ['villa_price_negotiable']);
+      ..addAll(p.connections ?? _fl(f, ['connections']));
+    _villaPriceNegotiable =
+        p.villaPriceNegotiable ??
+        p.priceNegotiable ??
+        _fbNullableInverted(f, ['villa_price_negotiable', 'price_negotiable']);
     _villaMaintenanceCharges.text =
-        _fd(f, ['villa_maintenance_charges'])?.toString() ?? '';
-    _villaBookingAmount.text = p.bookingAmount?.toString() ??
-        _fd(f, ['villa_booking_amount'])?.toString() ?? '';
+        p.maintenanceCharges?.toString() ??
+        _fd(f, ['villa_maintenance_charges'])?.toString() ??
+        '';
+    _villaBookingAmount.text =
+        p.bookingAmount?.toString() ??
+        _fd(f, ['villa_booking_amount'])?.toString() ??
+        '';
 
     // ── 15. Sell → Residential → Builder Floor ─────────────────────────────
-    _builderCornerProperty = _fb(f, ['builder_corner_property']);
-    _builderGatedSociety = _fb(f, ['builder_gated_society']);
-    _constructionAllowed = _fb(f, ['construction_allowed'], fallback: true);
+    _builderCornerProperty =
+        p.builderCornerProperty ??
+        (p.cornerProperty ??
+            _fb(f, ['builder_corner_property', 'corner_property']));
+    _builderGatedSociety = _fb(f, ['builder_gated_society', 'gated_society']);
+    _constructionAllowed =
+        p.constructionAllowed ?? _fbNullable(f, ['construction_allowed']);
     _builderUtilities
       ..clear()
       ..addAll(_fl(f, ['utilities']));
     _pricePerSqft.text = _fd(f, ['price_per_sqft'])?.toString() ?? '';
-    _builderNegotiable = _fb(f, ['negotiable']);
+    _builderNegotiable =
+        p.builderNegotiable ?? _fbNullableInverted(f, ['negotiable']);
+    _maintenanceCharges.text =
+        p.maintenanceCharges?.toString() ??
+        _fd(f, ['maintenance_charges'])?.toString() ??
+        '';
+    _bookingAmount.text =
+        p.bookingAmount?.toString() ??
+        _fd(f, ['booking_amount'])?.toString() ??
+        '';
 
     // ── 16. Sell → Residential → Duplex ────────────────────────────────────
-    _duplexCornerPlot = _fb(f, ['duplex_corner_plot']);
-    _duplexGatedCommunity = _fb(f, ['duplex_gated_community']);
-    _duplexConstructionAllowed = _fb(f, [
-      'duplex_construction_allowed',
-    ], fallback: true);
-    _duplexWaterConnection = _fb(f, [
-      'duplex_water_connection',
-    ], fallback: true);
-    _duplexElectricityConnection = _fb(f, [
-      'duplex_electricity_connection',
-    ], fallback: true);
-    _duplexNegotiable = _fb(f, ['duplex_negotiable']);
-    _duplexRoadAccess = _fb(f, ['duplex_road_access'], fallback: true);
+    _duplexCornerPlot =
+        p.duplexCornerPlot ?? _fb(f, ['duplex_corner_plot', 'corner_property']);
+    _duplexGatedCommunity =
+        p.duplexGatedCommunity ??
+        _fb(f, ['duplex_gated_community', 'gated_society']);
+    _duplexConstructionAllowed =
+        p.duplexConstructionAllowed ??
+        _fbNullable(f, ['duplex_construction_allowed', 'construction_allowed']);
+    _duplexWaterConnection =
+        p.duplexWaterConnection ??
+        _fbNullable(f, ['duplex_water_connection', 'water_source']);
+    if (_duplexWaterConnection == null) {
+      final conn = f['connections'];
+      if (conn != null) {
+        if (conn is List) {
+          if (conn.map((e) => e.toString().toLowerCase()).contains('water')) {
+            _duplexWaterConnection = true;
+          }
+        } else if (conn is String) {
+          if (conn.toLowerCase().contains('water')) {
+            _duplexWaterConnection = true;
+          }
+        }
+      }
+    }
+    _duplexElectricityConnection =
+        p.duplexElectricityConnection ??
+        _fbNullable(f, ['duplex_electricity_connection']);
+    if (_duplexElectricityConnection == null) {
+      for (final key in ['connections', 'utilities']) {
+        final val = f[key];
+        if (val != null) {
+          if (val is List) {
+            final items = val.map((e) => e.toString().toLowerCase()).toList();
+            if (items.contains('electricity') || items.contains('power')) {
+              _duplexElectricityConnection = true;
+              break;
+            }
+          } else if (val is String) {
+            final s = val.toLowerCase();
+            if (s.contains('electricity') || s.contains('power')) {
+              _duplexElectricityConnection = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    _duplexNegotiable =
+        p.duplexNegotiable ??
+        _fbNullableInverted(f, ['duplex_negotiable', 'price_negotiable']);
+    _duplexRoadAccess =
+        p.duplexRoadAccess ??
+        _fbNullable(f, ['duplex_road_access', 'road_access']);
     _duplexNearbyFacilities
       ..clear()
       ..addAll(_fl(f, ['duplex_nearby_facilities']));
+    _maintenanceCharges.text =
+        p.maintenanceCharges?.toString() ??
+        _fd(f, ['maintenance_charges'])?.toString() ??
+        '';
+    _bookingAmount.text =
+        p.bookingAmount?.toString() ??
+        _fd(f, ['booking_amount'])?.toString() ??
+        '';
 
     // ── 17. Sell → Residential → Farmhouse ─────────────────────────────────
     _farmLandArea.text = _fd(f, ['farm_land_area'])?.toString() ?? '';
@@ -1628,11 +2017,17 @@ _pgNearbyPreferences
     _farmSwimmingPool = _fb(f, ['farm_swimming_pool']);
     _village.text = _f(f, ['village']) ?? '';
     _landmark.text = _f(f, ['landmark']) ?? '';
+    _maintenanceCharges.text =
+        p.maintenanceCharges?.toString() ??
+        _fd(f, ['maintenance_charges'])?.toString() ??
+        '';
+    _bookingAmount.text =
+        p.bookingAmount?.toString() ??
+        _fd(f, ['booking_amount'])?.toString() ??
+        '';
 
     // ── 18. PG / Co-Living ──────────────────────────────────────────────────
-    debugPrint(
-      'PG Details => ${p.pgDetails?.toJson()}',
-    );
+    debugPrint('PG Details => ${p.pgDetails?.toJson()}');
 
     String normalizeFood(String? val, String? pref) {
       if (pref != null && pref.trim().isNotEmpty) {
@@ -1643,7 +2038,8 @@ _pgNearbyPreferences
       if (val == null) return '';
       final s = val.trim().toLowerCase();
       if (s == '1' || s == 'true' || s == 'with_food') return 'with_food';
-      if (s == '0' || s == 'false' || s == 'without_food') return 'without_food';
+      if (s == '0' || s == 'false' || s == 'without_food')
+        return 'without_food';
       return s;
     }
 
@@ -1677,92 +2073,192 @@ _pgNearbyPreferences
       return s;
     }
 
-    final genderVal = p.pgDetails?.genderBased ?? _f(f, ['pg_gender_based']) ?? _f(pg, ['gender_based']);
+    final genderVal =
+        p.pgDetails?.genderBased ??
+        _f(f, ['pg_gender_based']) ??
+        _f(pg, ['gender_based']);
     if (genderVal != null) {
       _pgGenderBased = normalizeGender(genderVal);
     }
 
-    final occupancyVal = p.pgDetails?.occupancyType ?? _f(f, ['pg_occupancy_type']) ?? _f(pg, ['occupancy_type']);
+    final occupancyVal =
+        p.pgDetails?.occupancyType ??
+        _f(f, ['pg_occupancy_type']) ??
+        _f(pg, ['occupancy_type']);
     if (occupancyVal != null) {
       _pgOccupancyType = normalizeOccupancy(occupancyVal);
     }
 
     _pgTenantTypes
       ..clear()
-      ..addAll(p.pgDetails?.tenantTypes ?? (_fl(f, ['pg_tenant_types']).isNotEmpty
-          ? _fl(f, ['pg_tenant_types'])
-          : _fl(pg, ['tenant_types'])));
+      ..addAll(
+        p.pgDetails?.tenantTypes ??
+            (_fl(f, ['pg_tenant_types']).isNotEmpty
+                ? _fl(f, ['pg_tenant_types'])
+                : _fl(pg, ['tenant_types'])),
+      );
 
     // Normalizing food availability
-    final foodVal = p.pgDetails?.foodAvailability ?? _f(f, ['pg_food_availability']) ?? _f(pg, ['food_available', 'food_availability']);
-    final foodPref = _f(f, ['food_preference']) ?? _f(pg, ['food_preference']) ?? f['food_preference'];
+    final foodVal =
+        p.pgDetails?.foodAvailability ??
+        _f(f, ['pg_food_availability']) ??
+        _f(pg, ['food_available', 'food_availability']);
+    final foodPref =
+        _f(f, ['food_preference']) ??
+        _f(pg, ['food_preference']) ??
+        f['food_preference'];
     if (foodVal != null || foodPref != null) {
       _pgFoodAvailability = normalizeFood(foodVal, foodPref);
     }
 
     // Normalizing property type
-    final propTypeVal = p.pgDetails?.propertyType ?? _f(f, ['pg_property_type']) ?? _f(pg, ['property_type']);
+    final propTypeVal =
+        p.pgDetails?.propertyType ??
+        _f(f, ['pg_property_type']) ??
+        _f(pg, ['property_type']);
     if (propTypeVal != null) {
       _pgPropertyType = normalizePropertyType(propTypeVal);
     }
 
-    _pgBathroomType = p.pgDetails?.bathroomType ?? _f(f, ['pg_bathroom_type']) ?? _f(pg, ['bathroom_type']) ?? _pgBathroomType;
-    _pgSuitableFor = p.pgDetails?.suitableFor ?? _f(f, ['pg_suitable_for']) ?? _f(pg, ['suitable_for']) ?? _pgSuitableFor;
-    _pgBuildingName.text = p.pgDetails?.buildingName ?? _f(f, ['pg_building_name']) ?? _f(pg, ['building_name']) ?? '';
-    _pgTotalBeds.text = (p.pgDetails?.totalBeds ?? _fi(f, ['pg_total_beds']) ?? _fi(pg, ['total_beds']))?.toString() ?? '';
-    _pgAvailableBeds.text = (p.pgDetails?.availableBeds ?? _fi(f, ['pg_available_beds']) ?? _fi(pg, ['available_beds']))?.toString() ?? '';
-    _pgRoomType = p.pgDetails?.roomType ?? _f(f, ['pg_room_type']) ?? _f(pg, ['room_type']) ?? _pgRoomType;
-    _pgAttachedBathroom = p.pgDetails?.attachedBathroom ?? _fb(f, ['pg_attached_bathroom', 'attached_bathroom']) || _fb(pg, ['attached_bathroom']);
-    _pgBalcony = p.pgDetails?.balcony ?? _fb(f, ['pg_balcony', 'balcony']) || _fb(pg, ['balcony']);
-    _pgRoomSize.text = p.pgDetails?.roomSize ?? _f(f, ['pg_room_size', 'room_size']) ?? _f(pg, ['room_size']) ?? '';
-    _pgBedType = p.pgDetails?.bedType ?? _f(f, ['pg_bed_type', 'bed_type']) ?? _f(pg, ['bed_type']) ?? _pgBedType;
-    _pgCupboardAvailable = p.pgDetails?.cupboardAvailable ?? _fb(f, [
-      'pg_cupboard_available',
-      'cupboard_available',
-    ]) || _fb(pg, ['cupboard_available']);
-    _pgStudyTableAvailable = p.pgDetails?.studyTableAvailable ?? _fb(f, [
-      'pg_study_table_available',
-      'study_table_available',
-    ]) || _fb(pg, ['study_table_available']);
-    _pgSecurityDeposit.text =
-        (p.pgDetails?.securityDeposit ?? _fd(f, ['pg_security_deposit', 'security_deposit']) ?? _fd(pg, ['security_deposit']))?.toString() ?? '';
-    _pgMaintenanceCharges.text =
-        (p.pgDetails?.maintenanceCharges ?? _fd(f, ['pg_maintenance_charges', 'maintenance_charges']) ?? _fd(pg, ['maintenance_charges']))?.toString() ??
+    _pgBathroomType =
+        p.pgDetails?.bathroomType ??
+        _f(f, ['pg_bathroom_type']) ??
+        _f(pg, ['bathroom_type']) ??
+        _pgBathroomType;
+    _pgSuitableFor =
+        p.pgDetails?.suitableFor ??
+        _f(f, ['pg_suitable_for']) ??
+        _f(pg, ['suitable_for']) ??
+        _pgSuitableFor;
+    _pgBuildingName.text =
+        p.pgDetails?.buildingName ??
+        _f(f, ['pg_building_name']) ??
+        _f(pg, ['building_name']) ??
         '';
-    _pgElectricityIncluded = p.pgDetails?.electricityIncluded ?? _fb(f, [
-      'pg_electricity_included',
-      'electricity_included',
-    ]) || _fb(pg, ['electricity_included']);
-    _pgWaterIncluded = p.pgDetails?.waterIncluded ?? _fb(f, [
-      'pg_water_included',
-      'water_included',
-    ]) || _fb(pg, ['water_included']);
-    _pgFoodChargesIncluded = p.pgDetails?.foodChargesIncluded ?? _fb(f, [
-      'pg_food_charges_included',
-      'food_charges_included',
-    ]) || _fb(pg, ['food_charges_included']);
-    _pgBrokerageRequired = p.pgDetails?.brokerageRequired ?? _fb(f, ['pg_brokerage_required']) || _fb(pg, ['brokerage_required']);
-    _pgCoupleFriendly = p.pgDetails?.coupleFriendly ?? _fb(f, ['pg_couple_friendly']) || _fb(pg, ['couple_friendly']);
-    _pgIdProofRequired = p.pgDetails?.idProofRequired ?? _fb(f, ['pg_id_proof_required']) || _fb(pg, ['id_proof_required']);
-    _pgAvailableFrom.text = p.pgDetails?.availableFrom ?? _f(f, ['pg_available_from']) ?? _f(pg, ['available_from']) ?? '';
-    _pgMinStayDays.text = (p.pgDetails?.minStayDays ?? _fi(f, ['pg_min_stay_days']) ?? _fi(pg, ['min_stay_days']))?.toString() ?? '';
+    _pgTotalBeds.text =
+        (p.pgDetails?.totalBeds ??
+                _fi(f, ['pg_total_beds']) ??
+                _fi(pg, ['total_beds']))
+            ?.toString() ??
+        '';
+    _pgAvailableBeds.text =
+        (p.pgDetails?.availableBeds ??
+                _fi(f, ['pg_available_beds']) ??
+                _fi(pg, ['available_beds']))
+            ?.toString() ??
+        '';
+    _pgRoomType =
+        p.pgDetails?.roomType ??
+        _f(f, ['pg_room_type']) ??
+        _f(pg, ['room_type']) ??
+        _pgRoomType;
+    _pgAttachedBathroom =
+        p.pgDetails?.attachedBathroom ??
+        _fb(f, ['pg_attached_bathroom', 'attached_bathroom']) ||
+            _fb(pg, ['attached_bathroom']);
+    _pgBalcony =
+        p.pgDetails?.balcony ??
+        _fb(f, ['pg_balcony', 'balcony']) || _fb(pg, ['balcony']);
+    _pgRoomSize.text =
+        p.pgDetails?.roomSize ??
+        _f(f, ['pg_room_size', 'room_size']) ??
+        _f(pg, ['room_size']) ??
+        '';
+    _pgBedType =
+        p.pgDetails?.bedType ??
+        _f(f, ['pg_bed_type', 'bed_type']) ??
+        _f(pg, ['bed_type']) ??
+        _pgBedType;
+    _pgCupboardAvailable =
+        p.pgDetails?.cupboardAvailable ??
+        _fb(f, ['pg_cupboard_available', 'cupboard_available']) ||
+            _fb(pg, ['cupboard_available']);
+    _pgStudyTableAvailable =
+        p.pgDetails?.studyTableAvailable ??
+        _fb(f, ['pg_study_table_available', 'study_table_available']) ||
+            _fb(pg, ['study_table_available']);
+    _pgSecurityDeposit.text =
+        (p.pgDetails?.securityDeposit ??
+                _fd(f, ['pg_security_deposit', 'security_deposit']) ??
+                _fd(pg, ['security_deposit']))
+            ?.toString() ??
+        '';
+    _pgMaintenanceCharges.text =
+        (p.pgDetails?.maintenanceCharges ??
+                _fd(f, ['pg_maintenance_charges', 'maintenance_charges']) ??
+                _fd(pg, ['maintenance_charges']))
+            ?.toString() ??
+        '';
+    _pgElectricityIncluded =
+        p.pgDetails?.electricityIncluded ??
+        _fb(f, ['pg_electricity_included', 'electricity_included']) ||
+            _fb(pg, ['electricity_included']);
+    _pgWaterIncluded =
+        p.pgDetails?.waterIncluded ??
+        _fb(f, ['pg_water_included', 'water_included']) ||
+            _fb(pg, ['water_included']);
+    _pgFoodChargesIncluded =
+        p.pgDetails?.foodChargesIncluded ??
+        _fb(f, ['pg_food_charges_included', 'food_charges_included']) ||
+            _fb(pg, ['food_charges_included']);
+    _pgBrokerageRequired =
+        p.pgDetails?.brokerageRequired ??
+        _fb(f, ['pg_brokerage_required']) || _fb(pg, ['brokerage_required']);
+    _pgCoupleFriendly =
+        p.pgDetails?.coupleFriendly ??
+        _fb(f, ['pg_couple_friendly']) || _fb(pg, ['couple_friendly']);
+    _pgIdProofRequired =
+        p.pgDetails?.idProofRequired ??
+        _fb(f, ['pg_id_proof_required']) || _fb(pg, ['id_proof_required']);
+    _pgAvailableFrom.text =
+        p.pgDetails?.availableFrom ??
+        _f(f, ['pg_available_from']) ??
+        _f(pg, ['available_from']) ??
+        '';
+    _pgMinStayDays.text =
+        (p.pgDetails?.minStayDays ??
+                _fi(f, ['pg_min_stay_days']) ??
+                _fi(pg, ['min_stay_days']))
+            ?.toString() ??
+        '';
     _pgNoticePeriodDays.text =
-        (p.pgDetails?.noticePeriodDays ?? _fi(f, ['pg_notice_period_days']) ?? _fi(pg, ['notice_period_days']))?.toString() ?? '';
+        (p.pgDetails?.noticePeriodDays ??
+                _fi(f, ['pg_notice_period_days']) ??
+                _fi(pg, ['notice_period_days']))
+            ?.toString() ??
+        '';
     _pgPreferredTenantAge.text =
-        (p.pgDetails?.preferredTenantAge ?? _fi(f, ['pg_preferred_tenant_age']) ?? _fi(pg, ['preferred_tenant_age']))?.toString() ?? '';
-    _pgSmokingAllowed = p.pgDetails?.smokingAllowed ?? _fb(f, ['pg_smoking_allowed']) || _fb(pg, ['smoking_allowed']);
-    _pgDrinkingAllowed = p.pgDetails?.drinkingAllowed ?? _fb(f, ['pg_drinking_allowed']) || _fb(pg, ['drinking_allowed']);
-    _pgPetsAllowed = p.pgDetails?.petsAllowed ?? _fb(f, ['pg_pets_allowed']) || _fb(pg, ['pets_allowed']);
-    _pgVisitorsAllowed = p.pgDetails?.visitorsAllowed ?? _fb(f, ['pg_visitors_allowed']) || _fb(pg, ['visitors_allowed']);
+        (p.pgDetails?.preferredTenantAge ??
+                _fi(f, ['pg_preferred_tenant_age']) ??
+                _fi(pg, ['preferred_tenant_age']))
+            ?.toString() ??
+        '';
+    _pgSmokingAllowed =
+        p.pgDetails?.smokingAllowed ??
+        _fb(f, ['pg_smoking_allowed']) || _fb(pg, ['smoking_allowed']);
+    _pgDrinkingAllowed =
+        p.pgDetails?.drinkingAllowed ??
+        _fb(f, ['pg_drinking_allowed']) || _fb(pg, ['drinking_allowed']);
+    _pgPetsAllowed =
+        p.pgDetails?.petsAllowed ??
+        _fb(f, ['pg_pets_allowed']) || _fb(pg, ['pets_allowed']);
+    _pgVisitorsAllowed =
+        p.pgDetails?.visitorsAllowed ??
+        _fb(f, ['pg_visitors_allowed']) || _fb(pg, ['visitors_allowed']);
 
     // Curfew time format conversion (e.g., 22:00:00 -> 10:00 PM)
-    final rawCurfew = p.pgDetails?.curfewTime ?? _f(f, ['pg_curfew_time']) ?? _f(pg, ['curfew_time']);
+    final rawCurfew =
+        p.pgDetails?.curfewTime ??
+        _f(f, ['pg_curfew_time']) ??
+        _f(pg, ['curfew_time']);
     if (rawCurfew != null && rawCurfew.trim().isNotEmpty) {
       final s = rawCurfew.trim();
       final timeParts = s.split(':');
       if (timeParts.isNotEmpty) {
         final hour = int.tryParse(timeParts[0]);
-        final minute = timeParts.length > 1 ? int.tryParse(timeParts[1]) ?? 0 : 0;
+        final minute = timeParts.length > 1
+            ? int.tryParse(timeParts[1]) ?? 0
+            : 0;
         if (hour != null) {
           final period = hour >= 12 ? 'PM' : 'AM';
           final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
@@ -1778,15 +2274,32 @@ _pgNearbyPreferences
       _pgCurfewTime.text = '';
     }
 
-    _pgGateLockedAtNight = p.pgDetails?.gateLockedAtNight ?? _fb(f, ['pg_gate_locked_at_night']) || _fb(pg, ['gate_locked_at_night']);
+    _pgGateLockedAtNight =
+        p.pgDetails?.gateLockedAtNight ??
+        _fb(f, ['pg_gate_locked_at_night']) ||
+            _fb(pg, ['gate_locked_at_night']);
     _pgNearbyPreferences
       ..clear()
-      ..addAll(p.pgDetails?.nearbyPreferences ?? (_fl(f, ['pg_nearby_preferences']).isNotEmpty
-          ? _fl(f, ['pg_nearby_preferences'])
-          : _fl(pg, ['nearby_preferences'])));
-    _pgAvailability = p.pgDetails?.availability ?? _f(f, ['pg_availability']) ?? _f(pg, ['availability_status']) ?? _pgAvailability;
-    _pgSharing = p.pgDetails?.sharing ?? _fi(f, ['pg_sharing']) ?? _fi(pg, ['pg_sharing', 'sharing']) ?? _pgSharing;
-    _pgSecurity = p.pgDetails?.security ?? _fb(f, ['pg_security']) || _fb(pg, ['pg_security', 'security_features', 'security']);
+      ..addAll(
+        p.pgDetails?.nearbyPreferences ??
+            (_fl(f, ['pg_nearby_preferences']).isNotEmpty
+                ? _fl(f, ['pg_nearby_preferences'])
+                : _fl(pg, ['nearby_preferences'])),
+      );
+    _pgAvailability =
+        p.pgDetails?.availability ??
+        _f(f, ['pg_availability']) ??
+        _f(pg, ['availability_status']) ??
+        _pgAvailability;
+    _pgSharing =
+        p.pgDetails?.sharing ??
+        _fi(f, ['pg_sharing']) ??
+        _fi(pg, ['pg_sharing', 'sharing']) ??
+        _pgSharing;
+    _pgSecurity =
+        p.pgDetails?.security ??
+        _fb(f, ['pg_security']) ||
+            _fb(pg, ['pg_security', 'security_features', 'security']);
 
     // ── 19. Open all sections so the user can see everything ────────────────
     for (final key in _expandedSections.keys.toList()) {
@@ -3359,6 +3872,9 @@ _pgNearbyPreferences
 
     final isLandPlot = _isLandPlotContext;
     final isCommercial = _isCommercialContext;
+    final isPgCoLiving =
+        _propertyKind == _CreatePropertyKind.pg ||
+        _propertyKind == _CreatePropertyKind.coLiving;
 
     final property = Property(
       id: id,
@@ -3382,29 +3898,52 @@ _pgNearbyPreferences
       balconies: _isResidential ? (_balconies >= 0 ? _balconies : 0) : null,
       builtUpArea: double.tryParse(_builtUpArea.text.trim()),
       availability: _availability,
-      possessionBy: _possessionBy.text.trim().isEmpty ? null : _possessionBy.text.trim(),
+      possessionBy: _possessionBy.text.trim().isEmpty
+          ? null
+          : _possessionBy.text.trim(),
       ownership: _ownership.isEmpty ? null : _ownership,
       additionalRooms: () {
         if (!_isResidential) return null;
-        final rooms = (_isSellResidentialApartment
-                ? _additionalRooms
-                : _isSellResidentialVillaHouse
+        final rooms =
+            (_isSellResidentialApartment
+                    ? _additionalRooms
+                    : _isSellResidentialVillaHouse
                     ? _villaAdditionalRooms
                     : _isRentLeaseResidentialApartment
-                        ? _rentAdditionalRooms
-                        : <String>{})
-            .toList(growable: false);
+                    ? _rentAdditionalRooms
+                    : <String>{})
+                .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),
       bookingAmount: (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
           : _isResidential
-              ? double.tryParse((_isSellResidentialVillaHouse
-                      ? _villaBookingAmount
-                      : _bookingAmount)
+          ? double.tryParse(
+        (_isSellResidentialVillaHouse
+            ? _villaBookingAmount
+            : _bookingAmount)
+            .text
+            .trim(),
+      )
+          : double.tryParse(_bookingAmount.text.trim()),
+
+      maintenanceCharges: isPgCoLiving
+          ? double.tryParse(_pgMaintenanceCharges.text.trim())
+          : (isCommercial && _commercialType == 'office')
+          ? double.tryParse(_officeMaintenanceCharges.text.trim())
+          : _isResidential
+          ? double.tryParse(
+              ((_propertyKind == _CreatePropertyKind.rent ||
+                          _propertyKind == _CreatePropertyKind.lease)
+                      ? _rentMaintenanceCharges
+                      : _isSellResidentialVillaHouse
+                      ? _villaMaintenanceCharges
+                      : _maintenanceCharges)
                   .text
-                  .trim())
-              : null,
+                  .trim(),
+            )
+          : double.tryParse(_maintenanceCharges.text.trim()),
+
       possessionStatus: 'ready',
       bedrooms: (isLandPlot || isCommercial) ? null : _bedrooms,
       bathrooms: (isLandPlot || isCommercial) ? null : _bathrooms,
@@ -3433,6 +3972,15 @@ _pgNearbyPreferences
             ),
           )
           .toList(growable: false),
+    );
+
+    debugPrint(
+      '[PropertyCreateScreen] _submit() '
+      'isSellVillaHouse=$_isSellResidentialVillaHouse '
+      'isSellBuilderFloor=$_isSellResidentialBuilderFloor '
+      'controllerText="${_maintenanceCharges.text}" '
+      'parsedMaintenanceCharges=${property.maintenanceCharges} '
+      'apiFieldsMaintenanceCharges=${property.apiFields?['maintenance_charges']}',
     );
 
     try {
@@ -3464,6 +4012,7 @@ _pgNearbyPreferences
   }
 
   Map<String, dynamic> _buildApiFields() {
+
     final isLandPlot = _isLandPlotContext;
     final isCommercial = _isCommercialContext;
     final isPgCoLiving =
@@ -3566,23 +4115,30 @@ _pgNearbyPreferences
           : null,
       'security_deposit': isPgCoLiving
           ? double.tryParse(_pgSecurityDeposit.text.trim())
-          : null,
+          : (((_propertyKind == _CreatePropertyKind.rent ||
+                        _propertyKind == _CreatePropertyKind.lease) &&
+                    _isResidential)
+                ? double.tryParse(_securityDeposit.text.trim())
+                : null),
       'pg_maintenance_charges': isPgCoLiving
           ? double.tryParse(_pgMaintenanceCharges.text.trim())
           : null,
       'maintenance_charges': isPgCoLiving
           ? double.tryParse(_pgMaintenanceCharges.text.trim())
           : (isCommercial && _commercialType == 'office')
-              ? double.tryParse(_officeMaintenanceCharges.text.trim())
-              : _isResidential
-                  ? double.tryParse((_isSellResidentialVillaHouse
-                          ? _villaMaintenanceCharges
-                          : _isRentLeaseResidentialApartment
-                              ? _rentMaintenanceCharges
-                              : _maintenanceCharges)
-                      .text
-                      .trim())
-                  : null,
+          ? double.tryParse(_officeMaintenanceCharges.text.trim())
+          : _isResidential
+          ? double.tryParse(
+              ((_propertyKind == _CreatePropertyKind.rent ||
+                          _propertyKind == _CreatePropertyKind.lease)
+                      ? _rentMaintenanceCharges
+                      : _isSellResidentialVillaHouse
+                      ? _villaMaintenanceCharges
+                      : _maintenanceCharges)
+                  .text
+                  .trim(),
+            )
+          : double.tryParse(_maintenanceCharges.text.trim()),
       'pg_electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'pg_water_included': isPgCoLiving ? _pgWaterIncluded : null,
@@ -3591,7 +4147,7 @@ _pgNearbyPreferences
       'food_charges_included': isPgCoLiving ? _pgFoodChargesIncluded : null,
       'food_preference': isPgCoLiving
           ? _normalizePgFoodPreferenceForApi(_pgFoodAvailability)
-          : null,
+          : (_isRentLeaseResidentialApartment ? _foodPreference : null),
       'pg_brokerage_required': isPgCoLiving ? _pgBrokerageRequired : null,
       'pg_couple_friendly': isPgCoLiving ? _pgCoupleFriendly : null,
       'pg_id_proof_required': isPgCoLiving ? _pgIdProofRequired : null,
@@ -3620,14 +4176,43 @@ _pgNearbyPreferences
       'built_up_area': double.tryParse(_builtUpArea.text.trim()),
       'super_built_up_area': double.tryParse(_superBuiltUpArea.text.trim()),
       'plot_area': double.tryParse(_plotArea.text.trim()),
-      'plot_length_ft': double.tryParse(_length.text.trim()),
-      'plot_breadth_ft': double.tryParse(_breadth.text.trim()),
+      'plot_length': double.tryParse(_length.text.trim()),
+      'plot_width': double.tryParse(_breadth.text.trim()),
       'floors_allowed': int.tryParse(_floorsAllowed.text.trim()),
       'open_sides': _openSides,
       'boundary_wall': _boundaryWall,
       'construction_done': _constructionDone,
       'availability': _availability,
       'ready_timeframe': _readyTimeframe,
+      'property_age_range': _readyTimeframe,
+      'property_age': () {
+        switch (_readyTimeframe) {
+          case '0_1':
+            return 1;
+          case '1_5':
+            return 3;
+          case '5_10':
+            return 7;
+          case '10_plus':
+            return 10;
+          default:
+            return null;
+        }
+      }(),
+      'property_age_years': () {
+        switch (_readyTimeframe) {
+          case '0_1':
+            return 1;
+          case '1_5':
+            return 3;
+          case '5_10':
+            return 7;
+          case '10_plus':
+            return 10;
+          default:
+            return null;
+        }
+      }(),
       'possession_by': _possessionBy.text.trim().isEmpty
           ? null
           : _possessionBy.text.trim(),
@@ -3684,11 +4269,15 @@ _pgNearbyPreferences
           ? _taxIncluded
           : null,
       'price_negotiable_office': (isCommercial && _commercialType == 'office')
-          ? _officeNegotiable
+          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 0 : 1))
           : null,
       'negotiable': (isCommercial && _commercialType == 'office')
-          ? _officeNegotiable
-          : null,
+          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 0 : 1))
+          : (_isSellResidentialBuilderFloor
+                ? (_builderNegotiable == null
+                      ? null
+                      : (_builderNegotiable! ? 0 : 1))
+                : null),
       'maintenance_charges_office':
           (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeMaintenanceCharges.text.trim())
@@ -3699,12 +4288,14 @@ _pgNearbyPreferences
       'booking_amount': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
           : _isResidential
-              ? double.tryParse((_isSellResidentialVillaHouse
+          ? double.tryParse(
+              (_isSellResidentialVillaHouse
                       ? _villaBookingAmount
                       : _bookingAmount)
                   .text
-                  .trim())
-              : null,
+                  .trim(),
+            )
+          : null,
       'floor_plate_area_unit': (isCommercial && _commercialType == 'office')
           ? _areaUnit
           : null,
@@ -3723,10 +4314,14 @@ _pgNearbyPreferences
           : null,
       'showroom_area': (isCommercial && _commercialType == 'shop')
           ? double.tryParse(_shopArea.text.trim())
-          : null,
+          : ((isCommercial && _commercialType == 'showroom')
+                ? double.tryParse(_showroomArea.text.trim())
+                : null),
       'showroom_area_unit': (isCommercial && _commercialType == 'shop')
           ? _shopAreaUnit
-          : null,
+          : ((isCommercial && _commercialType == 'showroom')
+                ? _showroomAreaUnit
+                : null),
       'frontage_width_ft': (isCommercial && _commercialType == 'shop')
           ? double.tryParse(_frontageWidth.text.trim())
           : null,
@@ -3744,6 +4339,9 @@ _pgNearbyPreferences
       'main_road_facing': (isCommercial && _commercialType == 'shop')
           ? _mainRoadFacing
           : null,
+      'corner_shop': (isCommercial && _commercialType == 'shop')
+          ? (_cornerShop ? 0 : 1)
+          : null,
       'washroom_available': (isCommercial && _commercialType == 'shop')
           ? _washroomAvailable
           : null,
@@ -3759,22 +4357,51 @@ _pgNearbyPreferences
       'locality': (isCommercial && _commercialType == 'shop')
           ? (_locality.text.trim().isEmpty ? null : _locality.text.trim())
           : null,
-      'owner_name': (isCommercial && _commercialType == 'shop')
-          ? (_showroomOwnerName.text.trim().isEmpty
-                ? null
-                : _showroomOwnerName.text.trim())
-          : null,
-      'owner_mobile': (isCommercial && _commercialType == 'shop')
-          ? (_showroomOwnerMobile.text.trim().isEmpty
-                ? null
-                : _showroomOwnerMobile.text.trim())
-          : null,
-      'showroom_area': (isCommercial && _commercialType == 'showroom')
-          ? double.tryParse(_showroomArea.text.trim())
-          : null,
-      'showroom_area_unit': (isCommercial && _commercialType == 'showroom')
-          ? _showroomAreaUnit
-          : null,
+      'owner_name': () {
+        final val = _ownerName.text.trim();
+        if (val.isNotEmpty) return val;
+        if (isCommercial && _commercialType == 'shop') {
+          return _showroomOwnerName.text.trim().isEmpty
+              ? null
+              : _showroomOwnerName.text.trim();
+        }
+        if (isCommercial && _commercialType == 'showroom') {
+          return _showroomOwnerName.text.trim().isEmpty
+              ? null
+              : _showroomOwnerName.text.trim();
+        }
+        return null;
+      }(),
+      'owner_phone': () {
+        final val = _ownerPhone.text.trim();
+        if (val.isNotEmpty) return val;
+        if (isCommercial && _commercialType == 'shop') {
+          return _showroomOwnerMobile.text.trim().isEmpty
+              ? null
+              : _showroomOwnerMobile.text.trim();
+        }
+        if (isCommercial && _commercialType == 'showroom') {
+          return _showroomOwnerMobile.text.trim().isEmpty
+              ? null
+              : _showroomOwnerMobile.text.trim();
+        }
+        return null;
+      }(),
+      'owner_mobile': () {
+        final val = _ownerPhone.text.trim();
+        if (val.isNotEmpty) return val;
+        if (isCommercial && _commercialType == 'shop') {
+          return _showroomOwnerMobile.text.trim().isEmpty
+              ? null
+              : _showroomOwnerMobile.text.trim();
+        }
+        if (isCommercial && _commercialType == 'showroom') {
+          return _showroomOwnerMobile.text.trim().isEmpty
+              ? null
+              : _showroomOwnerMobile.text.trim();
+        }
+        return null;
+      }(),
       'showroom_frontage_width_ft':
           (isCommercial && _commercialType == 'showroom')
           ? double.tryParse(_showroomFrontageWidth.text.trim())
@@ -3786,6 +4413,9 @@ _pgNearbyPreferences
       'showroom_main_road_facing':
           (isCommercial && _commercialType == 'showroom')
           ? _showroomMainRoadFacing
+          : null,
+      'corner_showroom': (isCommercial && _commercialType == 'showroom')
+          ? (_showroomCorner ? 0 : 1)
           : null,
       'showroom_washroom_available':
           (isCommercial && _commercialType == 'showroom')
@@ -3890,49 +4520,87 @@ _pgNearbyPreferences
           : null,
       'water_source': (isLandPlot && _landType == 'agricultural')
           ? _agriWaterSource
-          : null,
+          : (_isSellResidentialVillaHouse ? _waterSource : null),
       'agri_water_source': (isLandPlot && _landType == 'agricultural')
           ? _agriWaterSource
           : null,
       'farm_land_area': isLandPlot
           ? double.tryParse(_plotArea.text.trim())
-          : null,
+          : (_isSellResidentialFarmhouse
+                ? double.tryParse(_farmLandArea.text.trim())
+                : null),
       'farm_built_up_area': isLandPlot
           ? double.tryParse(_builtUpArea.text.trim())
-          : null,
-      'farm_rooms': isLandPlot ? int.tryParse(_rooms.text.trim()) : null,
-      'farm_garden': isLandPlot ? _boundaryWall : null,
-      'farm_swimming_pool': isLandPlot ? false : null,
-      'farm_utilities': isLandPlot ? <String>[] : null,
+          : (_isSellResidentialFarmhouse
+                ? double.tryParse(_farmBuiltUpArea.text.trim())
+                : null),
+      'farm_rooms': isLandPlot
+          ? int.tryParse(_rooms.text.trim())
+          : (_isSellResidentialFarmhouse
+                ? int.tryParse(_farmRooms.text.trim())
+                : null),
+      'farm_garden': isLandPlot
+          ? _boundaryWall
+          : (_isSellResidentialFarmhouse ? _farmGarden : null),
+      'farm_swimming_pool': isLandPlot
+          ? false
+          : (_isSellResidentialFarmhouse ? _farmSwimmingPool : null),
+      'farm_utilities': isLandPlot
+          ? <String>[]
+          : (_isSellResidentialFarmhouse
+                ? _farmUtilities.toList(growable: false)
+                : null),
       'farm_monthly_charges': isLandPlot
           ? double.tryParse(_maintenanceCharges.text.trim())
+          : (_isSellResidentialFarmhouse
+                ? double.tryParse(_farmMonthlyCharges.text.trim())
+                : (_isRentLeaseResidentialFarmhouse
+                      ? double.tryParse(_farmMonthlyCharges.text.trim())
+                      : null)),
+      'farm_daily_charges': _isRentLeaseResidentialFarmhouse
+          ? double.tryParse(_farmDailyCharges.text.trim())
           : null,
-      'farm_daily_charges': isLandPlot ? null : null,
-      'farm_event_charges': isLandPlot ? null : null,
+      'farm_event_charges': _isRentLeaseResidentialFarmhouse
+          ? double.tryParse(_farmEventCharges.text.trim())
+          : null,
       'min_stay_days': isLandPlot
           ? int.tryParse(_pgMinStayDays.text.trim())
-          : null,
+          : (_isRentLeaseResidentialFarmhouse
+                ? int.tryParse(_minStayDays.text.trim())
+                : null),
 
       // Sell -> Residential -> Flat/Apartment extra fields
-      'corner_property': _cornerProperty ||
-          _rentCornerProperty ||
-          _villaCornerProperty ||
-          _builderCornerProperty ||
-          _duplexCornerPlot ||
-          _cornerShop ||
-          _showroomCorner ||
-          _plotCorner,
-      'price_negotiable': _isSellResidentialApartment ? _priceNegotiable : null,
+      'corner_property':
+          (_cornerProperty ||
+              _rentCornerProperty ||
+              _villaCornerProperty ||
+              _builderCornerProperty ||
+              _duplexCornerPlot ||
+              _cornerShop ||
+              _showroomCorner ||
+              _plotCorner)
+          ? 0
+          : 1,
+      'price_negotiable': (_propertyKind == _CreatePropertyKind.sale)
+          ? (_isSellResidentialVillaHouse
+                ? (_villaPriceNegotiable == null
+                      ? null
+                      : (_villaPriceNegotiable! ? 0 : 1))
+                : (_priceNegotiable == null
+                      ? null
+                      : (_priceNegotiable! ? 0 : 1)))
+          : null,
       'additional_rooms': () {
         if (!_isResidential) return null;
-        final rooms = (_isSellResidentialApartment
-                ? _additionalRooms
-                : _isSellResidentialVillaHouse
+        final rooms =
+            (_isSellResidentialApartment
+                    ? _additionalRooms
+                    : _isSellResidentialVillaHouse
                     ? _villaAdditionalRooms
                     : _isRentLeaseResidentialApartment
-                        ? _rentAdditionalRooms
-                        : <String>{})
-            .toList(growable: false);
+                    ? _rentAdditionalRooms
+                    : <String>{})
+                .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),
       'property_highlights': _isSellResidentialApartment
@@ -3949,16 +4617,22 @@ _pgNearbyPreferences
       'gated_society_rent': _isRentLeaseResidentialApartment
           ? _rentGatedSociety
           : null,
-      'security_deposit': _isRentLeaseResidentialApartment
-          ? double.tryParse(_securityDeposit.text.trim())
-          : null,
-      'brokerage': _isRentLeaseResidentialApartment
+      'brokerage':
+          ((_propertyKind == _CreatePropertyKind.rent ||
+                  _propertyKind == _CreatePropertyKind.lease) &&
+              _isResidential)
           ? double.tryParse(_brokerage.text.trim())
           : null,
-      'rent_negotiable': _isRentLeaseResidentialApartment
+      'rent_negotiable':
+          ((_propertyKind == _CreatePropertyKind.rent ||
+                  _propertyKind == _CreatePropertyKind.lease) &&
+              _isResidential)
           ? _rentNegotiable
           : null,
-      'available_from': _isRentLeaseResidentialApartment
+      'available_from':
+          ((_propertyKind == _CreatePropertyKind.rent ||
+                  _propertyKind == _CreatePropertyKind.lease) &&
+              _isResidential)
           ? (_availableFrom.text.trim().isEmpty
                 ? null
                 : _availableFrom.text.trim())
@@ -3977,9 +4651,6 @@ _pgNearbyPreferences
           : null,
       'preferred_tenant': _isRentLeaseResidentialApartment
           ? _preferredTenant
-          : null,
-      'food_preference': _isRentLeaseResidentialApartment
-          ? _foodPreference
           : null,
       'rent_promotion': _isRentLeaseResidentialApartment
           ? _rentPromotionTypes.toList(growable: false)
@@ -4025,39 +4696,22 @@ _pgNearbyPreferences
       'farm_use_cases': _isRentLeaseResidentialFarmhouse
           ? _rentFarmUseCases.toList(growable: false)
           : null,
-      'farm_monthly_charges': _isRentLeaseResidentialFarmhouse
-          ? double.tryParse(_farmMonthlyCharges.text.trim())
-          : null,
-      'farm_daily_charges': _isRentLeaseResidentialFarmhouse
-          ? double.tryParse(_farmDailyCharges.text.trim())
-          : null,
-      'farm_event_charges': _isRentLeaseResidentialFarmhouse
-          ? double.tryParse(_farmEventCharges.text.trim())
-          : null,
-      'min_stay_days': _isRentLeaseResidentialFarmhouse
-          ? int.tryParse(_minStayDays.text.trim())
-          : null,
 
       // Sell -> Residential -> Independent House / Villa extra fields
-      'gated_community': _isSellResidentialVillaHouse ? _gatedCommunity : null,
+      'gated_society': _isSellResidentialVillaHouse
+          ? _gatedCommunity
+          : (_isSellResidentialBuilderFloor ? _builderGatedSociety : null),
       'parking_types': _isSellResidentialVillaHouse
           ? _villaParking.toList(growable: false)
           : null,
       'outdoors': _isSellResidentialVillaHouse
           ? _outdoors.toList(growable: false)
           : null,
-      'villa_water_source': _isSellResidentialVillaHouse ? _waterSource : null,
       'connections': _isSellResidentialVillaHouse
           ? _connections.toList(growable: false)
           : null,
-      'villa_price_negotiable': _isSellResidentialVillaHouse
-          ? _villaPriceNegotiable
-          : null,
 
       // Sell -> Residential -> Builder Floor extra fields
-      'builder_gated_society': _isSellResidentialBuilderFloor
-          ? _builderGatedSociety
-          : null,
       'construction_allowed': _isSellResidentialBuilderFloor
           ? _constructionAllowed
           : null,
@@ -4067,7 +4721,6 @@ _pgNearbyPreferences
       'price_per_sqft': _isSellResidentialBuilderFloor
           ? double.tryParse(_pricePerSqft.text.trim())
           : null,
-      'negotiable': _isSellResidentialBuilderFloor ? _builderNegotiable : null,
 
       // Sell -> Residential -> Duplex extra fields
       'duplex_gated_community': _isSellResidentialDuplex
@@ -4082,29 +4735,15 @@ _pgNearbyPreferences
       'duplex_electricity_connection': _isSellResidentialDuplex
           ? _duplexElectricityConnection
           : null,
-      'duplex_negotiable': _isSellResidentialDuplex ? _duplexNegotiable : null,
+      'duplex_negotiable': _isSellResidentialDuplex
+          ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 0 : 1))
+          : null,
       'duplex_road_access': _isSellResidentialDuplex ? _duplexRoadAccess : null,
       'duplex_nearby_facilities': _isSellResidentialDuplex
           ? _duplexNearbyFacilities.toList(growable: false)
           : null,
 
       // Sell -> Residential -> Farmhouse extra fields
-      'farm_land_area': _isSellResidentialFarmhouse
-          ? double.tryParse(_farmLandArea.text.trim())
-          : null,
-      'farm_built_up_area': _isSellResidentialFarmhouse
-          ? double.tryParse(_farmBuiltUpArea.text.trim())
-          : null,
-      'farm_utilities': _isSellResidentialFarmhouse
-          ? _farmUtilities.toList(growable: false)
-          : null,
-      'farm_rooms': _isSellResidentialFarmhouse
-          ? int.tryParse(_farmRooms.text.trim())
-          : null,
-      'farm_garden': _isSellResidentialFarmhouse ? _farmGarden : null,
-      'farm_swimming_pool': _isSellResidentialFarmhouse
-          ? _farmSwimmingPool
-          : null,
       'village': _isSellResidentialFarmhouse
           ? (_village.text.trim().isEmpty ? null : _village.text.trim())
           : null,
@@ -4851,7 +5490,10 @@ _pgNearbyPreferences
             initiallyExpanded: expanded,
             onExpansionChanged: (expanded) =>
                 setState(() => _expandedSections[key] = expanded),
-            tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            tilePadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 6,
+            ),
             title: Row(
               children: [
                 Icon(icon, size: 20, color: AppTheme.gold),
@@ -4951,7 +5593,9 @@ _pgNearbyPreferences
           onChanged: (_) => _validateField('price'),
           errorText: _priceErr,
         ),
-        if (_isSellResidentialApartment) ...[
+        if (_propertyKind == _CreatePropertyKind.sale &&
+            !_isSellResidentialVillaHouse &&
+            !(isCommercial && _commercialType == 'office')) ...[
           const SizedBox(height: 12),
           Row(
             children: [
@@ -5001,6 +5645,67 @@ _pgNearbyPreferences
                 ),
               ),
             ],
+          ),
+        ],
+        if (_propertyKind == _CreatePropertyKind.sale) ...[
+          const SizedBox(height: 12),
+          _buildChoiceChipRow(
+            'Price Negotiable',
+            const ['yes', 'no'],
+            _priceNegotiable == null ? '' : (_priceNegotiable! ? 'yes' : 'no'),
+            (v) {
+              setState(() => _priceNegotiable = v == 'yes');
+              _scheduleSaveDraft();
+            },
+          ),
+        ],
+        if ((_propertyKind == _CreatePropertyKind.rent ||
+                _propertyKind == _CreatePropertyKind.lease) &&
+            _isResidential) ...[
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildTextField(
+                  _securityDeposit,
+                  'Security Deposit',
+                  'e.g., 50000',
+                  Icons.account_balance_wallet_outlined,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => _scheduleSaveDraft(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildTextField(
+                  _rentMaintenanceCharges,
+                  'Maintenance Charges',
+                  'e.g., 3500',
+                  Icons.receipt_long_outlined,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => _scheduleSaveDraft(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildTextField(
+            _brokerage,
+            'Brokerage (Optional)',
+            'e.g., 1 month rent',
+            Icons.handshake_outlined,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => _scheduleSaveDraft(),
+          ),
+          const SizedBox(height: 12),
+          _buildChoiceChipRow(
+            'Rent Negotiable',
+            const ['yes', 'no'],
+            _rentNegotiable == null ? '' : (_rentNegotiable! ? 'yes' : 'no'),
+            (v) {
+              setState(() => _rentNegotiable = v == 'yes');
+              _scheduleSaveDraft();
+            },
           ),
         ],
         const SizedBox(height: 12),
@@ -5511,7 +6216,8 @@ _pgNearbyPreferences
                   keyboardType: TextInputType.number,
                   onChanged: (val) {
                     final total = int.tryParse(val.trim()) ?? 0;
-                    final avail = int.tryParse(_pgAvailableBeds.text.trim()) ?? 0;
+                    final avail =
+                        int.tryParse(_pgAvailableBeds.text.trim()) ?? 0;
                     if (total > 0 && avail > total) {
                       setState(() {
                         _pgAvailableBeds.text = total.toString();
@@ -5949,7 +6655,7 @@ _pgNearbyPreferences
           _buildChoiceChipRow(
             'Road Access',
             const ['yes', 'no'],
-            _plotRoadAccess ? 'yes' : 'no',
+            _plotRoadAccess == null ? '' : (_plotRoadAccess! ? 'yes' : 'no'),
             (v) {
               setState(() => _plotRoadAccess = v == 'yes');
               _scheduleSaveDraft();
@@ -5992,7 +6698,8 @@ _pgNearbyPreferences
               _availability,
               (v) => setState(() => _availability = v),
             ),
-            if (_availability != 'ready_to_move' && _availability != 'immediate') ...[
+            if (_availability != 'ready_to_move' &&
+                _availability != 'immediate') ...[
               const SizedBox(height: 12),
               _buildTextField(
                 _possessionBy,
@@ -6728,7 +7435,9 @@ _pgNearbyPreferences
               _buildChoiceChipRow(
                 'Construction Allowed',
                 const ['yes', 'no'],
-                _duplexConstructionAllowed ? 'yes' : 'no',
+                _duplexConstructionAllowed == null
+                    ? ''
+                    : (_duplexConstructionAllowed! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _duplexConstructionAllowed = v == 'yes');
                   _scheduleSaveDraft();
@@ -6738,7 +7447,9 @@ _pgNearbyPreferences
               _buildChoiceChipRow(
                 'Water Connection',
                 const ['available', 'not_available'],
-                _duplexWaterConnection ? 'available' : 'not_available',
+                _duplexWaterConnection == null
+                    ? ''
+                    : (_duplexWaterConnection! ? 'available' : 'not_available'),
                 (v) {
                   setState(() => _duplexWaterConnection = v == 'available');
                   _scheduleSaveDraft();
@@ -6748,7 +7459,11 @@ _pgNearbyPreferences
               _buildChoiceChipRow(
                 'Electricity Connection',
                 const ['available', 'not_available'],
-                _duplexElectricityConnection ? 'available' : 'not_available',
+                _duplexElectricityConnection == null
+                    ? ''
+                    : (_duplexElectricityConnection!
+                          ? 'available'
+                          : 'not_available'),
                 (v) {
                   setState(
                     () => _duplexElectricityConnection = v == 'available',
@@ -6760,22 +7475,15 @@ _pgNearbyPreferences
               _buildChoiceChipRow(
                 'Road Access',
                 const ['yes', 'no'],
-                _duplexRoadAccess ? 'yes' : 'no',
+                _duplexRoadAccess == null
+                    ? ''
+                    : (_duplexRoadAccess! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _duplexRoadAccess = v == 'yes');
                   _scheduleSaveDraft();
                 },
               ),
-              const SizedBox(height: 12),
-              _buildChoiceChipRow(
-                'Negotiable',
-                const ['yes', 'no'],
-                _duplexNegotiable ? 'yes' : 'no',
-                (v) {
-                  setState(() => _duplexNegotiable = v == 'yes');
-                  _scheduleSaveDraft();
-                },
-              ),
+
               const SizedBox(height: 12),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -6952,7 +7660,8 @@ _pgNearbyPreferences
                 _availability,
                 (v) => setState(() => _availability = v),
               ),
-              if (_availability == 'ready_to_move' || _availability == 'immediate') ...[
+              if (_availability == 'ready_to_move' ||
+                  _availability == 'immediate') ...[
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
                   'Property Age',
@@ -7064,16 +7773,6 @@ _pgNearbyPreferences
                   _cornerProperty ? 'yes' : 'no',
                   (v) {
                     setState(() => _cornerProperty = v == 'yes');
-                    _scheduleSaveDraft();
-                  },
-                ),
-                const SizedBox(height: 12),
-                _buildChoiceChipRow(
-                  'Price Negotiable',
-                  const ['yes', 'no'],
-                  _priceNegotiable ? 'yes' : 'no',
-                  (v) {
-                    setState(() => _priceNegotiable = v == 'yes');
                     _scheduleSaveDraft();
                   },
                 ),
@@ -7199,51 +7898,6 @@ _pgNearbyPreferences
                   _rentGatedSociety ? 'yes' : 'no',
                   (v) {
                     setState(() => _rentGatedSociety = v == 'yes');
-                    _scheduleSaveDraft();
-                  },
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        _securityDeposit,
-                        'Security Deposit',
-                        'e.g., 50000',
-                        Icons.account_balance_wallet_outlined,
-                        keyboardType: TextInputType.number,
-                        onChanged: (_) => _scheduleSaveDraft(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildTextField(
-                        _rentMaintenanceCharges,
-                        'Maintenance Charges',
-                        'e.g., 3500',
-                        Icons.receipt_long_outlined,
-                        keyboardType: TextInputType.number,
-                        onChanged: (_) => _scheduleSaveDraft(),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildTextField(
-                  _brokerage,
-                  'Brokerage (Optional)',
-                  'e.g., 1 month rent',
-                  Icons.handshake_outlined,
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => _scheduleSaveDraft(),
-                ),
-                const SizedBox(height: 12),
-                _buildChoiceChipRow(
-                  'Rent Negotiable',
-                  const ['yes', 'no'],
-                  _rentNegotiable ? 'yes' : 'no',
-                  (v) {
-                    setState(() => _rentNegotiable = v == 'yes');
                     _scheduleSaveDraft();
                   },
                 ),
@@ -8052,7 +8706,13 @@ _pgNearbyPreferences
                         ),
                         onSelected: (v) {
                           setState(() {
-                            v ? _villaParking.add(p) : _villaParking.remove(p);
+                            if (v) {
+                              _villaParking
+                                ..clear()
+                                ..add(p);
+                            } else {
+                              _villaParking.remove(p);
+                            }
                           });
                           _scheduleSaveDraft();
                         },
@@ -8172,16 +8832,7 @@ _pgNearbyPreferences
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 12),
-                _buildChoiceChipRow(
-                  'Price Negotiable',
-                  const ['yes', 'no'],
-                  _villaPriceNegotiable ? 'yes' : 'no',
-                  (v) {
-                    setState(() => _villaPriceNegotiable = v == 'yes');
-                    _scheduleSaveDraft();
-                  },
-                ),
+
                 const SizedBox(height: 12),
                 // Booking/Maintenance moved to Pricing & Area.
               ],
@@ -8278,7 +8929,9 @@ _pgNearbyPreferences
                 _buildChoiceChipRow(
                   'Construction Allowed',
                   const ['yes', 'no'],
-                  _constructionAllowed ? 'yes' : 'no',
+                  _constructionAllowed == null
+                      ? ''
+                      : (_constructionAllowed! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _constructionAllowed = v == 'yes');
                     _scheduleSaveDraft();
@@ -8351,16 +9004,6 @@ _pgNearbyPreferences
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 12),
-                _buildChoiceChipRow(
-                  'Negotiable',
-                  const ['yes', 'no'],
-                  _builderNegotiable ? 'yes' : 'no',
-                  (v) {
-                    setState(() => _builderNegotiable = v == 'yes');
-                    _scheduleSaveDraft();
-                  },
                 ),
               ],
             ],
@@ -8640,7 +9283,9 @@ _pgNearbyPreferences
               _buildChoiceChipRow(
                 'Price Negotiable',
                 const ['yes', 'no'],
-                _officeNegotiable ? 'yes' : 'no',
+                _officeNegotiable == null
+                    ? ''
+                    : (_officeNegotiable! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _officeNegotiable = v == 'yes');
                   _scheduleSaveDraft();
@@ -8893,7 +9538,7 @@ _pgNearbyPreferences
             _buildChoiceChipRow(
               'Road Access',
               const ['yes', 'no'],
-              _plotRoadAccess ? 'yes' : 'no',
+              _plotRoadAccess == null ? '' : (_plotRoadAccess! ? 'yes' : 'no'),
               (v) {
                 setState(() => _plotRoadAccess = v == 'yes');
                 _scheduleSaveDraft();
@@ -8936,7 +9581,8 @@ _pgNearbyPreferences
                 _availability,
                 (v) => setState(() => _availability = v),
               ),
-              if (_availability != 'ready_to_move' && _availability != 'immediate') ...[
+              if (_availability != 'ready_to_move' &&
+                  _availability != 'immediate') ...[
                 const SizedBox(height: 12),
                 _buildTextField(
                   _possessionBy,
@@ -8970,11 +9616,11 @@ _pgNearbyPreferences
 
     return AppDropdown<int>(
       label: 'Floor No.',
-      hintText: total == null ? 'Enter total floors first' : 'Select your floor',
+      hintText: total == null
+          ? 'Enter total floors first'
+          : 'Select your floor',
       prefixIcon: Icons.flood,
-      value: (selected != null && items.contains(selected))
-          ? selected
-          : null,
+      value: (selected != null && items.contains(selected)) ? selected : null,
       items: items
           .map(
             (n) => DropdownMenuItem<int>(
@@ -9064,10 +9710,7 @@ _pgNearbyPreferences
                   const Text(
                     'Select the hour on the clock face below.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textMuted,
-                    ),
+                    style: TextStyle(fontSize: 12, color: AppColors.textMuted),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -9097,7 +9740,9 @@ _pgNearbyPreferences
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: active ? AppColors.dark : AppColors.textPrimary,
+                              color: active
+                                  ? AppColors.dark
+                                  : AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -9145,18 +9790,24 @@ _pgNearbyPreferences
                                   duration: const Duration(milliseconds: 150),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: active ? AppTheme.gold : AppColors.dark3,
+                                    color: active
+                                        ? AppTheme.gold
+                                        : AppColors.dark3,
                                     border: Border.all(
-                                      color: active ? AppTheme.gold : AppColors.border,
+                                      color: active
+                                          ? AppTheme.gold
+                                          : AppColors.border,
                                       width: active ? 2 : 1,
                                     ),
                                     boxShadow: active
                                         ? [
                                             BoxShadow(
-                                              color: AppTheme.gold.withValues(alpha: 0.4),
+                                              color: AppTheme.gold.withValues(
+                                                alpha: 0.4,
+                                              ),
                                               blurRadius: 10,
                                               spreadRadius: 1,
-                                            )
+                                            ),
                                           ]
                                         : null,
                                   ),
@@ -9166,7 +9817,9 @@ _pgNearbyPreferences
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w700,
-                                      color: active ? const Color(0xFF070B14) : AppColors.textPrimary,
+                                      color: active
+                                          ? const Color(0xFF070B14)
+                                          : AppColors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -9221,9 +9874,7 @@ _pgNearbyPreferences
                           ),
                           child: const Text(
                             'Confirm',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w700),
                           ),
                         ),
                       ),
@@ -10459,17 +11110,12 @@ _pgNearbyPreferences
       label: label,
       hintText: hint,
       prefixIcon: icon,
-      value: (selected != null && values.contains(selected))
-          ? selected
-          : null,
+      value: (selected != null && values.contains(selected)) ? selected : null,
       items: [
         if (allowEmpty)
           const DropdownMenuItem<int>(
             value: null,
-            child: Text(
-              'Select',
-              style: TextStyle(color: AppColors.textMuted),
-            ),
+            child: Text('Select', style: TextStyle(color: AppColors.textMuted)),
           ),
         ...values.map(
           (v) => DropdownMenuItem<int>(
@@ -10759,4 +11405,3 @@ class _QuantityStepper extends StatelessWidget {
     );
   }
 }
-

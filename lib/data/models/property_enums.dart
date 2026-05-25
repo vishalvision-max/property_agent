@@ -1,6 +1,6 @@
 enum PropertyStatus { pending, approved, listed, rejected }
 
-enum PropertyType { rent, sale }
+enum PropertyType { rent, sale, lease }
 
 extension PropertyStatusX on PropertyStatus {
   String get label => switch (this) {
@@ -15,6 +15,7 @@ extension PropertyTypeX on PropertyType {
   String get label => switch (this) {
         PropertyType.rent => 'Rent',
         PropertyType.sale => 'Sale',
+        PropertyType.lease => 'Lease',
       };
 }
 

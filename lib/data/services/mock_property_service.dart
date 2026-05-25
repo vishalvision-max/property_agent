@@ -4,6 +4,7 @@ import 'dart:math';
 import '../models/activity.dart';
 import '../models/property.dart';
 import '../models/property_enums.dart';
+import '../models/dashboard_counts.dart';
 import 'property_service.dart';
 
 class MockPropertyService implements PropertyService {
@@ -184,13 +185,18 @@ class MockPropertyService implements PropertyService {
   }
 
   @override
-  Future<Map<PropertyStatus, int>> getStatusCounts() async {
+  Future<DashboardCounts> getStatusCounts() async {
     await Future<void>.delayed(const Duration(milliseconds: 420));
-    final counts = <PropertyStatus, int>{};
-    for (final s in PropertyStatus.values) {
-      counts[s] = _properties.where((p) => p.status == s).length;
-    }
-    return counts;
+    final assigned = _properties.length;
+    final listed = _properties.where((p) => p.status == PropertyStatus.listed).length;
+    final pending = _properties.where((p) => p.status == PropertyStatus.pending).length;
+    final rejected = _properties.where((p) => p.status == PropertyStatus.rejected).length;
+    return DashboardCounts(
+      assigned: assigned,
+      listed: listed,
+      pending: pending,
+      rejected: rejected,
+    );
   }
 
   @override

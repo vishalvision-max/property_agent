@@ -47,4 +47,8 @@ class AuthRepository {
     await prefs.remove(AppConstants.prefsAgentEmailKey);
     await prefs.remove(AppConstants.prefsAgentImageKey);
   }
+
+  Future<void> forgotPassword({required String email}) async {
+    await authService.forgotPassword(email: email);
+  }
 }

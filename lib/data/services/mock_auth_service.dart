@@ -20,5 +20,12 @@ class MockAuthService implements AuthService {
       token: 'mock-token-${DateTime.now().millisecondsSinceEpoch}',
     );
   }
-}
 
+  @override
+  Future<void> forgotPassword({required String email}) async {
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    if (!email.toLowerCase().contains('@')) {
+      throw Exception('Enter a valid email address');
+    }
+  }
+}

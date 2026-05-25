@@ -270,11 +270,15 @@ class PropertyFormNotifier extends StateNotifier<PropertyFormState> {
   void updateArea(double? value) => state = state.copyWith(area: value);
   void updateAreaUnit(String value) => state = state.copyWith(areaUnit: value);
 
-  // Updates transaction kind and dynamically maps standard PropertyType
   void updatePropertyKind(CreatePropertyKind kind) {
-    final type = (kind == CreatePropertyKind.sale)
-        ? PropertyType.sale
-        : PropertyType.rent;
+    final PropertyType type;
+    if (kind == CreatePropertyKind.sale) {
+      type = PropertyType.sale;
+    } else if (kind == CreatePropertyKind.lease) {
+      type = PropertyType.lease;
+    } else {
+      type = PropertyType.rent;
+    }
     state = state.copyWith(propertyKind: kind, type: type);
   }
 

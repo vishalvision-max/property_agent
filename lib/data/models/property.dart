@@ -260,116 +260,119 @@ class Property extends Equatable {
     this.pgAvailability,
     this.pgSharing,
     this.pgSecurity,
-    this.pgMaintenanceCharges,  this.showroomOwnerName,
+    this.pgMaintenanceCharges,
+    this.showroomOwnerName,
     PropertyPgDetails? pgDetails,
-  })  : pgDetails = pgDetails ?? PropertyPgDetails(
-          genderBased: pgGenderBased,
-          occupancyType: pgOccupancyType,
-          tenantTypes: pgTenantTypes,
-          foodAvailability: pgFoodAvailability,
-          propertyType: pgPropertyType,
-          bathroomType: pgBathroomType,
-          suitableFor: pgSuitableFor,
-          buildingName: pgBuildingName,
-          totalBeds: pgTotalBeds,
-          availableBeds: pgAvailableBeds,
-          roomType: pgRoomType,
-          attachedBathroom: pgAttachedBathroom,
-          balcony: pgBalcony,
-          roomSize: pgRoomSize,
-          bedType: pgBedType,
-          cupboardAvailable: pgCupboardAvailable,
-          studyTableAvailable: pgStudyTableAvailable,
-          securityDeposit: pgSecurityDeposit,
-          electricityIncluded: pgElectricityIncluded,
-          waterIncluded: pgWaterIncluded,
-          foodChargesIncluded: pgFoodChargesIncluded,
-          brokerageRequired: pgBrokerageRequired,
-          coupleFriendly: pgCoupleFriendly,
-          idProofRequired: pgIdProofRequired,
-          availableFrom: pgAvailableFrom,
-          minStayDays: pgMinStayDays,
-          noticePeriodDays: pgNoticePeriodDays,
-          preferredTenantAge: pgPreferredTenantAge,
-          smokingAllowed: pgSmokingAllowed,
-          drinkingAllowed: pgDrinkingAllowed,
-          petsAllowed: pgPetsAllowed,
-          visitorsAllowed: pgVisitorsAllowed,
-          curfewTime: pgCurfewTime,
-          gateLockedAtNight: pgGateLockedAtNight,
-          nearbyPreferences: pgNearbyPreferences,
-          availability: pgAvailability,
-          sharing: pgSharing,
-          security: pgSecurity,
-          maintenanceCharges: pgMaintenanceCharges,
-        ),
-        officeDetails = PropertyOfficeDetails(
-          carpetArea: carpetArea,
-          builtUpArea: builtUpArea,
-          superBuiltUpArea: superBuiltUpArea,
-          cabins: cabins,
-          meetingRooms: meetingRooms,
-          seats: seats,
-          maxSeats: maxSeats,
-          conferenceRooms: conferenceRooms,
-          liftAvailable: liftAvailable,
-          preLeased: preLeased,
-          officeType: officeType,
-          receptionArea: receptionArea,
-          pantry: pantry,
-          cafeteria: cafeteria,
-          serverRoom: serverRoom,
-          fireSafetyInstalled: fireSafetyInstalled,
-          centralAC: centralAC,
-          visitorParking: visitorParking,
-          numberOfLifts: numberOfLifts,
-          taxIncluded: taxIncluded,
-          officeNegotiable: officeNegotiable,
-          officeMaintenanceCharges: officeMaintenanceCharges,
-          officeBookingAmount: officeBookingAmount,
-        ),
-        showroomDetails = PropertyShowroomDetails(
-          showroomArea: showroomArea,
-          showroomAreaUnit: showroomAreaUnit,
-          showroomFrontageWidth: showroomFrontageWidth,
-          showroomCeilingHeight: showroomCeilingHeight,
-          showroomMainRoadFacing: showroomMainRoadFacing,
-          showroomCorner: showroomCorner,
-          showroomWashroom: showroomWashroom,
-          showroomParkingSlots: showroomParkingSlots,
-          showroomFurnishing: showroomFurnishing,
-          showroomFloorType: showroomFloorType,
-          showroomMarketName: showroomMarketName,
-          showroomLocality: showroomLocality,
-          showroomOwnerName: showroomOwnerName,
-          showroomOwnerMobile: showroomOwnerMobile,
-        ),
-        shopDetails = PropertyShopDetails(
-          shopType: shopType,
-          shopArea: shopArea,
-          shopAreaUnit: shopAreaUnit,
-          frontageWidth: frontageWidth,
-          ceilingHeight: ceilingHeight,
-          mainRoadFacing: mainRoadFacing,
-          cornerShop: cornerShop,
-          washroomAvailable: washroomAvailable,
-          floorType: floorType,
-          marketName: marketName,
-          locality: locality,
-        ),
-        warehouseDetails = PropertyWarehouseDetails(
-          warehouseType: warehouseType,
-          warehousePlotArea: warehousePlotArea,
-          warehousePlotAreaUnit: warehousePlotAreaUnit,
-          warehouseCeilingHeight: warehouseCeilingHeight,
-          warehouseLoadingBays: warehouseLoadingBays,
-          warehouseDockLevelers: warehouseDockLevelers,
-          warehousePowerSupply: warehousePowerSupply,
-          warehouseIndustrialLicense: warehouseIndustrialLicense,
-          warehouseTruckAccess: warehouseTruckAccess,
-          warehouseAreaName: warehouseAreaName,
-          warehouseCity: warehouseCity,
-        );
+  }) : pgDetails =
+           pgDetails ??
+           PropertyPgDetails(
+             genderBased: pgGenderBased,
+             occupancyType: pgOccupancyType,
+             tenantTypes: pgTenantTypes,
+             foodAvailability: pgFoodAvailability,
+             propertyType: pgPropertyType,
+             bathroomType: pgBathroomType,
+             suitableFor: pgSuitableFor,
+             buildingName: pgBuildingName,
+             totalBeds: pgTotalBeds,
+             availableBeds: pgAvailableBeds,
+             roomType: pgRoomType,
+             attachedBathroom: pgAttachedBathroom,
+             balcony: pgBalcony,
+             roomSize: pgRoomSize,
+             bedType: pgBedType,
+             cupboardAvailable: pgCupboardAvailable,
+             studyTableAvailable: pgStudyTableAvailable,
+             securityDeposit: pgSecurityDeposit,
+             electricityIncluded: pgElectricityIncluded,
+             waterIncluded: pgWaterIncluded,
+             foodChargesIncluded: pgFoodChargesIncluded,
+             brokerageRequired: pgBrokerageRequired,
+             coupleFriendly: pgCoupleFriendly,
+             idProofRequired: pgIdProofRequired,
+             availableFrom: pgAvailableFrom,
+             minStayDays: pgMinStayDays,
+             noticePeriodDays: pgNoticePeriodDays,
+             preferredTenantAge: pgPreferredTenantAge,
+             smokingAllowed: pgSmokingAllowed,
+             drinkingAllowed: pgDrinkingAllowed,
+             petsAllowed: pgPetsAllowed,
+             visitorsAllowed: pgVisitorsAllowed,
+             curfewTime: pgCurfewTime,
+             gateLockedAtNight: pgGateLockedAtNight,
+             nearbyPreferences: pgNearbyPreferences,
+             availability: pgAvailability,
+             sharing: pgSharing,
+             security: pgSecurity,
+             maintenanceCharges: pgMaintenanceCharges,
+           ),
+       officeDetails = PropertyOfficeDetails(
+         carpetArea: carpetArea,
+         builtUpArea: builtUpArea,
+         superBuiltUpArea: superBuiltUpArea,
+         cabins: cabins,
+         meetingRooms: meetingRooms,
+         seats: seats,
+         maxSeats: maxSeats,
+         conferenceRooms: conferenceRooms,
+         liftAvailable: liftAvailable,
+         preLeased: preLeased,
+         officeType: officeType,
+         receptionArea: receptionArea,
+         pantry: pantry,
+         cafeteria: cafeteria,
+         serverRoom: serverRoom,
+         fireSafetyInstalled: fireSafetyInstalled,
+         centralAC: centralAC,
+         visitorParking: visitorParking,
+         numberOfLifts: numberOfLifts,
+         taxIncluded: taxIncluded,
+         officeNegotiable: officeNegotiable,
+         officeMaintenanceCharges: officeMaintenanceCharges,
+         officeBookingAmount: officeBookingAmount,
+       ),
+       showroomDetails = PropertyShowroomDetails(
+         showroomArea: showroomArea,
+         showroomAreaUnit: showroomAreaUnit,
+         showroomFrontageWidth: showroomFrontageWidth,
+         showroomCeilingHeight: showroomCeilingHeight,
+         showroomMainRoadFacing: showroomMainRoadFacing,
+         showroomCorner: showroomCorner,
+         showroomWashroom: showroomWashroom,
+         showroomParkingSlots: showroomParkingSlots,
+         showroomFurnishing: showroomFurnishing,
+         showroomFloorType: showroomFloorType,
+         showroomMarketName: showroomMarketName,
+         showroomLocality: showroomLocality,
+         showroomOwnerName: showroomOwnerName,
+         showroomOwnerMobile: showroomOwnerMobile,
+       ),
+       shopDetails = PropertyShopDetails(
+         shopType: shopType,
+         shopArea: shopArea,
+         shopAreaUnit: shopAreaUnit,
+         frontageWidth: frontageWidth,
+         ceilingHeight: ceilingHeight,
+         mainRoadFacing: mainRoadFacing,
+         cornerShop: cornerShop,
+         washroomAvailable: washroomAvailable,
+         floorType: floorType,
+         marketName: marketName,
+         locality: locality,
+       ),
+       warehouseDetails = PropertyWarehouseDetails(
+         warehouseType: warehouseType,
+         warehousePlotArea: warehousePlotArea,
+         warehousePlotAreaUnit: warehousePlotAreaUnit,
+         warehouseCeilingHeight: warehouseCeilingHeight,
+         warehouseLoadingBays: warehouseLoadingBays,
+         warehouseDockLevelers: warehouseDockLevelers,
+         warehousePowerSupply: warehousePowerSupply,
+         warehouseIndustrialLicense: warehouseIndustrialLicense,
+         warehouseTruckAccess: warehouseTruckAccess,
+         warehouseAreaName: warehouseAreaName,
+         warehouseCity: warehouseCity,
+       );
 
   String get displayTag {
     final pk = propertyKind?.toLowerCase();
@@ -653,7 +656,7 @@ class Property extends Equatable {
   final PropertyShowroomDetails showroomDetails;
   final PropertyShopDetails shopDetails;
   final PropertyWarehouseDetails warehouseDetails;
-  
+
   var showroomOwneLeaserName;
 
   Property copyWith({
@@ -988,7 +991,8 @@ class Property extends Equatable {
       numberOfLifts: numberOfLifts ?? this.numberOfLifts,
       taxIncluded: taxIncluded ?? this.taxIncluded,
       officeNegotiable: officeNegotiable ?? this.officeNegotiable,
-      officeMaintenanceCharges: officeMaintenanceCharges ?? this.officeMaintenanceCharges,
+      officeMaintenanceCharges:
+          officeMaintenanceCharges ?? this.officeMaintenanceCharges,
       officeBookingAmount: officeBookingAmount ?? this.officeBookingAmount,
       shopType: shopType ?? this.shopType,
       shopArea: shopArea ?? this.shopArea,
@@ -1003,9 +1007,12 @@ class Property extends Equatable {
       locality: locality ?? this.locality,
       showroomArea: showroomArea ?? this.showroomArea,
       showroomAreaUnit: showroomAreaUnit ?? this.showroomAreaUnit,
-      showroomFrontageWidth: showroomFrontageWidth ?? this.showroomFrontageWidth,
-      showroomCeilingHeight: showroomCeilingHeight ?? this.showroomCeilingHeight,
-      showroomMainRoadFacing: showroomMainRoadFacing ?? this.showroomMainRoadFacing,
+      showroomFrontageWidth:
+          showroomFrontageWidth ?? this.showroomFrontageWidth,
+      showroomCeilingHeight:
+          showroomCeilingHeight ?? this.showroomCeilingHeight,
+      showroomMainRoadFacing:
+          showroomMainRoadFacing ?? this.showroomMainRoadFacing,
       showroomCorner: showroomCorner ?? this.showroomCorner,
       showroomWashroom: showroomWashroom ?? this.showroomWashroom,
       showroomParkingSlots: showroomParkingSlots ?? this.showroomParkingSlots,
@@ -1017,12 +1024,16 @@ class Property extends Equatable {
       showroomOwnerMobile: showroomOwnerMobile ?? this.showroomOwnerMobile,
       warehouseType: warehouseType ?? this.warehouseType,
       warehousePlotArea: warehousePlotArea ?? this.warehousePlotArea,
-      warehousePlotAreaUnit: warehousePlotAreaUnit ?? this.warehousePlotAreaUnit,
-      warehouseCeilingHeight: warehouseCeilingHeight ?? this.warehouseCeilingHeight,
+      warehousePlotAreaUnit:
+          warehousePlotAreaUnit ?? this.warehousePlotAreaUnit,
+      warehouseCeilingHeight:
+          warehouseCeilingHeight ?? this.warehouseCeilingHeight,
       warehouseLoadingBays: warehouseLoadingBays ?? this.warehouseLoadingBays,
-      warehouseDockLevelers: warehouseDockLevelers ?? this.warehouseDockLevelers,
+      warehouseDockLevelers:
+          warehouseDockLevelers ?? this.warehouseDockLevelers,
       warehousePowerSupply: warehousePowerSupply ?? this.warehousePowerSupply,
-      warehouseIndustrialLicense: warehouseIndustrialLicense ?? this.warehouseIndustrialLicense,
+      warehouseIndustrialLicense:
+          warehouseIndustrialLicense ?? this.warehouseIndustrialLicense,
       warehouseTruckAccess: warehouseTruckAccess ?? this.warehouseTruckAccess,
       warehouseAreaName: warehouseAreaName ?? this.warehouseAreaName,
       warehouseCity: warehouseCity ?? this.warehouseCity,
@@ -1053,7 +1064,8 @@ class Property extends Equatable {
       wheelchairFriendly: wheelchairFriendly ?? this.wheelchairFriendly,
       rentGatedSociety: rentGatedSociety ?? this.rentGatedSociety,
       securityDeposit: securityDeposit ?? this.securityDeposit,
-      rentMaintenanceCharges: rentMaintenanceCharges ?? this.rentMaintenanceCharges,
+      rentMaintenanceCharges:
+          rentMaintenanceCharges ?? this.rentMaintenanceCharges,
       brokerage: brokerage ?? this.brokerage,
       rentNegotiable: rentNegotiable ?? this.rentNegotiable,
       availableFrom: availableFrom ?? this.availableFrom,
@@ -1091,9 +1103,11 @@ class Property extends Equatable {
       waterSource: waterSource ?? this.waterSource,
       connections: connections ?? this.connections,
       villaPriceNegotiable: villaPriceNegotiable ?? this.villaPriceNegotiable,
-      villaMaintenanceCharges: villaMaintenanceCharges ?? this.villaMaintenanceCharges,
+      villaMaintenanceCharges:
+          villaMaintenanceCharges ?? this.villaMaintenanceCharges,
       villaBookingAmount: villaBookingAmount ?? this.villaBookingAmount,
-      builderCornerProperty: builderCornerProperty ?? this.builderCornerProperty,
+      builderCornerProperty:
+          builderCornerProperty ?? this.builderCornerProperty,
       builderGatedSociety: builderGatedSociety ?? this.builderGatedSociety,
       constructionAllowed: constructionAllowed ?? this.constructionAllowed,
       builderUtilities: builderUtilities ?? this.builderUtilities,
@@ -1101,12 +1115,16 @@ class Property extends Equatable {
       builderNegotiable: builderNegotiable ?? this.builderNegotiable,
       duplexCornerPlot: duplexCornerPlot ?? this.duplexCornerPlot,
       duplexGatedCommunity: duplexGatedCommunity ?? this.duplexGatedCommunity,
-      duplexConstructionAllowed: duplexConstructionAllowed ?? this.duplexConstructionAllowed,
-      duplexWaterConnection: duplexWaterConnection ?? this.duplexWaterConnection,
-      duplexElectricityConnection: duplexElectricityConnection ?? this.duplexElectricityConnection,
+      duplexConstructionAllowed:
+          duplexConstructionAllowed ?? this.duplexConstructionAllowed,
+      duplexWaterConnection:
+          duplexWaterConnection ?? this.duplexWaterConnection,
+      duplexElectricityConnection:
+          duplexElectricityConnection ?? this.duplexElectricityConnection,
       duplexNegotiable: duplexNegotiable ?? this.duplexNegotiable,
       duplexRoadAccess: duplexRoadAccess ?? this.duplexRoadAccess,
-      duplexNearbyFacilities: duplexNearbyFacilities ?? this.duplexNearbyFacilities,
+      duplexNearbyFacilities:
+          duplexNearbyFacilities ?? this.duplexNearbyFacilities,
       farmLandArea: farmLandArea ?? this.farmLandArea,
       farmBuiltUpArea: farmBuiltUpArea ?? this.farmBuiltUpArea,
       farmUtilities: farmUtilities ?? this.farmUtilities,
@@ -1131,11 +1149,14 @@ class Property extends Equatable {
       pgRoomSize: pgRoomSize ?? this.pgRoomSize,
       pgBedType: pgBedType ?? this.pgBedType,
       pgCupboardAvailable: pgCupboardAvailable ?? this.pgCupboardAvailable,
-      pgStudyTableAvailable: pgStudyTableAvailable ?? this.pgStudyTableAvailable,
+      pgStudyTableAvailable:
+          pgStudyTableAvailable ?? this.pgStudyTableAvailable,
       pgSecurityDeposit: pgSecurityDeposit ?? this.pgSecurityDeposit,
-      pgElectricityIncluded: pgElectricityIncluded ?? this.pgElectricityIncluded,
+      pgElectricityIncluded:
+          pgElectricityIncluded ?? this.pgElectricityIncluded,
       pgWaterIncluded: pgWaterIncluded ?? this.pgWaterIncluded,
-      pgFoodChargesIncluded: pgFoodChargesIncluded ?? this.pgFoodChargesIncluded,
+      pgFoodChargesIncluded:
+          pgFoodChargesIncluded ?? this.pgFoodChargesIncluded,
       pgBrokerageRequired: pgBrokerageRequired ?? this.pgBrokerageRequired,
       pgCoupleFriendly: pgCoupleFriendly ?? this.pgCoupleFriendly,
       pgIdProofRequired: pgIdProofRequired ?? this.pgIdProofRequired,
@@ -1158,255 +1179,260 @@ class Property extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'owner_phone': ownerPhone,
-        'owner_name': ownerName,
-        'location': location,
-        'price': price,
-        'type': type.name,
-        'amenities': amenities,
-        'images': images,
-        'videos': videos.map((e) => e.toJson()).toList(),
-        'description': description,
-        'status': status.name,
-        'slug': slug,
-        'listing_type': listingType,
-        'property_kind': propertyKind,
-        'area': area,
-        'area_unit': areaUnit,
-        'property_age': propertyAge,
-        'facing': facing,
-        'floor': floor,
-        'total_floors': totalFloors,
-        'possession_status': possessionStatus,
-        'bedrooms': bedrooms,
-        'bathrooms': bathrooms,
-        'furnishing': furnishing,
-        'parking': parking,
-        'address': address,
-        'city': city,
-        'state': state,
-        'pincode': pincode,
-        'latitude': latitude,
-        'longitude': longitude,
-        'primary_image_index': primaryImageIndex,
-        'rejection_reason': rejectionReason,
-        'updated_at': updatedAt?.toIso8601String(),
-        'created_at': createdAt?.toIso8601String(),
-        'category_id': categoryId,
-        'user_id': userId,
-        'is_featured': isFeatured,
-        'featured_expiry': featuredExpiry?.toIso8601String(),
-        'documents': documents,
-        'amenity_ids': amenityIds,
+    'id': id,
+    'name': name,
+    'owner_phone': ownerPhone,
+    'owner_name': ownerName,
+    'location': location,
+    'price': price,
+    'type': type.name,
+    'amenities': amenities,
+    'images': images,
+    'videos': videos.map((e) => e.toJson()).toList(),
+    'description': description,
+    'status': status.name,
+    'slug': slug,
+    'listing_type': listingType,
+    'property_kind': propertyKind,
+    'area': area,
+    'area_unit': areaUnit,
+    'property_age': propertyAge,
+    'facing': facing,
+    'floor': floor,
+    'total_floors': totalFloors,
+    'possession_status': possessionStatus,
+    'bedrooms': bedrooms,
+    'bathrooms': bathrooms,
+    'furnishing': furnishing,
+    'parking': parking,
+    'address': address,
+    'city': city,
+    'state': state,
+    'pincode': pincode,
+    'latitude': latitude,
+    'longitude': longitude,
+    'primary_image_index': primaryImageIndex,
+    'rejection_reason': rejectionReason,
+    'updated_at': updatedAt?.toIso8601String(),
+    'created_at': createdAt?.toIso8601String(),
+    'category_id': categoryId,
+    'user_id': userId,
+    'is_featured': isFeatured,
+    'featured_expiry': featuredExpiry?.toIso8601String(),
+    'documents': documents,
+    'amenity_ids': amenityIds,
 
-        'carpet_area': carpetArea,
-        'built_up_area': builtUpArea,
-        'super_built_up_area': superBuiltUpArea,
-        'plot_area': plotArea,
-        'plot_length': plotLength,
-        'plot_breadth': plotBreadth,
-        'floors_allowed': floorsAllowed,
-        'open_sides': openSides,
-        'boundary_wall': boundaryWall,
-        'construction_done': constructionDone,
-        'availability': availability,
-        'ready_timeframe': readyTimeframe,
-        'possession_by': possessionBy,
-        'ownership': ownership,
-        'balconies': balconies,
-        'commercial_type': commercialType,
-        'floor_plate_area': floorPlateArea,
-        'cabins': cabins,
-        'meeting_rooms': meetingRooms,
-        'seats': seats,
-        'max_seats': maxSeats,
-        'conference_rooms': conferenceRooms,
-        'lift_available': liftAvailable,
-        'pre_leased': preLeased,
-        'office_type': officeType,
-        'reception_area': receptionArea,
-        'pantry': pantry,
-        'cafeteria': cafeteria,
-        'server_room': serverRoom,
-        'fire_safety_installed': fireSafetyInstalled,
-        'central_ac': centralAC,
-        'visitor_parking': visitorParking,
-        'number_of_lifts': numberOfLifts,
-        'tax_included': taxIncluded,
-        'price_negotiable_office': officeNegotiable,
-        'maintenance_charges_office': officeMaintenanceCharges,
-        'booking_amount_office': officeBookingAmount,
-        'shop_type': shopType,
-        'shop_area': shopArea,
-        'shop_area_unit': shopAreaUnit,
-        'frontage_width': frontageWidth,
-        'ceiling_height': ceilingHeight,
-        'main_road_facing': mainRoadFacing,
-        'corner_shop': cornerShop,
-        'washroom_available': washroomAvailable,
-        'floor_type': floorType,
-        'market_name': marketName,
-        'locality': locality,
-        'showroom_area': showroomArea,
-        'showroom_area_unit': showroomAreaUnit,
-        'showroom_frontage_width_ft': showroomFrontageWidth,
-        'showroom_ceiling_height_ft': showroomCeilingHeight,
-        'showroom_main_road_facing': showroomMainRoadFacing,
-        'corner_showroom': showroomCorner,
-        'showroom_washroom_available': showroomWashroom,
-        'showroom_parking_slots': showroomParkingSlots,
-        'showroom_furnishing_status': showroomFurnishing,
-        'showroom_floor_type': showroomFloorType,
-        'showroom_market_name': showroomMarketName,
-        'showroom_locality': showroomLocality,
-        'showroom_owner_name': showroomOwnerName,
-        'showroom_owner_mobile': showroomOwnerMobile,
-        'warehouse_type': warehouseType,
-        'warehouse_plot_area': warehousePlotArea,
-        'warehouse_plot_area_unit': warehousePlotAreaUnit,
-        'warehouse_ceiling_height_ft': warehouseCeilingHeight,
-        'loading_bays': warehouseLoadingBays,
-        'dock_levelers': warehouseDockLevelers,
-        'power_supply': warehousePowerSupply,
-        'industrial_license': warehouseIndustrialLicense,
-        'truck_access': warehouseTruckAccess,
-        'industrial_area_name': warehouseAreaName,
-        'industrial_area_city': warehouseCity,
-        'shop_facade': shopFacade,
-        'washrooms': washrooms,
-        'parking_type': parkingType,
-        'plot_type': plotType,
-        'rooms': rooms,
-        'quality_rating': qualityRating,
-        'land_type': landType,
-        'road_width': roadWidth,
-        'plot_area_unit': plotAreaUnit,
-        'corner_plot': plotCorner,
-        'road_access': plotRoadAccess,
-        'fencing': agriFencing,
-        'water_source': agriWaterSource,
-        'additional_rooms': additionalRooms,
-        'corner_property': cornerProperty,
-        'price_negotiable': priceNegotiable,
-        'maintenance_charges': maintenanceCharges,
-        'booking_amount': bookingAmount,
-        'property_highlights': propertyHighlights,
-        'whatsapp_updates': whatsappUpdates,
-        'promotion': promotionTags,
-        'rent_additional_rooms': rentAdditionalRooms,
-        'rent_corner_property': rentCornerProperty,
-        'pet_friendly': petFriendly,
-        'wheelchair_friendly': wheelchairFriendly,
-        'gated_society_rent': rentGatedSociety,
-        'security_deposit': securityDeposit,
-        'maintenance_charges_rent': rentMaintenanceCharges,
-        'brokerage': brokerage,
-        'rent_negotiable': rentNegotiable,
-        'available_from': availableFrom,
-        'lease_duration_months': leaseDurationMonths,
-        'lock_in_months': lockInMonths,
-        'notice_period_value': noticePeriodValue,
-        'notice_period_unit': noticePeriodUnit,
-        'preferred_tenant': preferredTenant,
-        'food_preference': foodPreference,
-        'rent_promotion': rentPromotionTypes,
-        'rent_villa_outdoors': rentVillaOutdoors,
-        'rent_villa_water_source': rentVillaWaterSource,
-        'solar_power': rentSolarPower,
-        'independent_entry': rentIndependentEntry,
-        'lift_available_rent': rentLiftAvailable,
-        'society_name': societyName,
-        'tenant_types': rentTenantTypes,
-        'studio_config': studioConfig,
-        'kitchen_type': kitchenType,
-        'studio_tenant_preferences': studioTenantPrefs,
-        'farm_land_area_rent': rentFarmLandArea,
-        'farm_rooms_rent': rentFarmRooms,
-        'farm_pool_rent': rentFarmPool,
-        'farm_fencing_rent': rentFarmFencing,
-        'farm_use_cases': rentFarmUseCases,
-        'farm_monthly_charges': farmMonthlyCharges,
-        'farm_daily_charges': farmDailyCharges,
-        'farm_event_charges': farmEventCharges,
-        'min_stay_days': minStayDays,
-        'villa_additional_rooms': villaAdditionalRooms,
-        'villa_corner_property': villaCornerProperty,
-        'gated_community': gatedCommunity,
-        'parking_types': villaParking,
-        'outdoors': outdoors,
-        'villa_water_source': waterSource,
-        'connections': connections,
-        'villa_price_negotiable': villaPriceNegotiable,
-        'villa_maintenance_charges': villaMaintenanceCharges,
-        'villa_booking_amount': villaBookingAmount,
-        'builder_corner_property': builderCornerProperty,
-        'builder_gated_society': builderGatedSociety,
-        'construction_allowed': constructionAllowed,
-        'utilities': builderUtilities,
-        'price_per_sqft': pricePerSqft,
-        'negotiable': builderNegotiable,
-        'duplex_corner_plot': duplexCornerPlot,
-        'duplex_gated_community': duplexGatedCommunity,
-        'duplex_construction_allowed': duplexConstructionAllowed,
-        'duplex_water_connection': duplexWaterConnection,
-        'duplex_electricity_connection': duplexElectricityConnection,
-        'duplex_negotiable': duplexNegotiable,
-        'duplex_road_access': duplexRoadAccess,
-        'duplex_nearby_facilities': duplexNearbyFacilities,
-        'farm_land_area': farmLandArea,
-        'farm_built_up_area': farmBuiltUpArea,
-        'farm_utilities': farmUtilities,
-        'farm_rooms': farmRooms,
-        'farm_garden': farmGarden,
-        'farm_swimming_pool': farmSwimmingPool,
-        'village': village,
-        'landmark': landmark,
-        'pg_gender_based': pgGenderBased,
-        'pg_occupancy_type': pgOccupancyType,
-        'pg_tenant_types': pgTenantTypes,
-        'pg_food_availability': pgFoodAvailability,
-        'pg_property_type': pgPropertyType,
-        'pg_bathroom_type': pgBathroomType,
-        'pg_suitable_for': pgSuitableFor,
-        'pg_building_name': pgBuildingName,
-        'pg_total_beds': pgTotalBeds,
-        'pg_available_beds': pgAvailableBeds,
-        'pg_room_type': pgRoomType,
-        'pg_attached_bathroom': pgAttachedBathroom,
-        'pg_balcony': pgBalcony,
-        'pg_room_size': pgRoomSize,
-        'pg_bed_type': pgBedType,
-        'pg_cupboard_available': pgCupboardAvailable,
-        'pg_study_table_available': pgStudyTableAvailable,
-        'pg_security_deposit': pgSecurityDeposit,
-        'pg_electricity_included': pgElectricityIncluded,
-        'pg_water_included': pgWaterIncluded,
-        'pg_food_charges_included': pgFoodChargesIncluded,
-        'pg_brokerage_required': pgBrokerageRequired,
-        'pg_couple_friendly': pgCoupleFriendly,
-        'pg_id_proof_required': pgIdProofRequired,
-        'pg_available_from': pgAvailableFrom,
-        'pg_min_stay_days': pgMinStayDays,
-        'pg_notice_period_days': pgNoticePeriodDays,
-        'pg_preferred_tenant_age': pgPreferredTenantAge,
-        'pg_smoking_allowed': pgSmokingAllowed,
-        'pg_drinking_allowed': pgDrinkingAllowed,
-        'pg_pets_allowed': pgPetsAllowed,
-        'pg_visitors_allowed': pgVisitorsAllowed,
-        'pg_curfew_time': pgCurfewTime,
-        'pg_gate_locked_at_night': pgGateLockedAtNight,
-        'pg_nearby_preferences': pgNearbyPreferences,
-        'pg_availability': pgAvailability,
-        'pg_sharing': pgSharing,
-        'pg_security': pgSecurity,
-        'pg_maintenance_charges': pgMaintenanceCharges,
-      };
+    'carpet_area': carpetArea,
+    'built_up_area': builtUpArea,
+    'super_built_up_area': superBuiltUpArea,
+    'plot_area': plotArea,
+    'plot_length': plotLength,
+    'plot_breadth': plotBreadth,
+    'floors_allowed': floorsAllowed,
+    'open_sides': openSides,
+    'boundary_wall': boundaryWall,
+    'construction_done': constructionDone,
+    'availability': availability,
+    'ready_timeframe': readyTimeframe,
+    'possession_by': possessionBy,
+    'ownership': ownership,
+    'balconies': balconies,
+    'commercial_type': commercialType,
+    'floor_plate_area': floorPlateArea,
+    'cabins': cabins,
+    'meeting_rooms': meetingRooms,
+    'seats': seats,
+    'max_seats': maxSeats,
+    'conference_rooms': conferenceRooms,
+    'lift_available': liftAvailable,
+    'pre_leased': preLeased,
+    'office_type': officeType,
+    'reception_area': receptionArea,
+    'pantry': pantry,
+    'cafeteria': cafeteria,
+    'server_room': serverRoom,
+    'fire_safety_installed': fireSafetyInstalled,
+    'central_ac': centralAC,
+    'visitor_parking': visitorParking,
+    'number_of_lifts': numberOfLifts,
+    'tax_included': taxIncluded,
+    'price_negotiable_office': officeNegotiable,
+    'maintenance_charges_office': officeMaintenanceCharges,
+    'booking_amount_office': officeBookingAmount,
+    'shop_type': shopType,
+    'shop_area': shopArea,
+    'shop_area_unit': shopAreaUnit,
+    'frontage_width': frontageWidth,
+    'ceiling_height': ceilingHeight,
+    'main_road_facing': mainRoadFacing,
+    'corner_shop': cornerShop,
+    'washroom_available': washroomAvailable,
+    'floor_type': floorType,
+    'market_name': marketName,
+    'locality': locality,
+    'showroom_area': showroomArea,
+    'showroom_area_unit': showroomAreaUnit,
+    'showroom_frontage_width_ft': showroomFrontageWidth,
+    'showroom_ceiling_height_ft': showroomCeilingHeight,
+    'showroom_main_road_facing': showroomMainRoadFacing,
+    'corner_showroom': showroomCorner,
+    'showroom_washroom_available': showroomWashroom,
+    'showroom_parking_slots': showroomParkingSlots,
+    'showroom_furnishing_status': showroomFurnishing,
+    'showroom_floor_type': showroomFloorType,
+    'showroom_market_name': showroomMarketName,
+    'showroom_locality': showroomLocality,
+    'showroom_owner_name': showroomOwnerName,
+    'showroom_owner_mobile': showroomOwnerMobile,
+    'warehouse_type': warehouseType,
+    'warehouse_plot_area': warehousePlotArea,
+    'warehouse_plot_area_unit': warehousePlotAreaUnit,
+    'warehouse_ceiling_height_ft': warehouseCeilingHeight,
+    'loading_bays': warehouseLoadingBays,
+    'dock_levelers': warehouseDockLevelers,
+    'power_supply': warehousePowerSupply,
+    'industrial_license': warehouseIndustrialLicense,
+    'truck_access': warehouseTruckAccess,
+    'industrial_area_name': warehouseAreaName,
+    'industrial_area_city': warehouseCity,
+    'shop_facade': shopFacade,
+    'washrooms': washrooms,
+    'parking_type': parkingType,
+    'plot_type': plotType,
+    'rooms': rooms,
+    'quality_rating': qualityRating,
+    'land_type': landType,
+    'road_width': roadWidth,
+    'plot_area_unit': plotAreaUnit,
+    'corner_plot': plotCorner,
+    'road_access': plotRoadAccess,
+    'fencing': agriFencing,
+    'water_source': agriWaterSource,
+    'additional_rooms': additionalRooms,
+    "corner_plot": cornerProperty,
+    'price_negotiable': priceNegotiable,
+    'maintenance_charges': maintenanceCharges,
+    'booking_amount': bookingAmount,
+    'property_highlights': propertyHighlights,
+    'whatsapp_updates': whatsappUpdates,
+    'promotion': promotionTags,
+    'rent_additional_rooms': rentAdditionalRooms,
+    'rent_corner_property': rentCornerProperty,
+    'pet_friendly': petFriendly,
+    'wheelchair_friendly': wheelchairFriendly,
+    'gated_society_rent': rentGatedSociety,
+    'security_deposit': securityDeposit,
+    'maintenance_charges_rent': rentMaintenanceCharges,
+    'brokerage': brokerage,
+    'rent_negotiable': rentNegotiable,
+    'available_from': availableFrom,
+    'lease_duration_months': leaseDurationMonths,
+    'lock_in_months': lockInMonths,
+    'notice_period_value': noticePeriodValue,
+    'notice_period_unit': noticePeriodUnit,
+    'preferred_tenant': preferredTenant,
+    'food_preference': foodPreference,
+    'rent_promotion': rentPromotionTypes,
+    'rent_villa_outdoors': rentVillaOutdoors,
+    'rent_villa_water_source': rentVillaWaterSource,
+    'solar_power': rentSolarPower,
+    'independent_entry': rentIndependentEntry,
+    'lift_available_rent': rentLiftAvailable,
+    'society_name': societyName,
+    'tenant_types': rentTenantTypes,
+    'studio_config': studioConfig,
+    'kitchen_type': kitchenType,
+    'studio_tenant_preferences': studioTenantPrefs,
+    'farm_land_area_rent': rentFarmLandArea,
+    'farm_rooms_rent': rentFarmRooms,
+    'farm_pool_rent': rentFarmPool,
+    'farm_fencing_rent': rentFarmFencing,
+    'farm_use_cases': rentFarmUseCases,
+    'farm_monthly_charges': farmMonthlyCharges,
+    'farm_daily_charges': farmDailyCharges,
+    'farm_event_charges': farmEventCharges,
+    'min_stay_days': minStayDays,
+    'villa_additional_rooms': villaAdditionalRooms,
+    'villa_corner_property': villaCornerProperty,
+    'gated_community': gatedCommunity,
+    'parking_types': villaParking,
+    'outdoors': outdoors,
+    'villa_water_source': waterSource,
+    'connections': connections,
+    'villa_price_negotiable': villaPriceNegotiable,
+    'villa_maintenance_charges': villaMaintenanceCharges,
+    'villa_booking_amount': villaBookingAmount,
+    'builder_corner_property': builderCornerProperty,
+    'gated_society': builderGatedSociety,
+    'construction_allowed': constructionAllowed,
+    'utilities': builderUtilities,
+    'price_per_sqft': pricePerSqft,
+    'negotiable': builderNegotiable,
+    'duplex_corner_plot': duplexCornerPlot,
+    'duplex_gated_community': duplexGatedCommunity,
+    'duplex_construction_allowed': duplexConstructionAllowed,
+    'duplex_water_connection': duplexWaterConnection,
+    'duplex_electricity_connection': duplexElectricityConnection,
+    'duplex_negotiable': duplexNegotiable,
+    'duplex_road_access': duplexRoadAccess,
+    'duplex_nearby_facilities': duplexNearbyFacilities,
+    'farm_land_area': farmLandArea,
+    'farm_built_up_area': farmBuiltUpArea,
+    'farm_utilities': farmUtilities,
+    'farm_rooms': farmRooms,
+    'farm_garden': farmGarden,
+    'farm_swimming_pool': farmSwimmingPool,
+    'village': village,
+    'landmark': landmark,
+    'pg_gender_based': pgGenderBased,
+    'pg_occupancy_type': pgOccupancyType,
+    'pg_tenant_types': pgTenantTypes,
+    'pg_food_availability': pgFoodAvailability,
+    'pg_property_type': pgPropertyType,
+    'pg_bathroom_type': pgBathroomType,
+    'pg_suitable_for': pgSuitableFor,
+    'pg_building_name': pgBuildingName,
+    'pg_total_beds': pgTotalBeds,
+    'pg_available_beds': pgAvailableBeds,
+    'pg_room_type': pgRoomType,
+    'pg_attached_bathroom': pgAttachedBathroom,
+    'pg_balcony': pgBalcony,
+    'pg_room_size': pgRoomSize,
+    'pg_bed_type': pgBedType,
+    'pg_cupboard_available': pgCupboardAvailable,
+    'pg_study_table_available': pgStudyTableAvailable,
+    'pg_security_deposit': pgSecurityDeposit,
+    'pg_electricity_included': pgElectricityIncluded,
+    'pg_water_included': pgWaterIncluded,
+    'pg_food_charges_included': pgFoodChargesIncluded,
+    'pg_brokerage_required': pgBrokerageRequired,
+    'pg_couple_friendly': pgCoupleFriendly,
+    'pg_id_proof_required': pgIdProofRequired,
+    'pg_available_from': pgAvailableFrom,
+    'pg_min_stay_days': pgMinStayDays,
+    'pg_notice_period_days': pgNoticePeriodDays,
+    'pg_preferred_tenant_age': pgPreferredTenantAge,
+    'pg_smoking_allowed': pgSmokingAllowed,
+    'pg_drinking_allowed': pgDrinkingAllowed,
+    'pg_pets_allowed': pgPetsAllowed,
+    'pg_visitors_allowed': pgVisitorsAllowed,
+    'pg_curfew_time': pgCurfewTime,
+    'pg_gate_locked_at_night': pgGateLockedAtNight,
+    'pg_nearby_preferences': pgNearbyPreferences,
+    'pg_availability': pgAvailability,
+    'pg_sharing': pgSharing,
+    'pg_security': pgSecurity,
+    'pg_maintenance_charges': pgMaintenanceCharges,
+  };
 
   factory Property.fromJson(Map<String, dynamic> json) {
     final f = json;
-final pg = (f['pg_details'] as Map?) ?? {};
+    final pg = (f['pg_details'] as Map?) ?? {};
+    final office = (f['office_details'] as Map?) ?? {};
+    final shop = (f['shop_details'] as Map?) ?? {};
+    final showroom = (f['showroom_details'] as Map?) ?? {};
+    final warehouse = (f['warehouse_details'] as Map?) ?? {};
+    final plot = (f['plot_details'] as Map?) ?? {};
     int? toInt(dynamic val) {
       if (val == null) return null;
       if (val is num) return val.toInt();
@@ -1435,8 +1461,66 @@ final pg = (f['pg_details'] as Map?) ?? {};
       if (val is num) return val != 0;
       if (val is String) {
         final s = val.trim().toLowerCase();
-        if (s == 'true' || s == '1') return true;
-        if (s == 'false' || s == '0') return false;
+        if (s == 'true' || s == '1' || s == 'available' || s == 'yes')
+          return true;
+        if (s == 'false' || s == '0' || s == 'not_available' || s == 'no')
+          return false;
+      }
+      return null;
+    }
+
+    bool? toBoolInverted(dynamic val) {
+      if (val == null) return null;
+      if (val is bool) return val;
+      if (val is num) return val == 0;
+      if (val is String) {
+        final s = val.trim().toLowerCase();
+        if (s == 'true') return true;
+        if (s == 'false') return false;
+        if (s == '0') return true;
+        if (s == '1') return false;
+        final parsed = int.tryParse(s);
+        if (parsed != null) return parsed == 0;
+      }
+      return null;
+    }
+
+    bool? checkWater(dynamic val, dynamic connections) {
+      final b = toBool(val);
+      if (b != null) return b;
+      if (connections != null) {
+        if (connections is List) {
+          return connections
+              .map((e) => e.toString().toLowerCase())
+              .contains('water');
+        }
+        if (connections is String) {
+          final s = connections.toLowerCase();
+          return s.contains('water');
+        }
+      }
+      return null;
+    }
+
+    bool? checkElectricity(
+      dynamic val,
+      dynamic connections,
+      dynamic utilities,
+    ) {
+      final b = toBool(val);
+      if (b != null) return b;
+      for (final list in [connections, utilities]) {
+        if (list != null) {
+          if (list is List) {
+            final items = list.map((e) => e.toString().toLowerCase()).toList();
+            if (items.contains('electricity') || items.contains('power'))
+              return true;
+          }
+          if (list is String) {
+            final s = list.toLowerCase();
+            if (s.contains('electricity') || s.contains('power')) return true;
+          }
+        }
       }
       return null;
     }
@@ -1444,7 +1528,10 @@ final pg = (f['pg_details'] as Map?) ?? {};
     List<String> toStringList(dynamic val) {
       if (val == null) return const [];
       if (val is List) {
-        return val.map((e) => e.toString().trim()).where((s) => s.isNotEmpty).toList();
+        return val
+            .map((e) => e.toString().trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
       }
       if (val is String) {
         final s = val.trim();
@@ -1453,33 +1540,40 @@ final pg = (f['pg_details'] as Map?) ?? {};
           try {
             final parsed = jsonDecode(s);
             if (parsed is List) {
-              return parsed.map((e) => e.toString().trim()).where((x) => x.isNotEmpty).toList();
+              return parsed
+                  .map((e) => e.toString().trim())
+                  .where((x) => x.isNotEmpty)
+                  .toList();
             }
           } catch (_) {}
         }
-        return s.split(',').map((e) {
-          return e.replaceAll('[', '').replaceAll(']', '').replaceAll('"', '').replaceAll("'", "").trim();
-        }).where((e) => e.isNotEmpty).toList();
+        return s
+            .split(',')
+            .map((e) {
+              return e
+                  .replaceAll('[', '')
+                  .replaceAll(']', '')
+                  .replaceAll('"', '')
+                  .replaceAll("'", "")
+                  .trim();
+            })
+            .where((e) => e.isNotEmpty)
+            .toList();
       }
       return const [];
     }
 
     return Property(
-      
       id: (f['id'] ?? '').toString(),
-name: (f['title'] ?? f['name'] ?? '').toString(),      ownerPhone: f['ownerPhone']?.toString() ??
-          f['owner_phone']?.toString() ??
-          '',
+      name: (f['title'] ?? f['name'] ?? '').toString(),
+      ownerPhone:
+          f['ownerPhone']?.toString() ?? f['owner_phone']?.toString() ?? '',
       ownerName: (f['ownerName'] ?? f['owner_name'] ?? '').toString(),
-location: (
-  f['location'] ??
-  f['address'] ??
-  f['city'] ??
-  ''
-).toString(),      price: (f['price'] as num?)?.toDouble() ?? 0,
+      location: (f['location'] ?? f['address'] ?? f['city'] ?? '').toString(),
+      price: (f['price'] as num?)?.toDouble() ?? 0,
       type: PropertyType.values.byName((f['type'] ?? 'rent').toString()),
       amenities: toStringList(f['amenities']),
-      
+
       // Parse images flexibly supporting both Map objects and string lists.
       images: ((f['images'] as List?) ?? const [])
           .map((e) {
@@ -1496,10 +1590,14 @@ location: (
           .map((e) => PropertyVideo.fromJson(Map<String, dynamic>.from(e)))
           .toList(growable: false),
       description: (f['description'] ?? '').toString(),
-      status: PropertyStatus.values.byName((f['status'] ?? 'pending').toString()),
+      status: PropertyStatus.values.byName(
+        (f['status'] ?? 'pending').toString(),
+      ),
       slug: f['slug']?.toString(),
-      listingType: f['listingType']?.toString() ?? f['listing_type']?.toString(),
-      propertyKind: f['propertyKind']?.toString() ?? f['property_kind']?.toString(),
+      listingType:
+          f['listingType']?.toString() ?? f['listing_type']?.toString(),
+      propertyKind:
+          f['propertyKind']?.toString() ?? f['property_kind']?.toString(),
       area: f['area'] is num
           ? (f['area'] as num).toDouble()
           : double.tryParse(f['area']?.toString() ?? ''),
@@ -1508,7 +1606,9 @@ location: (
       facing: f['facing']?.toString(),
       floor: toInt(f['floor']),
       totalFloors: toInt(f['totalFloors'] ?? f['total_floors']),
-      possessionStatus: f['possessionStatus']?.toString() ?? f['possession_status']?.toString(),
+      possessionStatus:
+          f['possessionStatus']?.toString() ??
+          f['possession_status']?.toString(),
       bedrooms: toInt(f['bedrooms']),
       bathrooms: toInt(f['bathrooms']),
       furnishing: f['furnishing']?.toString(),
@@ -1523,23 +1623,63 @@ location: (
       longitude: f['longitude'] is num
           ? (f['longitude'] as num).toDouble()
           : double.tryParse(f['longitude']?.toString() ?? ''),
-      primaryImageIndex: toInt(f['primaryImageIndex'] ?? f['primary_image_index']),
-      rejectionReason: f['rejectionReason']?.toString() ?? f['rejection_reason']?.toString(),
-      updatedAt: f['updatedAt'] == null ? (f['updated_at'] == null ? null : DateTime.tryParse(f['updated_at'].toString())) : DateTime.tryParse(f['updatedAt'].toString()),
-      createdAt: f['createdAt'] == null ? (f['created_at'] == null ? null : DateTime.tryParse(f['created_at'].toString())) : DateTime.tryParse(f['createdAt'].toString()),
+      primaryImageIndex: toInt(
+        f['primaryImageIndex'] ?? f['primary_image_index'],
+      ),
+      rejectionReason:
+          f['rejectionReason']?.toString() ?? f['rejection_reason']?.toString(),
+      updatedAt: f['updatedAt'] == null
+          ? (f['updated_at'] == null
+                ? null
+                : DateTime.tryParse(f['updated_at'].toString()))
+          : DateTime.tryParse(f['updatedAt'].toString()),
+      createdAt: f['createdAt'] == null
+          ? (f['created_at'] == null
+                ? null
+                : DateTime.tryParse(f['created_at'].toString()))
+          : DateTime.tryParse(f['createdAt'].toString()),
       categoryId: f['categoryId']?.toString() ?? f['category_id']?.toString(),
       userId: toInt(f['userId'] ?? f['user_id']),
       isFeatured: toBool(f['isFeatured'] ?? f['is_featured']),
-      featuredExpiry: f['featuredExpiry'] == null ? (f['featured_expiry'] == null ? null : DateTime.tryParse(f['featured_expiry'].toString())) : DateTime.tryParse(f['featuredExpiry'].toString()),
+      featuredExpiry: f['featuredExpiry'] == null
+          ? (f['featured_expiry'] == null
+                ? null
+                : DateTime.tryParse(f['featured_expiry'].toString()))
+          : DateTime.tryParse(f['featuredExpiry'].toString()),
       documents: toStringList(f['documents']),
       amenityIds: () {
-        final list1 = f['amenityIds'] as List? ?? f['amenity_ids'] as List?;
-        if (list1 != null) {
+        // Priority 1: explicit amenityIds / amenity_ids field
+        // Priority 2: amenities list (backend returns full amenity objects here)
+        // Priority 3: features list filtered by type=="amenity" (backend fallback)
+        List? list1 = f['amenityIds'] as List? ?? f['amenity_ids'] as List?;
+
+        // If amenities list is non-empty, use it
+        final amenitiesList = f['amenities'] as List?;
+        if (list1 == null &&
+            amenitiesList != null &&
+            amenitiesList.isNotEmpty) {
+          list1 = amenitiesList;
+        }
+
+        // Fallback: parse from features list filtering type=="amenity"
+        if (list1 == null || list1.isEmpty) {
+          final features = f['features'] as List?;
+          if (features != null) {
+            list1 = features
+                .whereType<Map>()
+                .where((e) => e['type']?.toString() == 'amenity')
+                .toList();
+          }
+        }
+
+        if (list1 != null && list1.isNotEmpty) {
           return list1
               .map((e) {
                 if (e is Map) {
                   final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
-                  return idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
+                  return idVal is num
+                      ? idVal.toInt()
+                      : int.tryParse(idVal?.toString() ?? '');
                 }
                 return e is num ? e.toInt() : int.tryParse(e.toString());
               })
@@ -1549,19 +1689,41 @@ location: (
         return <int>[];
       }(),
       furnishingSelections: () {
-        final list = f['furnishings'] as List? ??
+        // Priority 1: furnishings / furnishing_selections / furnishingSelections
+        // Priority 2: features list filtered by type=="furnishing"
+        List? list =
+            f['furnishings'] as List? ??
             f['furnishing_selections'] as List? ??
             f['furnishingSelections'] as List?;
+
+        // Fallback: parse from features list filtering type=="furnishing"
+        if (list == null || list.isEmpty) {
+          final features = f['features'] as List?;
+          if (features != null) {
+            list = features
+                .whereType<Map>()
+                .where((e) => e['type']?.toString() == 'furnishing')
+                .toList();
+          }
+        }
+
         if (list == null) return <PropertyFurnishingSelection>[];
         return list
             .map((e) {
               if (e is Map) {
                 final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
-                final id = idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
+                final id = idVal is num
+                    ? idVal.toInt()
+                    : int.tryParse(idVal?.toString() ?? '');
                 final qVal = e['quantity'] ?? (e['pivot'] as Map?)?['quantity'];
-                final quantity = qVal is num ? qVal.toInt() : int.tryParse(qVal?.toString() ?? '') ?? 1;
+                final quantity = qVal is num
+                    ? qVal.toInt()
+                    : int.tryParse(qVal?.toString() ?? '') ?? 1;
                 if (id != null) {
-                  return PropertyFurnishingSelection(id: id, quantity: quantity);
+                  return PropertyFurnishingSelection(
+                    id: id,
+                    quantity: quantity,
+                  );
                 }
               }
               return null;
@@ -1575,220 +1737,711 @@ location: (
 
       carpetArea: toDouble(f['carpetArea'] ?? f['carpet_area']),
       builtUpArea: toDouble(f['builtUpArea'] ?? f['built_up_area']),
-      superBuiltUpArea: toDouble(f['superBuiltUpArea'] ?? f['super_built_up_area']),
-      plotArea: toDouble(f['plotArea'] ?? f['plot_area']),
-      plotLength: toDouble(f['plotLength'] ?? f['plot_length'] ?? f['plot_length_ft']),
-      plotBreadth: toDouble(f['plotBreadth'] ?? f['plot_breadth'] ?? f['plot_breadth_ft']),
+      superBuiltUpArea: toDouble(
+        f['superBuiltUpArea'] ?? f['super_built_up_area'],
+      ),
+      plotArea: toDouble(
+        f['plotArea'] ??
+            f['plot_area'] ??
+            (f['plot_details'] as Map?)?['plot_area'],
+      ),
+      plotLength: toDouble(
+        f['plotLength'] ??
+            f['plot_length'] ??
+            f['plot_length_ft'] ??
+            (f['plot_details'] as Map?)?['plot_length'] ??
+            (f['plot_details'] as Map?)?['plot_length_ft'],
+      ),
+      plotBreadth: toDouble(
+        f['plotBreadth'] ??
+            f['plot_breadth'] ??
+            f['plot_width'] ??
+            f['plot_breadth_ft'] ??
+            (f['plot_details'] as Map?)?['plot_breadth'] ??
+            (f['plot_details'] as Map?)?['plot_breadth_ft'],
+      ),
       floorsAllowed: toInt(f['floorsAllowed'] ?? f['floors_allowed']),
       openSides: toInt(f['openSides'] ?? f['open_sides']),
       boundaryWall: toBool(f['boundaryWall'] ?? f['boundary_wall']),
       constructionDone: toBool(f['constructionDone'] ?? f['construction_done']),
       availability: f['availability']?.toString(),
-      readyTimeframe: f['readyTimeframe']?.toString() ?? f['ready_timeframe']?.toString(),
-      possessionBy: f['possessionBy']?.toString() ?? f['possession_by']?.toString(),
+      readyTimeframe:
+          f['readyTimeframe']?.toString() ?? f['ready_timeframe']?.toString(),
+      possessionBy:
+          f['possessionBy']?.toString() ?? f['possession_by']?.toString(),
       ownership: f['ownership']?.toString(),
       balconies: toInt(f['balconies'] ?? f['balcony']),
 
-      commercialType: f['commercialType']?.toString() ?? f['commercial_type']?.toString(),
-      floorPlateArea: toDouble(f['floorPlateArea'] ?? f['floor_plate_area']),
-      cabins: toInt(f['cabins']),
-      meetingRooms: toInt(f['meetingRooms'] ?? f['meeting_rooms']),
-      seats: toInt(f['seats']),
-      maxSeats: toInt(f['maxSeats'] ?? f['max_seats']),
-      conferenceRooms: toInt(f['conferenceRooms'] ?? f['conference_rooms']),
-      liftAvailable: toBool(f['liftAvailable'] ?? f['lift_available'] ?? f['goods_lift']),
-      preLeased: toBool(f['preLeased'] ?? f['pre_leased']),
-      officeType: f['officeType']?.toString() ?? f['office_type']?.toString(),
-      receptionArea: toBool(f['receptionArea'] ?? f['reception_area']),
-      pantry: toBool(f['pantry']),
-      cafeteria: toBool(f['cafeteria']),
-      serverRoom: toBool(f['serverRoom'] ?? f['server_room']),
-      fireSafetyInstalled: toBool(f['fireSafetyInstalled'] ?? f['fire_safety_installed']),
-      centralAC: toBool(f['centralAC'] ?? f['central_ac']),
-      visitorParking: toBool(f['visitorParking'] ?? f['visitor_parking'] ?? f['commercial_parking']),
-      numberOfLifts: toInt(f['numberOfLifts'] ?? f['number_of_lifts']),
-      taxIncluded: toBool(f['taxIncluded'] ?? f['tax_included']),
-      officeNegotiable: toBool(f['officeNegotiable'] ?? f['price_negotiable_office'] ?? f['negotiable']),
-      officeMaintenanceCharges: toDouble(f['officeMaintenanceCharges'] ?? f['maintenance_charges_office'] ?? f['maintenance_charges']),
-      officeBookingAmount: toDouble(f['officeBookingAmount'] ?? f['booking_amount_office'] ?? f['booking_amount']),
+      commercialType:
+          f['commercialType']?.toString() ?? f['commercial_type']?.toString(),
+      floorPlateArea: toDouble(
+        f['floorPlateArea'] ??
+            f['floor_plate_area'] ??
+            office['floor_plate_area'],
+      ),
+      cabins: toInt(f['cabins'] ?? office['cabins']),
+      meetingRooms: toInt(
+        f['meetingRooms'] ?? f['meeting_rooms'] ?? office['meeting_rooms'],
+      ),
+      seats: toInt(f['seats'] ?? office['seats']),
+      maxSeats: toInt(f['maxSeats'] ?? f['max_seats'] ?? office['max_seats']),
+      conferenceRooms: toInt(
+        f['conferenceRooms'] ??
+            f['conference_rooms'] ??
+            office['conference_rooms'],
+      ),
+      liftAvailable: toBool(
+        f['liftAvailable'] ??
+            f['lift_available'] ??
+            f['goods_lift'] ??
+            office['lift_available'] ??
+            office['goods_lift'],
+      ),
+      preLeased: toBool(
+        f['preLeased'] ?? f['pre_leased'] ?? office['pre_leased'],
+      ),
+      officeType:
+          f['officeType']?.toString() ??
+          f['office_type']?.toString() ??
+          office['office_type']?.toString(),
+      receptionArea: toBool(
+        f['receptionArea'] ?? f['reception_area'] ?? office['reception_area'],
+      ),
+      pantry: toBool(f['pantry'] ?? office['pantry']),
+      cafeteria: toBool(f['cafeteria'] ?? office['cafeteria']),
+      serverRoom: toBool(
+        f['serverRoom'] ?? f['server_room'] ?? office['server_room'],
+      ),
+      fireSafetyInstalled: toBool(
+        f['fireSafetyInstalled'] ??
+            f['fire_safety_installed'] ??
+            office['fire_safety_installed'],
+      ),
+      centralAC: toBool(
+        f['centralAC'] ?? f['central_ac'] ?? office['central_ac'],
+      ),
+      visitorParking: toBool(
+        f['visitorParking'] ??
+            f['visitor_parking'] ??
+            f['commercial_parking'] ??
+            office['visitor_parking'] ??
+            office['commercial_parking'],
+      ),
+      numberOfLifts: toInt(
+        f['numberOfLifts'] ?? f['number_of_lifts'] ?? office['number_of_lifts'],
+      ),
+      taxIncluded: toBool(
+        f['taxIncluded'] ?? f['tax_included'] ?? office['tax_included'],
+      ),
+      officeNegotiable: toBool(
+        f['officeNegotiable'] ??
+            f['price_negotiable_office'] ??
+            f['negotiable'] ??
+            office['price_negotiable_office'] ??
+            office['negotiable'],
+      ),
+      officeMaintenanceCharges: toDouble(
+        f['officeMaintenanceCharges'] ??
+            f['maintenance_charges_office'] ??
+            f['maintenance_charges'] ??
+            office['maintenance_charges_office'] ??
+            office['maintenance_charges'],
+      ),
+      officeBookingAmount: toDouble(
+        f['officeBookingAmount'] ??
+            f['booking_amount_office'] ??
+            f['booking_amount'] ??
+            office['booking_amount_office'] ??
+            office['booking_amount'],
+      ),
 
-      shopType: f['shopType']?.toString() ?? f['shop_type']?.toString(),
-      shopArea: toDouble(f['shopArea'] ?? f['shop_area']),
-      shopAreaUnit: f['shopAreaUnit']?.toString() ?? f['shop_area_unit']?.toString(),
-      frontageWidth: toDouble(f['frontageWidth'] ?? f['frontage_width'] ?? f['frontage_width_ft']),
-      ceilingHeight: toDouble(f['ceilingHeight'] ?? f['ceiling_height'] ?? f['ceiling_height_ft']),
-      mainRoadFacing: toBool(f['mainRoadFacing'] ?? f['main_road_facing']),
-      cornerShop: toBool(f['cornerShop'] ?? f['corner_shop']),
-      washroomAvailable: toBool(f['washroomAvailable'] ?? f['washroom_available']),
-      floorType: f['floorType']?.toString() ?? f['floor_type']?.toString(),
-      marketName: f['marketName']?.toString() ?? f['market_name']?.toString(),
-      locality: f['locality']?.toString(),
+      shopType:
+          f['shopType']?.toString() ??
+          f['shop_type']?.toString() ??
+          shop['shop_type']?.toString(),
+      shopArea: toDouble(f['shopArea'] ?? f['shop_area'] ?? shop['shop_area']),
+      shopAreaUnit:
+          f['shopAreaUnit']?.toString() ??
+          f['shop_area_unit']?.toString() ??
+          shop['shop_area_unit']?.toString(),
+      frontageWidth: toDouble(
+        f['frontageWidth'] ??
+            f['frontage_width'] ??
+            f['frontage_width_ft'] ??
+            shop['frontage_width'] ??
+            shop['frontage_width_ft'],
+      ),
+      ceilingHeight: toDouble(
+        f['ceilingHeight'] ??
+            f['ceiling_height'] ??
+            f['ceiling_height_ft'] ??
+            shop['ceiling_height'] ??
+            shop['ceiling_height_ft'],
+      ),
+      mainRoadFacing: toBool(
+        f['mainRoadFacing'] ??
+            f['main_road_facing'] ??
+            shop['main_road_facing'],
+      ),
+      cornerShop: toBoolInverted(
+        f['cornerShop'] ?? f['corner_shop'] ?? shop['corner_shop'],
+      ),
+      washroomAvailable: toBool(
+        f['washroomAvailable'] ??
+            f['washroom_available'] ??
+            shop['washroom_available'],
+      ),
+      floorType:
+          f['floorType']?.toString() ??
+          f['floor_type']?.toString() ??
+          shop['floor_type']?.toString(),
+      marketName:
+          f['marketName']?.toString() ??
+          f['market_name']?.toString() ??
+          shop['market_name']?.toString(),
+      locality: f['locality']?.toString() ?? shop['locality']?.toString(),
 
-      showroomArea: toDouble(f['showroomArea'] ?? f['showroom_area']),
-      showroomAreaUnit: f['showroomAreaUnit']?.toString() ?? f['showroom_area_unit']?.toString(),
-      showroomFrontageWidth: toDouble(f['showroomFrontageWidth'] ?? f['showroom_frontage_width'] ?? f['showroom_frontage_width_ft']),
-      showroomCeilingHeight: toDouble(f['showroomCeilingHeight'] ?? f['showroom_ceiling_height'] ?? f['showroom_ceiling_height_ft']),
-      showroomMainRoadFacing: toBool(f['showroomMainRoadFacing'] ?? f['showroom_main_road_facing']),
-      showroomCorner: toBool(f['showroomCorner'] ?? f['corner_showroom']),
-      showroomWashroom: toBool(f['showroomWashroom'] ?? f['showroom_washroom_available']),
-      showroomParkingSlots: toInt(f['showroomParkingSlots'] ?? f['showroom_parking_slots']),
-      showroomFurnishing: f['showroomFurnishing']?.toString() ?? f['showroom_furnishing_status']?.toString(),
-      showroomFloorType: f['showroomFloorType']?.toString() ?? f['showroom_floor_type']?.toString(),
-      showroomMarketName: f['showroomMarketName']?.toString() ?? f['showroom_market_name']?.toString(),
-      showroomLocality: f['showroomLocality']?.toString() ?? f['showroom_locality']?.toString(),
-      showroomOwnerName: f['showroomOwnerName']?.toString() ?? f['showroom_owner_name']?.toString(),
-      showroomOwnerMobile: f['showroomOwnerMobile']?.toString() ?? f['showroom_owner_mobile']?.toString(),
+      showroomArea: toDouble(
+        f['showroomArea'] ?? f['showroom_area'] ?? showroom['showroom_area'],
+      ),
+      showroomAreaUnit:
+          f['showroomAreaUnit']?.toString() ??
+          f['showroom_area_unit']?.toString() ??
+          showroom['showroom_area_unit']?.toString(),
+      showroomFrontageWidth: toDouble(
+        f['showroomFrontageWidth'] ??
+            f['showroom_frontage_width'] ??
+            f['showroom_frontage_width_ft'] ??
+            showroom['showroom_frontage_width'] ??
+            showroom['showroom_frontage_width_ft'],
+      ),
+      showroomCeilingHeight: toDouble(
+        f['showroomCeilingHeight'] ??
+            f['showroom_ceiling_height'] ??
+            f['showroom_ceiling_height_ft'] ??
+            showroom['showroom_ceiling_height'] ??
+            showroom['showroom_ceiling_height_ft'],
+      ),
+      showroomMainRoadFacing: toBool(
+        f['showroomMainRoadFacing'] ??
+            f['showroom_main_road_facing'] ??
+            showroom['showroom_main_road_facing'],
+      ),
+      showroomCorner: toBoolInverted(
+        f['showroomCorner'] ??
+            f['corner_showroom'] ??
+            showroom['corner_showroom'],
+      ),
+      showroomWashroom: toBool(
+        f['showroomWashroom'] ??
+            f['showroom_washroom_available'] ??
+            showroom['showroom_washroom_available'],
+      ),
+      showroomParkingSlots: toInt(
+        f['showroomParkingSlots'] ?? showroom['showroom_parking_slots'],
+      ),
+      showroomFurnishing:
+          f['showroomFurnishing']?.toString() ??
+          f['showroom_furnishing_status']?.toString() ??
+          showroom['showroom_furnishing_status']?.toString() ??
+          showroom['showroom_furnishing']?.toString(),
+      showroomFloorType:
+          f['showroomFloorType']?.toString() ??
+          f['showroom_floor_type']?.toString() ??
+          showroom['showroom_floor_type']?.toString(),
+      showroomMarketName:
+          f['showroomMarketName']?.toString() ??
+          f['showroom_market_name']?.toString() ??
+          showroom['showroom_market_name']?.toString(),
+      showroomLocality:
+          f['showroomLocality']?.toString() ??
+          f['showroom_locality']?.toString() ??
+          showroom['showroom_locality']?.toString(),
+      showroomOwnerName:
+          f['showroomOwnerName']?.toString() ??
+          f['showroom_owner_name']?.toString() ??
+          showroom['showroom_owner_name']?.toString(),
+      showroomOwnerMobile:
+          f['showroomOwnerMobile']?.toString() ??
+          f['showroom_owner_mobile']?.toString() ??
+          showroom['showroom_owner_mobile']?.toString(),
 
-      warehouseType: f['warehouseType']?.toString() ?? f['warehouse_type']?.toString(),
-      warehousePlotArea: toDouble(f['warehousePlotArea'] ?? f['warehouse_plot_area']),
-      warehousePlotAreaUnit: f['warehousePlotAreaUnit']?.toString() ?? f['warehouse_plot_area_unit']?.toString(),
-      warehouseCeilingHeight: toDouble(f['warehouseCeilingHeight'] ?? f['warehouse_ceiling_height'] ?? f['warehouse_ceiling_height_ft']),
-      warehouseLoadingBays: toInt(f['warehouseLoadingBays'] ?? f['loading_bays']),
-      warehouseDockLevelers: toInt(f['warehouseDockLevelers'] ?? f['dock_levelers']),
-      warehousePowerSupply: f['warehousePowerSupply']?.toString() ?? f['power_supply']?.toString(),
-      warehouseIndustrialLicense: toBool(f['warehouseIndustrialLicense'] ?? f['industrial_license']),
-      warehouseTruckAccess: f['warehouseTruckAccess']?.toString() ?? f['truck_access']?.toString(),
-      warehouseAreaName: f['warehouseAreaName']?.toString() ?? f['industrial_area_name']?.toString(),
-      warehouseCity: f['warehouseCity']?.toString() ?? f['industrial_area_city']?.toString(),
+      warehouseType:
+          f['warehouseType']?.toString() ??
+          f['warehouse_type']?.toString() ??
+          warehouse['warehouse_type']?.toString(),
+      warehousePlotArea: toDouble(
+        f['warehousePlotArea'] ??
+            f['warehouse_plot_area'] ??
+            warehouse['warehouse_plot_area'],
+      ),
+      warehousePlotAreaUnit:
+          f['warehousePlotAreaUnit']?.toString() ??
+          f['warehouse_plot_area_unit']?.toString() ??
+          warehouse['warehouse_plot_area_unit']?.toString(),
+      warehouseCeilingHeight: toDouble(
+        f['warehouseCeilingHeight'] ??
+            f['warehouse_ceiling_height'] ??
+            f['warehouse_ceiling_height_ft'] ??
+            warehouse['warehouse_ceiling_height'] ??
+            warehouse['warehouse_ceiling_height_ft'],
+      ),
+      warehouseLoadingBays: toInt(
+        f['warehouseLoadingBays'] ??
+            f['loading_bays'] ??
+            warehouse['loading_bays'],
+      ),
+      warehouseDockLevelers: toInt(
+        f['warehouseDockLevelers'] ??
+            f['dock_levelers'] ??
+            warehouse['dock_levelers'],
+      ),
+      warehousePowerSupply:
+          f['warehousePowerSupply']?.toString() ??
+          f['power_supply']?.toString() ??
+          warehouse['power_supply']?.toString(),
+      warehouseIndustrialLicense: toBool(
+        f['warehouseIndustrialLicense'] ??
+            f['industrial_license'] ??
+            warehouse['industrial_license'],
+      ),
+      warehouseTruckAccess:
+          f['warehouseTruckAccess']?.toString() ??
+          f['truck_access']?.toString() ??
+          warehouse['truck_access']?.toString(),
+      warehouseAreaName:
+          f['warehouseAreaName']?.toString() ??
+          f['industrial_area_name']?.toString() ??
+          warehouse['industrial_area_name']?.toString(),
+      warehouseCity:
+          f['warehouseCity']?.toString() ??
+          f['industrial_area_city']?.toString() ??
+          warehouse['industrial_area_city']?.toString(),
 
       shopFacade: f['shopFacade']?.toString() ?? f['shop_facade']?.toString(),
       washrooms: toInt(f['washrooms']),
-      parkingType: f['parkingType']?.toString() ?? f['parking_type']?.toString(),
+      parkingType:
+          f['parkingType']?.toString() ?? f['parking_type']?.toString(),
       plotType: f['plotType']?.toString() ?? f['plot_type']?.toString(),
       rooms: toInt(f['rooms'] ?? f['pg_total_rooms'] ?? pg['total_rooms']),
       qualityRating: toDouble(f['qualityRating'] ?? f['quality_rating']),
 
-      landType: f['landType']?.toString() ?? f['land_type']?.toString(),
-      roadWidth: toDouble(f['roadWidth'] ?? f['road_width'] ?? f['road_width_ft']),
-      plotAreaUnit: f['plotAreaUnit']?.toString() ?? f['plot_area_unit']?.toString(),
-      plotCorner: toBool(f['plotCorner'] ?? f['corner_plot'] ?? f['plot_corner']),
-      plotRoadAccess: toBool(f['plotRoadAccess'] ?? f['road_access']),
-      agriFencing: toBool(f['agriFencing'] ?? f['fencing'] ?? f['agri_fencing']),
-      agriWaterSource: f['agriWaterSource']?.toString() ?? f['water_source']?.toString() ?? f['agri_water_source']?.toString(),
+      landType:
+          f['landType']?.toString() ??
+          f['land_type']?.toString() ??
+          plot['land_type']?.toString(),
+      roadWidth: toDouble(
+        f['roadWidth'] ??
+            f['road_width'] ??
+            f['road_width_ft'] ??
+            plot['road_width'] ??
+            plot['road_width_ft'],
+      ),
+      plotAreaUnit:
+          f['plotAreaUnit']?.toString() ??
+          f['plot_area_unit']?.toString() ??
+          plot['plot_area_unit']?.toString(),
+      plotCorner: toBoolInverted(
+        f['plotCorner'] ??
+            f['corner_plot'] ??
+            f['plot_corner'] ??
+            plot['corner_plot'] ??
+            plot['plot_corner'],
+      ),
+      plotRoadAccess: toBool(
+        f['plotRoadAccess'] ?? f['road_access'] ?? plot['road_access'],
+      ),
+      agriFencing: toBool(
+        f['agriFencing'] ??
+            f['fencing'] ??
+            f['agri_fencing'] ??
+            plot['fencing'] ??
+            plot['agri_fencing'],
+      ),
+      agriWaterSource:
+          f['agriWaterSource']?.toString() ??
+          f['water_source']?.toString() ??
+          f['agri_water_source']?.toString() ??
+          plot['water_source']?.toString() ??
+          plot['agri_water_source']?.toString(),
 
-      additionalRooms: toStringList(f['additionalRooms'] ?? f['additional_rooms']),
-      cornerProperty: toBool(f['cornerProperty'] ?? f['corner_property']),
-      priceNegotiable: toBool(f['priceNegotiable'] ?? f['price_negotiable']),
-      maintenanceCharges: toDouble(f['maintenanceCharges'] ?? f['maintenance_charges']),
+      additionalRooms: toStringList(
+        f['additionalRooms'] ?? f['additional_rooms'],
+      ),
+      cornerProperty: toBoolInverted(
+        f['cornerProperty'] ?? f['corner_property'],
+      ),
+      priceNegotiable: toBoolInverted(
+        f['priceNegotiable'] ?? f['price_negotiable'],
+      ),
+      maintenanceCharges: toDouble(
+        f['maintenanceCharges'] ?? f['maintenance_charges'],
+      ),
       bookingAmount: toDouble(f['bookingAmount'] ?? f['booking_amount']),
-      propertyHighlights: toStringList(f['propertyHighlights'] ?? f['property_highlights']),
+      propertyHighlights: toStringList(
+        f['propertyHighlights'] ?? f['property_highlights'],
+      ),
       whatsappUpdates: toBool(f['whatsappUpdates'] ?? f['whatsapp_updates']),
       promotionTags: toStringList(f['promotionTags'] ?? f['promotion']),
 
-      rentAdditionalRooms: toStringList(f['rentAdditionalRooms'] ?? f['rent_additional_rooms']),
-      rentCornerProperty: toBool(f['rentCornerProperty'] ?? f['rent_corner_property']),
+      rentAdditionalRooms: toStringList(
+        f['rentAdditionalRooms'] ?? f['rent_additional_rooms'],
+      ),
+      rentCornerProperty: toBoolInverted(
+        f['rentCornerProperty'] ?? f['rent_corner_property'],
+      ),
       petFriendly: toBool(f['petFriendly'] ?? f['pet_friendly']),
-      wheelchairFriendly: toBool(f['wheelchairFriendly'] ?? f['wheelchair_friendly']),
-      rentGatedSociety: toBool(f['rentGatedSociety'] ?? f['gated_society_rent']),
+      wheelchairFriendly: toBool(
+        f['wheelchairFriendly'] ?? f['wheelchair_friendly'],
+      ),
+      rentGatedSociety: toBool(
+        f['rentGatedSociety'] ?? f['gated_society_rent'],
+      ),
       securityDeposit: toDouble(f['securityDeposit'] ?? f['security_deposit']),
-      rentMaintenanceCharges: toDouble(f['rentMaintenanceCharges'] ?? f['maintenance_charges_rent']),
+      rentMaintenanceCharges: toDouble(
+        f['rentMaintenanceCharges'] ?? f['maintenance_charges_rent'],
+      ),
       brokerage: toDouble(f['brokerage']),
       rentNegotiable: toBool(f['rentNegotiable'] ?? f['rent_negotiable']),
-      availableFrom: f['availableFrom']?.toString() ?? f['available_from']?.toString(),
-      leaseDurationMonths: toInt(f['leaseDurationMonths'] ?? f['lease_duration_months']),
-      lockInMonths: toInt(f['lockInMonths'] ?? f['lock_in_months'] ?? f['lock_in_period']),
-      noticePeriodValue: toInt(f['noticePeriodValue'] ?? f['notice_period_value']),
-      noticePeriodUnit: f['noticePeriodUnit']?.toString() ?? f['notice_period_unit']?.toString(),
-      preferredTenant: f['preferredTenant']?.toString() ?? f['preferred_tenant']?.toString(),
-      foodPreference: f['foodPreference']?.toString() ?? f['food_preference']?.toString(),
-      rentPromotionTypes: toStringList(f['rentPromotionTypes'] ?? f['rent_promotion']),
+      availableFrom:
+          f['availableFrom']?.toString() ?? f['available_from']?.toString(),
+      leaseDurationMonths: toInt(
+        f['leaseDurationMonths'] ?? f['lease_duration_months'],
+      ),
+      lockInMonths: toInt(
+        f['lockInMonths'] ?? f['lock_in_months'] ?? f['lock_in_period'],
+      ),
+      noticePeriodValue: toInt(
+        f['noticePeriodValue'] ?? f['notice_period_value'],
+      ),
+      noticePeriodUnit:
+          f['noticePeriodUnit']?.toString() ??
+          f['notice_period_unit']?.toString(),
+      preferredTenant:
+          f['preferredTenant']?.toString() ?? f['preferred_tenant']?.toString(),
+      foodPreference:
+          f['foodPreference']?.toString() ?? f['food_preference']?.toString(),
+      rentPromotionTypes: toStringList(
+        f['rentPromotionTypes'] ?? f['rent_promotion'],
+      ),
 
-      rentVillaOutdoors: toStringList(f['rentVillaOutdoors'] ?? f['rent_villa_outdoors']),
-      rentVillaWaterSource: f['rentVillaWaterSource']?.toString() ?? f['rent_villa_water_source']?.toString(),
+      rentVillaOutdoors: toStringList(
+        f['rentVillaOutdoors'] ?? f['rent_villa_outdoors'],
+      ),
+      rentVillaWaterSource:
+          f['rentVillaWaterSource']?.toString() ??
+          f['rent_villa_water_source']?.toString(),
       rentSolarPower: toBool(f['rentSolarPower'] ?? f['solar_power']),
-      rentIndependentEntry: toBool(f['rentIndependentEntry'] ?? f['independent_entry']),
-      rentLiftAvailable: toBool(f['rentLiftAvailable'] ?? f['lift_available_rent']),
-      societyName: f['societyName']?.toString() ?? f['society_name']?.toString(),
+      rentIndependentEntry: toBool(
+        f['rentIndependentEntry'] ?? f['independent_entry'],
+      ),
+      rentLiftAvailable: toBool(
+        f['rentLiftAvailable'] ?? f['lift_available_rent'],
+      ),
+      societyName:
+          f['societyName']?.toString() ?? f['society_name']?.toString(),
       rentTenantTypes: toStringList(f['rentTenantTypes'] ?? f['tenant_types']),
 
-      studioConfig: f['studioConfig']?.toString() ?? f['studio_config']?.toString(),
-      kitchenType: f['kitchenType']?.toString() ?? f['kitchen_type']?.toString(),
-      studioTenantPrefs: toStringList(f['studioTenantPrefs'] ?? f['studio_tenant_preferences']),
-      rentFarmLandArea: toDouble(f['rentFarmLandArea'] ?? f['farm_land_area_rent']),
+      studioConfig:
+          f['studioConfig']?.toString() ?? f['studio_config']?.toString(),
+      kitchenType:
+          f['kitchenType']?.toString() ?? f['kitchen_type']?.toString(),
+      studioTenantPrefs: toStringList(
+        f['studioTenantPrefs'] ?? f['studio_tenant_preferences'],
+      ),
+      rentFarmLandArea: toDouble(
+        f['rentFarmLandArea'] ?? f['farm_land_area_rent'],
+      ),
       rentFarmRooms: toInt(f['rentFarmRooms'] ?? f['farm_rooms_rent']),
       rentFarmPool: toBool(f['rentFarmPool'] ?? f['farm_pool_rent']),
       rentFarmFencing: toBool(f['rentFarmFencing'] ?? f['farm_fencing_rent']),
-      rentFarmUseCases: toStringList(f['rentFarmUseCases'] ?? f['farm_use_cases']),
-      farmMonthlyCharges: toDouble(f['farmMonthlyCharges'] ?? f['farm_monthly_charges']),
-      farmDailyCharges: toDouble(f['farmDailyCharges'] ?? f['farm_daily_charges']),
-      farmEventCharges: toDouble(f['farmEventCharges'] ?? f['farm_event_charges']),
+      rentFarmUseCases: toStringList(
+        f['rentFarmUseCases'] ?? f['farm_use_cases'],
+      ),
+      farmMonthlyCharges: toDouble(
+        f['farmMonthlyCharges'] ?? f['farm_monthly_charges'],
+      ),
+      farmDailyCharges: toDouble(
+        f['farmDailyCharges'] ?? f['farm_daily_charges'],
+      ),
+      farmEventCharges: toDouble(
+        f['farmEventCharges'] ?? f['farm_event_charges'],
+      ),
       minStayDays: toInt(f['minStayDays'] ?? f['min_stay_days']),
 
-      villaAdditionalRooms: toStringList(f['villaAdditionalRooms'] ?? f['villa_additional_rooms']),
-      villaCornerProperty: toBool(f['villaCornerProperty'] ?? f['villa_corner_property']),
+      villaAdditionalRooms: toStringList(
+        f['villaAdditionalRooms'] ?? f['villa_additional_rooms'],
+      ),
+      villaCornerProperty: toBoolInverted(
+        f['villaCornerProperty'] ?? f['villa_corner_property'],
+      ),
       gatedCommunity: toBool(f['gatedCommunity'] ?? f['gated_community']),
       villaParking: toStringList(f['villaParking'] ?? f['parking_types']),
       outdoors: toStringList(f['outdoors']),
-      waterSource: f['waterSource']?.toString() ?? f['villa_water_source']?.toString() ?? f['water_source']?.toString(),
+      waterSource:
+          f['waterSource']?.toString() ??
+          f['villa_water_source']?.toString() ??
+          f['water_source']?.toString(),
       connections: toStringList(f['connections']),
-      villaPriceNegotiable: toBool(f['villaPriceNegotiable'] ?? f['villa_price_negotiable']),
-      villaMaintenanceCharges: toDouble(f['villaMaintenanceCharges'] ?? f['villa_maintenance_charges']),
-      villaBookingAmount: toDouble(f['villaBookingAmount'] ?? f['villa_booking_amount']),
+      villaPriceNegotiable: toBoolInverted(
+        f['villaPriceNegotiable'] ??
+            f['villa_price_negotiable'] ??
+            f['price_negotiable'],
+      ),
+      villaMaintenanceCharges: toDouble(
+        f['villaMaintenanceCharges'] ?? f['villa_maintenance_charges'],
+      ),
+      villaBookingAmount: toDouble(
+        f['villaBookingAmount'] ?? f['villa_booking_amount'],
+      ),
 
-      builderCornerProperty: toBool(f['builderCornerProperty'] ?? f['builder_corner_property']),
-      builderGatedSociety: toBool(f['builderGatedSociety'] ?? f['builder_gated_society']),
-      constructionAllowed: toBool(f['constructionAllowed'] ?? f['construction_allowed']),
+      builderCornerProperty: toBoolInverted(
+        f['builderCornerProperty'] ?? f['builder_corner_property'],
+      ),
+      builderGatedSociety: toBool(
+        f['builderGatedSociety'] ?? f['builder_gated_society'],
+      ),
+      constructionAllowed: toBool(
+        f['constructionAllowed'] ?? f['construction_allowed'],
+      ),
       builderUtilities: toStringList(f['builderUtilities'] ?? f['utilities']),
       pricePerSqft: toDouble(f['pricePerSqft'] ?? f['price_per_sqft']),
-      builderNegotiable: toBool(f['builderNegotiable'] ?? f['negotiable']),
+      builderNegotiable: toBoolInverted(
+        f['builderNegotiable'] ?? f['negotiable'],
+      ),
 
-      duplexCornerPlot: toBool(f['duplexCornerPlot'] ?? f['duplex_corner_plot']),
-      duplexGatedCommunity: toBool(f['duplexGatedCommunity'] ?? f['duplex_gated_community']),
-      duplexConstructionAllowed: toBool(f['duplexConstructionAllowed'] ?? f['duplex_construction_allowed']),
-      duplexWaterConnection: toBool(f['duplexWaterConnection'] ?? f['duplex_water_connection']),
-      duplexElectricityConnection: toBool(f['duplexElectricityConnection'] ?? f['duplex_electricity_connection']),
-      duplexNegotiable: toBool(f['duplexNegotiable'] ?? f['duplex_negotiable']),
-      duplexRoadAccess: toBool(f['duplexRoadAccess'] ?? f['duplex_road_access']),
-      duplexNearbyFacilities: toStringList(f['duplexNearbyFacilities'] ?? f['duplex_nearby_facilities']),
+      duplexCornerPlot: toBoolInverted(
+        f['duplexCornerPlot'] ??
+            f['duplex_corner_plot'] ??
+            f['corner_property'],
+      ),
+      duplexGatedCommunity: toBool(
+        f['duplexGatedCommunity'] ??
+            f['duplex_gated_community'] ??
+            f['gated_society'],
+      ),
+      duplexConstructionAllowed: toBool(
+        f['duplexConstructionAllowed'] ??
+            f['duplex_construction_allowed'] ??
+            f['construction_allowed'],
+      ),
+      duplexWaterConnection: checkWater(
+        f['duplexWaterConnection'] ??
+            f['duplex_water_connection'] ??
+            f['water_source'],
+        f['connections'],
+      ),
+      duplexElectricityConnection: checkElectricity(
+        f['duplexElectricityConnection'] ?? f['duplex_electricity_connection'],
+        f['connections'],
+        f['utilities'],
+      ),
+      duplexNegotiable: toBoolInverted(
+        f['duplexNegotiable'] ??
+            f['duplex_negotiable'] ??
+            f['price_negotiable'],
+      ),
+      duplexRoadAccess: toBool(
+        f['duplexRoadAccess'] ?? f['duplex_road_access'] ?? f['road_access'],
+      ),
+      duplexNearbyFacilities: toStringList(
+        f['duplexNearbyFacilities'] ?? f['duplex_nearby_facilities'],
+      ),
 
       farmLandArea: toDouble(f['farmLandArea'] ?? f['farm_land_area']),
-      farmBuiltUpArea: toDouble(f['farmBuiltUpArea'] ?? f['farm_built_up_area']),
+      farmBuiltUpArea: toDouble(
+        f['farmBuiltUpArea'] ?? f['farm_built_up_area'],
+      ),
       farmUtilities: toStringList(f['farmUtilities'] ?? f['farm_utilities']),
       farmRooms: toInt(f['farmRooms'] ?? f['farm_rooms']),
       farmGarden: toBool(f['farmGarden'] ?? f['farm_garden']),
-      farmSwimmingPool: toBool(f['farmSwimmingPool'] ?? f['farm_swimming_pool']),
+      farmSwimmingPool: toBool(
+        f['farmSwimmingPool'] ?? f['farm_swimming_pool'],
+      ),
       village: f['village']?.toString(),
       landmark: f['landmark']?.toString(),
 
-      pgGenderBased: f['pgGenderBased']?.toString() ?? f['pg_gender_based']?.toString() ?? pg['gender_based']?.toString(),
-      pgOccupancyType: f['pgOccupancyType']?.toString() ?? f['pg_occupancy_type']?.toString() ?? pg['occupancy_type']?.toString(),
-      pgTenantTypes: toStringList(f['pgTenantTypes'] ?? f['pg_tenant_types'] ?? pg['tenant_types']),
-      pgFoodAvailability: f['pgFoodAvailability']?.toString() ?? f['pg_food_availability']?.toString() ?? pg['food_available']?.toString() ?? pg['food_availability']?.toString(),
-      pgPropertyType: f['pgPropertyType']?.toString() ?? f['pg_property_type']?.toString() ?? pg['property_type']?.toString(),
-      pgBathroomType: f['pgBathroomType']?.toString() ?? f['pg_bathroom_type']?.toString() ?? pg['bathroom_type']?.toString(),
-      pgSuitableFor: f['pgSuitableFor']?.toString() ?? f['pg_suitable_for']?.toString() ?? pg['suitable_for']?.toString(),
-      pgBuildingName: f['pgBuildingName']?.toString() ?? f['pg_building_name']?.toString() ?? pg['building_name']?.toString(),
-      pgTotalBeds: toInt(f['pgTotalBeds'] ?? f['pg_total_beds'] ?? pg['total_beds']),
-      pgAvailableBeds: toInt(f['pgAvailableBeds'] ?? f['pg_available_beds'] ?? pg['available_beds']),
-      pgRoomType: f['pgRoomType']?.toString() ?? f['pg_room_type']?.toString() ?? pg['room_type']?.toString(),
-      pgAttachedBathroom: toBool(f['pgAttachedBathroom'] ?? f['pg_attached_bathroom'] ?? f['attached_bathroom'] ?? pg['attached_bathroom']),
-      pgBalcony: toBool(f['pgBalcony'] ?? f['pg_balcony'] ?? f['balcony'] ?? pg['balcony']),
-      pgRoomSize: f['pgRoomSize']?.toString() ?? f['pg_room_size']?.toString() ?? f['room_size']?.toString() ?? pg['room_size']?.toString(),
-      pgBedType: f['pgBedType']?.toString() ?? f['pg_bed_type']?.toString() ?? f['bed_type']?.toString() ?? pg['bed_type']?.toString(),
-      pgCupboardAvailable: toBool(f['pgCupboardAvailable'] ?? f['pg_cupboard_available'] ?? f['cupboard_available'] ?? pg['cupboard_available']),
-      pgStudyTableAvailable: toBool(f['pgStudyTableAvailable'] ?? f['pg_study_table_available'] ?? f['study_table_available'] ?? pg['study_table_available']),
-      pgSecurityDeposit: toDouble(f['pgSecurityDeposit'] ?? f['pg_security_deposit'] ?? f['security_deposit'] ?? pg['security_deposit']),
-      pgElectricityIncluded: toBool(f['pgElectricityIncluded'] ?? f['pg_electricity_included'] ?? f['electricity_included'] ?? pg['electricity_included']),
-      pgWaterIncluded: toBool(f['pgWaterIncluded'] ?? f['pg_water_included'] ?? f['water_included'] ?? pg['water_included']),
-      pgFoodChargesIncluded: toBool(f['pgFoodChargesIncluded'] ?? f['pg_food_charges_included'] ?? f['food_charges_included'] ?? pg['food_charges_included']),
-      pgBrokerageRequired: toBool(f['pgBrokerageRequired'] ?? f['pg_brokerage_required'] ?? pg['brokerage_required']),
-      pgCoupleFriendly: toBool(f['pgCoupleFriendly'] ?? f['pg_couple_friendly'] ?? pg['couple_friendly']),
-      pgIdProofRequired: toBool(f['pgIdProofRequired'] ?? f['pg_id_proof_required'] ?? pg['id_proof_required']),
-      pgAvailableFrom: f['pgAvailableFrom']?.toString() ?? f['pg_available_from']?.toString() ?? pg['available_from']?.toString(),
-      pgMinStayDays: toInt(f['pgMinStayDays'] ?? f['pg_min_stay_days'] ?? pg['min_stay_days']),
-      pgNoticePeriodDays: toInt(f['pgNoticePeriodDays'] ?? f['pg_notice_period_days'] ?? pg['notice_period_days']),
-      pgPreferredTenantAge: toInt(f['pgPreferredTenantAge'] ?? f['pg_preferred_tenant_age'] ?? pg['preferred_tenant_age']),
-      pgSmokingAllowed: toBool(f['pgSmokingAllowed'] ?? f['pg_smoking_allowed'] ?? pg['smoking_allowed']),
-      pgDrinkingAllowed: toBool(f['pgDrinkingAllowed'] ?? f['pg_drinking_allowed'] ?? pg['drinking_allowed']),
-      pgPetsAllowed: toBool(f['pgPetsAllowed'] ?? f['pg_pets_allowed'] ?? pg['pets_allowed']),
-      pgVisitorsAllowed: toBool(f['pgVisitorsAllowed'] ?? f['pg_visitors_allowed'] ?? pg['visitors_allowed']),
-      pgCurfewTime: f['pgCurfewTime']?.toString() ?? f['pg_curfew_time']?.toString() ?? pg['curfew_time']?.toString(),
-      pgGateLockedAtNight: toBool(f['pgGateLockedAtNight'] ?? f['pg_gate_locked_at_night'] ?? pg['gate_locked_at_night']),
-      pgNearbyPreferences: toStringList(f['pgNearbyPreferences'] ?? f['pg_nearby_preferences'] ?? pg['nearby_preferences']),
-      pgAvailability: f['pgAvailability']?.toString() ?? f['pg_availability']?.toString() ?? pg['availability_status']?.toString() ?? pg['availability']?.toString(),
-      pgSharing: toInt(f['pgSharing'] ?? f['pg_sharing'] ?? pg['pg_sharing'] ?? pg['sharing']),
-      pgSecurity: toBool(f['pgSecurity'] ?? f['pg_security'] ?? pg['security_features'] ?? pg['security']),
-      pgMaintenanceCharges: toDouble(f['pgMaintenanceCharges'] ?? f['pg_maintenance_charges'] ?? f['maintenance_charges'] ?? pg['maintenance_charges']),
+      pgGenderBased:
+          f['pgGenderBased']?.toString() ??
+          f['pg_gender_based']?.toString() ??
+          pg['gender_based']?.toString(),
+      pgOccupancyType:
+          f['pgOccupancyType']?.toString() ??
+          f['pg_occupancy_type']?.toString() ??
+          pg['occupancy_type']?.toString(),
+      pgTenantTypes: toStringList(
+        f['pgTenantTypes'] ?? f['pg_tenant_types'] ?? pg['tenant_types'],
+      ),
+      pgFoodAvailability:
+          f['pgFoodAvailability']?.toString() ??
+          f['pg_food_availability']?.toString() ??
+          pg['food_available']?.toString() ??
+          pg['food_availability']?.toString(),
+      pgPropertyType:
+          f['pgPropertyType']?.toString() ??
+          f['pg_property_type']?.toString() ??
+          pg['property_type']?.toString(),
+      pgBathroomType:
+          f['pgBathroomType']?.toString() ??
+          f['pg_bathroom_type']?.toString() ??
+          pg['bathroom_type']?.toString(),
+      pgSuitableFor:
+          f['pgSuitableFor']?.toString() ??
+          f['pg_suitable_for']?.toString() ??
+          pg['suitable_for']?.toString(),
+      pgBuildingName:
+          f['pgBuildingName']?.toString() ??
+          f['pg_building_name']?.toString() ??
+          pg['building_name']?.toString(),
+      pgTotalBeds: toInt(
+        f['pgTotalBeds'] ?? f['pg_total_beds'] ?? pg['total_beds'],
+      ),
+      pgAvailableBeds: toInt(
+        f['pgAvailableBeds'] ?? f['pg_available_beds'] ?? pg['available_beds'],
+      ),
+      pgRoomType:
+          f['pgRoomType']?.toString() ??
+          f['pg_room_type']?.toString() ??
+          pg['room_type']?.toString(),
+      pgAttachedBathroom: toBool(
+        f['pgAttachedBathroom'] ??
+            f['pg_attached_bathroom'] ??
+            f['attached_bathroom'] ??
+            pg['attached_bathroom'],
+      ),
+      pgBalcony: toBool(
+        f['pgBalcony'] ?? f['pg_balcony'] ?? f['balcony'] ?? pg['balcony'],
+      ),
+      pgRoomSize:
+          f['pgRoomSize']?.toString() ??
+          f['pg_room_size']?.toString() ??
+          f['room_size']?.toString() ??
+          pg['room_size']?.toString(),
+      pgBedType:
+          f['pgBedType']?.toString() ??
+          f['pg_bed_type']?.toString() ??
+          f['bed_type']?.toString() ??
+          pg['bed_type']?.toString(),
+      pgCupboardAvailable: toBool(
+        f['pgCupboardAvailable'] ??
+            f['pg_cupboard_available'] ??
+            f['cupboard_available'] ??
+            pg['cupboard_available'],
+      ),
+      pgStudyTableAvailable: toBool(
+        f['pgStudyTableAvailable'] ??
+            f['pg_study_table_available'] ??
+            f['study_table_available'] ??
+            pg['study_table_available'],
+      ),
+      pgSecurityDeposit: toDouble(
+        f['pgSecurityDeposit'] ??
+            f['pg_security_deposit'] ??
+            f['security_deposit'] ??
+            pg['security_deposit'],
+      ),
+      pgElectricityIncluded: toBool(
+        f['pgElectricityIncluded'] ??
+            f['pg_electricity_included'] ??
+            f['electricity_included'] ??
+            pg['electricity_included'],
+      ),
+      pgWaterIncluded: toBool(
+        f['pgWaterIncluded'] ??
+            f['pg_water_included'] ??
+            f['water_included'] ??
+            pg['water_included'],
+      ),
+      pgFoodChargesIncluded: toBool(
+        f['pgFoodChargesIncluded'] ??
+            f['pg_food_charges_included'] ??
+            f['food_charges_included'] ??
+            pg['food_charges_included'],
+      ),
+      pgBrokerageRequired: toBool(
+        f['pgBrokerageRequired'] ??
+            f['pg_brokerage_required'] ??
+            pg['brokerage_required'],
+      ),
+      pgCoupleFriendly: toBool(
+        f['pgCoupleFriendly'] ??
+            f['pg_couple_friendly'] ??
+            pg['couple_friendly'],
+      ),
+      pgIdProofRequired: toBool(
+        f['pgIdProofRequired'] ??
+            f['pg_id_proof_required'] ??
+            pg['id_proof_required'],
+      ),
+      pgAvailableFrom:
+          f['pgAvailableFrom']?.toString() ??
+          f['pg_available_from']?.toString() ??
+          pg['available_from']?.toString(),
+      pgMinStayDays: toInt(
+        f['pgMinStayDays'] ?? f['pg_min_stay_days'] ?? pg['min_stay_days'],
+      ),
+      pgNoticePeriodDays: toInt(
+        f['pgNoticePeriodDays'] ??
+            f['pg_notice_period_days'] ??
+            pg['notice_period_days'],
+      ),
+      pgPreferredTenantAge: toInt(
+        f['pgPreferredTenantAge'] ??
+            f['pg_preferred_tenant_age'] ??
+            pg['preferred_tenant_age'],
+      ),
+      pgSmokingAllowed: toBool(
+        f['pgSmokingAllowed'] ??
+            f['pg_smoking_allowed'] ??
+            pg['smoking_allowed'],
+      ),
+      pgDrinkingAllowed: toBool(
+        f['pgDrinkingAllowed'] ??
+            f['pg_drinking_allowed'] ??
+            pg['drinking_allowed'],
+      ),
+      pgPetsAllowed: toBool(
+        f['pgPetsAllowed'] ?? f['pg_pets_allowed'] ?? pg['pets_allowed'],
+      ),
+      pgVisitorsAllowed: toBool(
+        f['pgVisitorsAllowed'] ??
+            f['pg_visitors_allowed'] ??
+            pg['visitors_allowed'],
+      ),
+      pgCurfewTime:
+          f['pgCurfewTime']?.toString() ??
+          f['pg_curfew_time']?.toString() ??
+          pg['curfew_time']?.toString(),
+      pgGateLockedAtNight: toBool(
+        f['pgGateLockedAtNight'] ??
+            f['pg_gate_locked_at_night'] ??
+            pg['gate_locked_at_night'],
+      ),
+      pgNearbyPreferences: toStringList(
+        f['pgNearbyPreferences'] ??
+            f['pg_nearby_preferences'] ??
+            pg['nearby_preferences'],
+      ),
+      pgAvailability:
+          f['pgAvailability']?.toString() ??
+          f['pg_availability']?.toString() ??
+          pg['availability_status']?.toString() ??
+          pg['availability']?.toString(),
+      pgSharing: toInt(
+        f['pgSharing'] ?? f['pg_sharing'] ?? pg['pg_sharing'] ?? pg['sharing'],
+      ),
+      pgSecurity: toBool(
+        f['pgSecurity'] ??
+            f['pg_security'] ??
+            pg['security_features'] ??
+            pg['security'],
+      ),
+      pgMaintenanceCharges: toDouble(
+        f['pgMaintenanceCharges'] ??
+            f['pg_maintenance_charges'] ??
+            f['maintenance_charges'] ??
+            pg['maintenance_charges'],
+      ),
       pgDetails: f['pg_details'] != null
           ? PropertyPgDetails.fromJson(f['pg_details'] as Map<String, dynamic>)
           : null,
@@ -1797,256 +2450,256 @@ location: (
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        ownerName,
-        location,
-        price,
-        type,
-        amenities,
-        images,
-        description,
-        status,
-        slug,
-        listingType,
-        propertyKind,
-        area,
-        areaUnit,
-        propertyAge,
-        facing,
-        floor,
-        totalFloors,
-        possessionStatus,
-        bedrooms,
-        bathrooms,
-        furnishing,
-        parking,
-        address,
-        city,
-        state,
-        pincode,
-        latitude,
-        longitude,
-        primaryImageIndex,
-        rejectionReason,
-        updatedAt,
-        createdAt,
-        categoryId,
-        userId,
-        isFeatured,
-        featuredExpiry,
-        documents,
-        amenityIds,
-        furnishingSelections,
-        apiFields,
-        sectionImagePaths,
-        documentPaths,
-        
-        carpetArea,
-        builtUpArea,
-        superBuiltUpArea,
-        plotArea,
-        plotLength,
-        plotBreadth,
-        floorsAllowed,
-        openSides,
-        boundaryWall,
-        constructionDone,
-        availability,
-        readyTimeframe,
-        possessionBy,
-        ownership,
-        balconies,
-        commercialType,
-        floorPlateArea,
-        cabins,
-        meetingRooms,
-        seats,
-        maxSeats,
-        conferenceRooms,
-        liftAvailable,
-        preLeased,
-        officeType,
-        receptionArea,
-        pantry,
-        cafeteria,
-        serverRoom,
-        fireSafetyInstalled,
-        centralAC,
-        visitorParking,
-        numberOfLifts,
-        taxIncluded,
-        officeNegotiable,
-        officeMaintenanceCharges,
-        officeBookingAmount,
-        shopType,
-        shopArea,
-        shopAreaUnit,
-        frontageWidth,
-        ceilingHeight,
-        mainRoadFacing,
-        cornerShop,
-        washroomAvailable,
-        floorType,
-        marketName,
-        locality,
-        showroomArea,
-        showroomAreaUnit,
-        showroomFrontageWidth,
-        showroomCeilingHeight,
-        showroomMainRoadFacing,
-        showroomCorner,
-        showroomWashroom,
-        showroomParkingSlots,
-        showroomFurnishing,
-        showroomFloorType,
-        showroomMarketName,
-        showroomLocality,
-        showroomOwnerName,
-        showroomOwnerMobile,
-        warehouseType,
-        warehousePlotArea,
-        warehousePlotAreaUnit,
-        warehouseCeilingHeight,
-        warehouseLoadingBays,
-        warehouseDockLevelers,
-        warehousePowerSupply,
-        warehouseIndustrialLicense,
-        warehouseTruckAccess,
-        warehouseAreaName,
-        warehouseCity,
-        shopFacade,
-        washrooms,
-        parkingType,
-        plotType,
-        rooms,
-        qualityRating,
-        landType,
-        roadWidth,
-        plotAreaUnit,
-        plotCorner,
-        plotRoadAccess,
-        agriFencing,
-        agriWaterSource,
-        additionalRooms,
-        cornerProperty,
-        priceNegotiable,
-        maintenanceCharges,
-        bookingAmount,
-        propertyHighlights,
-        whatsappUpdates,
-        promotionTags,
-        rentAdditionalRooms,
-        rentCornerProperty,
-        petFriendly,
-        wheelchairFriendly,
-        rentGatedSociety,
-        securityDeposit,
-        rentMaintenanceCharges,
-        brokerage,
-        rentNegotiable,
-        availableFrom,
-        leaseDurationMonths,
-        lockInMonths,
-        noticePeriodValue,
-        noticePeriodUnit,
-        preferredTenant,
-        foodPreference,
-        rentPromotionTypes,
-        rentVillaOutdoors,
-        rentVillaWaterSource,
-        rentSolarPower,
-        rentIndependentEntry,
-        rentLiftAvailable,
-        societyName,
-        rentTenantTypes,
-        studioConfig,
-        kitchenType,
-        studioTenantPrefs,
-        rentFarmLandArea,
-        rentFarmRooms,
-        rentFarmPool,
-        rentFarmFencing,
-        rentFarmUseCases,
-        farmMonthlyCharges,
-        farmDailyCharges,
-        farmEventCharges,
-        minStayDays,
-        villaAdditionalRooms,
-        villaCornerProperty,
-        gatedCommunity,
-        villaParking,
-        outdoors,
-        waterSource,
-        connections,
-        villaPriceNegotiable,
-        villaMaintenanceCharges,
-        villaBookingAmount,
-        builderCornerProperty,
-        builderGatedSociety,
-        constructionAllowed,
-        builderUtilities,
-        pricePerSqft,
-        builderNegotiable,
-        duplexCornerPlot,
-        duplexGatedCommunity,
-        duplexConstructionAllowed,
-        duplexWaterConnection,
-        duplexElectricityConnection,
-        duplexNegotiable,
-        duplexRoadAccess,
-        duplexNearbyFacilities,
-        farmLandArea,
-        farmBuiltUpArea,
-        farmUtilities,
-        farmRooms,
-        farmGarden,
-        farmSwimmingPool,
-        village,
-        landmark,
-        pgGenderBased,
-        pgOccupancyType,
-        pgTenantTypes,
-        pgFoodAvailability,
-        pgPropertyType,
-        pgBathroomType,
-        pgSuitableFor,
-        pgBuildingName,
-        pgTotalBeds,
-        pgAvailableBeds,
-        pgRoomType,
-        pgAttachedBathroom,
-        pgBalcony,
-        pgRoomSize,
-        pgBedType,
-        pgCupboardAvailable,
-        pgStudyTableAvailable,
-        pgSecurityDeposit,
-        pgElectricityIncluded,
-        pgWaterIncluded,
-        pgFoodChargesIncluded,
-        pgBrokerageRequired,
-        pgCoupleFriendly,
-        pgIdProofRequired,
-        pgAvailableFrom,
-        pgMinStayDays,
-        pgNoticePeriodDays,
-        pgPreferredTenantAge,
-        pgSmokingAllowed,
-        pgDrinkingAllowed,
-        pgPetsAllowed,
-        pgVisitorsAllowed,
-        pgCurfewTime,
-        pgGateLockedAtNight,
-        pgNearbyPreferences,
-        pgAvailability,
-        pgSharing,
-        pgSecurity,
-        pgMaintenanceCharges,
-        pgDetails,
-        officeDetails,
-        showroomDetails,
-        shopDetails,
-        warehouseDetails,
-      ];
+    id,
+    name,
+    ownerName,
+    location,
+    price,
+    type,
+    amenities,
+    images,
+    description,
+    status,
+    slug,
+    listingType,
+    propertyKind,
+    area,
+    areaUnit,
+    propertyAge,
+    facing,
+    floor,
+    totalFloors,
+    possessionStatus,
+    bedrooms,
+    bathrooms,
+    furnishing,
+    parking,
+    address,
+    city,
+    state,
+    pincode,
+    latitude,
+    longitude,
+    primaryImageIndex,
+    rejectionReason,
+    updatedAt,
+    createdAt,
+    categoryId,
+    userId,
+    isFeatured,
+    featuredExpiry,
+    documents,
+    amenityIds,
+    furnishingSelections,
+    apiFields,
+    sectionImagePaths,
+    documentPaths,
+
+    carpetArea,
+    builtUpArea,
+    superBuiltUpArea,
+    plotArea,
+    plotLength,
+    plotBreadth,
+    floorsAllowed,
+    openSides,
+    boundaryWall,
+    constructionDone,
+    availability,
+    readyTimeframe,
+    possessionBy,
+    ownership,
+    balconies,
+    commercialType,
+    floorPlateArea,
+    cabins,
+    meetingRooms,
+    seats,
+    maxSeats,
+    conferenceRooms,
+    liftAvailable,
+    preLeased,
+    officeType,
+    receptionArea,
+    pantry,
+    cafeteria,
+    serverRoom,
+    fireSafetyInstalled,
+    centralAC,
+    visitorParking,
+    numberOfLifts,
+    taxIncluded,
+    officeNegotiable,
+    officeMaintenanceCharges,
+    officeBookingAmount,
+    shopType,
+    shopArea,
+    shopAreaUnit,
+    frontageWidth,
+    ceilingHeight,
+    mainRoadFacing,
+    cornerShop,
+    washroomAvailable,
+    floorType,
+    marketName,
+    locality,
+    showroomArea,
+    showroomAreaUnit,
+    showroomFrontageWidth,
+    showroomCeilingHeight,
+    showroomMainRoadFacing,
+    showroomCorner,
+    showroomWashroom,
+    showroomParkingSlots,
+    showroomFurnishing,
+    showroomFloorType,
+    showroomMarketName,
+    showroomLocality,
+    showroomOwnerName,
+    showroomOwnerMobile,
+    warehouseType,
+    warehousePlotArea,
+    warehousePlotAreaUnit,
+    warehouseCeilingHeight,
+    warehouseLoadingBays,
+    warehouseDockLevelers,
+    warehousePowerSupply,
+    warehouseIndustrialLicense,
+    warehouseTruckAccess,
+    warehouseAreaName,
+    warehouseCity,
+    shopFacade,
+    washrooms,
+    parkingType,
+    plotType,
+    rooms,
+    qualityRating,
+    landType,
+    roadWidth,
+    plotAreaUnit,
+    plotCorner,
+    plotRoadAccess,
+    agriFencing,
+    agriWaterSource,
+    additionalRooms,
+    cornerProperty,
+    priceNegotiable,
+    maintenanceCharges,
+    bookingAmount,
+    propertyHighlights,
+    whatsappUpdates,
+    promotionTags,
+    rentAdditionalRooms,
+    rentCornerProperty,
+    petFriendly,
+    wheelchairFriendly,
+    rentGatedSociety,
+    securityDeposit,
+    rentMaintenanceCharges,
+    brokerage,
+    rentNegotiable,
+    availableFrom,
+    leaseDurationMonths,
+    lockInMonths,
+    noticePeriodValue,
+    noticePeriodUnit,
+    preferredTenant,
+    foodPreference,
+    rentPromotionTypes,
+    rentVillaOutdoors,
+    rentVillaWaterSource,
+    rentSolarPower,
+    rentIndependentEntry,
+    rentLiftAvailable,
+    societyName,
+    rentTenantTypes,
+    studioConfig,
+    kitchenType,
+    studioTenantPrefs,
+    rentFarmLandArea,
+    rentFarmRooms,
+    rentFarmPool,
+    rentFarmFencing,
+    rentFarmUseCases,
+    farmMonthlyCharges,
+    farmDailyCharges,
+    farmEventCharges,
+    minStayDays,
+    villaAdditionalRooms,
+    villaCornerProperty,
+    gatedCommunity,
+    villaParking,
+    outdoors,
+    waterSource,
+    connections,
+    villaPriceNegotiable,
+    villaMaintenanceCharges,
+    villaBookingAmount,
+    builderCornerProperty,
+    builderGatedSociety,
+    constructionAllowed,
+    builderUtilities,
+    pricePerSqft,
+    builderNegotiable,
+    duplexCornerPlot,
+    duplexGatedCommunity,
+    duplexConstructionAllowed,
+    duplexWaterConnection,
+    duplexElectricityConnection,
+    duplexNegotiable,
+    duplexRoadAccess,
+    duplexNearbyFacilities,
+    farmLandArea,
+    farmBuiltUpArea,
+    farmUtilities,
+    farmRooms,
+    farmGarden,
+    farmSwimmingPool,
+    village,
+    landmark,
+    pgGenderBased,
+    pgOccupancyType,
+    pgTenantTypes,
+    pgFoodAvailability,
+    pgPropertyType,
+    pgBathroomType,
+    pgSuitableFor,
+    pgBuildingName,
+    pgTotalBeds,
+    pgAvailableBeds,
+    pgRoomType,
+    pgAttachedBathroom,
+    pgBalcony,
+    pgRoomSize,
+    pgBedType,
+    pgCupboardAvailable,
+    pgStudyTableAvailable,
+    pgSecurityDeposit,
+    pgElectricityIncluded,
+    pgWaterIncluded,
+    pgFoodChargesIncluded,
+    pgBrokerageRequired,
+    pgCoupleFriendly,
+    pgIdProofRequired,
+    pgAvailableFrom,
+    pgMinStayDays,
+    pgNoticePeriodDays,
+    pgPreferredTenantAge,
+    pgSmokingAllowed,
+    pgDrinkingAllowed,
+    pgPetsAllowed,
+    pgVisitorsAllowed,
+    pgCurfewTime,
+    pgGateLockedAtNight,
+    pgNearbyPreferences,
+    pgAvailability,
+    pgSharing,
+    pgSecurity,
+    pgMaintenanceCharges,
+    pgDetails,
+    officeDetails,
+    showroomDetails,
+    shopDetails,
+    warehouseDetails,
+  ];
 }
