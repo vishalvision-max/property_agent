@@ -1032,9 +1032,9 @@ class StaffPropertyService implements PropertyService {
 
       final assignedCount =
           int.tryParse(
-            (data['lead_assigned'] ??
-                    data['assigned_properties'] ??
+            (data['assigned_properties'] ??
                     data['assignedProperties'] ??
+                    data['lead_assigned'] ??
                     data['assigned'] ??
                     data['total_properties'] ??
                     data['totalProperties'] ??
@@ -1045,8 +1045,8 @@ class StaffPropertyService implements PropertyService {
 
       final pendingCount =
           int.tryParse(
-            (data['pending'] ??
-                    data['pending_properties'] ??
+            (data['pending_properties'] ??
+                    data['pending'] ??
                     data['pendingProperties'] ??
                     '0')
                 .toString(),
@@ -1055,7 +1055,9 @@ class StaffPropertyService implements PropertyService {
 
       final listedCount =
           int.tryParse(
-            (data['total_listed'] ??
+            (data['total_properties'] ??
+                    data['totalProperties'] ??
+                    data['total_listed'] ??
                     data['totalListed'] ??
                     data['listed'] ??
                     data['listed_properties'] ??
@@ -1070,8 +1072,8 @@ class StaffPropertyService implements PropertyService {
 
       final rejectedCount =
           int.tryParse(
-            (data['rejected'] ??
-                    data['rejected_properties'] ??
+            (data['rejected_properties'] ??
+                    data['rejected'] ??
                     data['rejectedProperties'] ??
                     '0')
                 .toString(),
