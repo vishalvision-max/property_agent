@@ -974,9 +974,21 @@ class StaffPropertyService implements PropertyService {
           '[StaffPropertyService] getPropertyById($id) keys=${rawData.keys.toList()}',
         ),
       );
+      // ── Targeted field debug ─────────────────────────────────────────────
+      final wd = rawData['warehouse_details'];
+      debugPrint(
+        '[StaffPropertyService] getPropertyById($id) '
+        'maintenance_charges=${rawData['maintenance_charges']} '
+        'price_negotiable=${rawData['price_negotiable']} '
+        'negotiable=${rawData['negotiable']} '
+        'warehouse_details=$wd '
+        'warehouse_maintenance=${rawData['warehouse_maintenance_charges'] ?? rawData['warehouse_maintenance']} '
+        'commercial_type=${rawData['commercial_type']}',
+      );
     }
     return _fromApi(rawData);
   }
+
 
   @override
   Future<List<Property>> getAssignedProperties() async {

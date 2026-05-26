@@ -1697,50 +1697,94 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _f(showroom, ['showroom_owner_mobile', 'owner_mobile']) ??
         '';
 
-    // Warehouse
+    // Warehouse — check both prefixed names (what we send) and flat backend
+    // keys (what the backend stores/returns). Backend often returns generic flat
+    // column names instead of the warehouse-prefixed variants we submit.
     _warehouseType =
         _f(f, ['warehouse_type']) ??
         _f(warehouse, ['warehouse_type']) ??
         _warehouseType;
+
+    // plot_area: try warehouse_plot_area first, then generic plot_area
     _warehousePlotArea.text =
-        (_fd(f, ['warehouse_plot_area']) ??
-                _fd(warehouse, ['warehouse_plot_area']))
+        (_fd(f, ['warehouse_plot_area', 'warehouse_area', 'plot_area']) ??
+                _fd(warehouse, ['warehouse_plot_area', 'plot_area']))
             ?.toString() ??
+        p.warehousePlotArea?.toString() ??
         '';
+
     _warehousePlotAreaUnit =
-        _f(f, ['warehouse_plot_area_unit']) ??
-        _f(warehouse, ['warehouse_plot_area_unit']) ??
+        _f(f, ['warehouse_plot_area_unit', 'area_unit']) ??
+        _f(warehouse, ['warehouse_plot_area_unit', 'area_unit']) ??
+        (p.warehousePlotAreaUnit?.isNotEmpty == true ? p.warehousePlotAreaUnit : null) ??
         _warehousePlotAreaUnit;
+
+    // ceiling_height: try all backend variants
     _warehouseCeilingHeight.text =
-        (_fd(f, ['warehouse_ceiling_height_ft']) ??
-                _fd(warehouse, ['warehouse_ceiling_height_ft']))
+        (_fd(f, ['warehouse_ceiling_height_ft', 'warehouse_ceiling_height', 'ceiling_height_ft', 'ceiling_height']) ??
+                _fd(warehouse, ['warehouse_ceiling_height_ft', 'warehouse_ceiling_height', 'ceiling_height_ft', 'ceiling_height']))
             ?.toString() ??
+        p.warehouseCeilingHeight?.toString() ??
         '';
+
     _warehouseLoadingBays.text =
         (_fi(f, ['loading_bays']) ?? _fi(warehouse, ['loading_bays']))
             ?.toString() ??
+        p.warehouseLoadingBays?.toString() ??
         '';
+
     _warehouseDockLevelers.text =
         (_fi(f, ['dock_levelers']) ?? _fi(warehouse, ['dock_levelers']))
             ?.toString() ??
+        p.warehouseDockLevelers?.toString() ??
         '';
+
     _warehousePowerSupply.text =
-        _f(f, ['power_supply']) ?? _f(warehouse, ['power_supply']) ?? '';
-    _warehouseIndustrialLicense = _fb(f, [
-      'industrial_license',
-    ], fallback: _fb(warehouse, ['industrial_license']));
+        _f(f, ['power_supply']) ??
+        _f(warehouse, ['power_supply']) ??
+        p.warehousePowerSupply ??
+        '';
+
+    _warehouseIndustrialLicense =
+        _fbNullable(f, ['industrial_license']) ??
+        _fbNullable(warehouse, ['industrial_license']) ??
+        p.warehouseIndustrialLicense;
+
     _warehouseTruckAccess =
         _f(f, ['truck_access']) ??
         _f(warehouse, ['truck_access']) ??
+        p.warehouseTruckAccess ??
         _warehouseTruckAccess;
+
+    // industrial_area_name: backend may return as industrial_area or area_name
     _warehouseAreaName.text =
-        _f(f, ['industrial_area_name']) ??
-        _f(warehouse, ['industrial_area_name']) ??
+        _f(f, ['industrial_area_name', 'industrial_area', 'area_name']) ??
+        _f(warehouse, ['industrial_area_name', 'industrial_area']) ??
+        p.warehouseAreaName ??
         '';
+
+    // industrial_area_city: backend may return as city (but city is overwritten
+    // by generic city field above, so also check warehouse-specific keys first)
     _warehouseCity.text =
         _f(f, ['industrial_area_city']) ??
-        _f(warehouse, ['industrial_area_city']) ??
+        _f(warehouse, ['industrial_area_city', 'city']) ??
+        p.warehouseCity ??
         '';
+
+    if (kDebugMode) {
+      debugPrint(
+        '[WarehousePrefill] type=$_warehouseType '
+        'plotArea=${_warehousePlotArea.text} '
+        'ceilingHeight=${_warehouseCeilingHeight.text} '
+        'loadingBays=${_warehouseLoadingBays.text} '
+        'dockLevelers=${_warehouseDockLevelers.text} '
+        'powerSupply=${_warehousePowerSupply.text} '
+        'industrialLicense=$_warehouseIndustrialLicense '
+        'truckAccess=$_warehouseTruckAccess '
+        'areaName=${_warehouseAreaName.text} '
+        'city=${_warehouseCity.text}',
+      );
+    }
 
     // Common commercial
     _shopFacade.text =
@@ -1808,19 +1852,31 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['additional_rooms']));
     _cornerProperty = p.cornerProperty ?? _fbNullable(f, ['corner_property']);
+    // price_negotiable: check both backend key names and model field
     _priceNegotiable =
         p.priceNegotiable ??
+        _fbNullable(f, ['price_negotiable']) ??
         _fbNullable(f, ['negotiable']) ??
         _fbNullable(f, ['villa_price_negotiable']) ??
-        _fbNullable(f, ['duplex_negotiable']);
+        _fbNullable(f, ['duplex_negotiable']) ??
+        _fbNullable(f, ['price_negotiable_office']);
+
+    // maintenance_charges: model field + direct API key fallback
     _maintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
-        _fd(f, ['maintenance_charges'])?.toString() ??
+        _fd(f, ['maintenance_charges', 'office_maintenance_charges', 'maintenance_charges_office'])?.toString() ??
         '';
     _bookingAmount.text =
         p.bookingAmount?.toString() ??
         _fd(f, ['booking_amount'])?.toString() ??
         '';
+    if (kDebugMode) {
+      debugPrint(
+        '[PricingPrefill] maintenanceCharges=${_maintenanceCharges.text} '
+        'bookingAmount=${_bookingAmount.text} '
+        'priceNegotiable=$_priceNegotiable',
+      );
+    }
     _propertyHighlights
       ..clear()
       ..addAll(_fl(f, ['property_highlights']));

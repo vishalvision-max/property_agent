@@ -1979,18 +1979,28 @@ class Property extends Equatable {
       warehousePlotArea: toDouble(
         f['warehousePlotArea'] ??
             f['warehouse_plot_area'] ??
-            warehouse['warehouse_plot_area'],
+            f['warehouse_area'] ??
+            // generic flat key the backend often returns
+            (f['commercial_type']?.toString() == 'warehouse' ? f['plot_area'] : null) ??
+            warehouse['warehouse_plot_area'] ??
+            warehouse['plot_area'],
       ),
       warehousePlotAreaUnit:
           f['warehousePlotAreaUnit']?.toString() ??
           f['warehouse_plot_area_unit']?.toString() ??
-          warehouse['warehouse_plot_area_unit']?.toString(),
+          warehouse['warehouse_plot_area_unit']?.toString() ??
+          (f['commercial_type']?.toString() == 'warehouse' ? f['area_unit']?.toString() : null),
       warehouseCeilingHeight: toDouble(
         f['warehouseCeilingHeight'] ??
             f['warehouse_ceiling_height'] ??
             f['warehouse_ceiling_height_ft'] ??
+            // generic flat keys
+            f['ceiling_height_ft'] ??
+            f['ceiling_height'] ??
             warehouse['warehouse_ceiling_height'] ??
-            warehouse['warehouse_ceiling_height_ft'],
+            warehouse['warehouse_ceiling_height_ft'] ??
+            warehouse['ceiling_height_ft'] ??
+            warehouse['ceiling_height'],
       ),
       warehouseLoadingBays: toInt(
         f['warehouseLoadingBays'] ??
@@ -2018,11 +2028,15 @@ class Property extends Equatable {
       warehouseAreaName:
           f['warehouseAreaName']?.toString() ??
           f['industrial_area_name']?.toString() ??
-          warehouse['industrial_area_name']?.toString(),
+          f['industrial_area']?.toString() ??
+          warehouse['industrial_area_name']?.toString() ??
+          warehouse['industrial_area']?.toString(),
       warehouseCity:
           f['warehouseCity']?.toString() ??
           f['industrial_area_city']?.toString() ??
-          warehouse['industrial_area_city']?.toString(),
+          warehouse['industrial_area_city']?.toString() ??
+          // Only use generic 'city' key if commercial_type is warehouse
+          (f['commercial_type']?.toString() == 'warehouse' ? warehouse['city']?.toString() : null),
 
       shopFacade: f['shopFacade']?.toString() ?? f['shop_facade']?.toString(),
       washrooms: toInt(f['washrooms']),
@@ -2075,13 +2089,25 @@ class Property extends Equatable {
         f['additionalRooms'] ?? f['additional_rooms'],
       ),
       cornerProperty: toBool(
-        f['cornerProperty'] ?? f['corner_property'],
+        f['cornerProperty'] ?? f['corner_property'] ?? f['corner_plot'],
       ),
       priceNegotiable: toBool(
-        f['priceNegotiable'] ?? f['price_negotiable'],
+        f['priceNegotiable'] ??
+            f['price_negotiable'] ??
+            f['negotiable'] ??
+            f['price_negotiable_office'] ??
+            f['villa_price_negotiable'],
       ),
       maintenanceCharges: toDouble(
-        f['maintenanceCharges'] ?? f['maintenance_charges'],
+        f['maintenanceCharges'] ??
+            f['maintenance_charges'] ??
+            // backend sometimes returns these column names for commercial
+            f['commercial_maintenance_charges'] ??
+            f['warehouse_maintenance_charges'] ??
+            f['maintenance'] ??
+            // office-specific aliases
+            f['office_maintenance_charges'] ??
+            f['maintenance_charges_office'],
       ),
       bookingAmount: toDouble(f['bookingAmount'] ?? f['booking_amount']),
       propertyHighlights: toStringList(
