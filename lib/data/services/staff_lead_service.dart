@@ -23,22 +23,29 @@ class StaffLeadService implements LeadService {
   @override
   Future<List<Lead>> getMyLeads({int page = 1}) async {
     final dio = await _dioFuture;
-    Response<Map<String, dynamic>> res;
+    Response<dynamic> res;
     try {
-      res = await dio.get<Map<String, dynamic>>(
-        '/my-leads',
+      res = await dio.get<dynamic>(
+        '/buyer-leads',
         queryParameters: {'page': page},
       );
     } on DioException catch (e) {
       throw _apiException(e);
     }
 
-    final body = res.data ?? const <String, dynamic>{};
-    final dataRaw = body['data'];
-    final list = (dataRaw is List) ? dataRaw : const [];
-    return list
-        .whereType<Map>()
-        .map((e) => Lead.fromJson(Map<String, dynamic>.from(e)))
+    final decoded = res.data;
+    final List leadsJson;
+    if (decoded is List) {
+      leadsJson = decoded;
+    } else if (decoded is Map && decoded['data'] is List) {
+      leadsJson = decoded['data'];
+    } else {
+      leadsJson = const [];
+    }
+
+    return leadsJson
+        .where((e) => e is Map)
+        .map((e) => Lead.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList(growable: false);
   }
 }

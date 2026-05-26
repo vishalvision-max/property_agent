@@ -1,3 +1,56 @@
+class LeadProperty {
+  final int id;
+  final String title;
+  final String description;
+  final double price;
+  final String city;
+  final String state;
+  final String type;
+  final String address;
+  final int? bedrooms;
+  final int? bathrooms;
+  final double? area;
+  final String? areaUnit;
+  final String? furnishing;
+  final String? possessionStatus;
+
+  LeadProperty({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.city,
+    required this.state,
+    required this.type,
+    required this.address,
+    this.bedrooms,
+    this.bathrooms,
+    this.area,
+    this.areaUnit,
+    this.furnishing,
+    this.possessionStatus,
+  });
+
+  factory LeadProperty.fromJson(Map<String, dynamic> json) {
+    return LeadProperty(
+      id: json['id'] ?? 0,
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      city: json['city']?.toString() ?? '',
+      state: json['state']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      address: json['address']?.toString() ?? '',
+      bedrooms: json['bedrooms'] != null ? (json['bedrooms'] as num).toInt() : null,
+      bathrooms: json['bathrooms'] != null ? (json['bathrooms'] as num).toInt() : null,
+      area: json['area'] != null ? (json['area'] as num).toDouble() : null,
+      areaUnit: json['area_unit']?.toString(),
+      furnishing: json['furnishing']?.toString(),
+      possessionStatus: json['possession_status']?.toString(),
+    );
+  }
+}
+
 class Lead {
   const Lead({
     required this.id,
@@ -23,6 +76,8 @@ class Lead {
     required this.priority,
     required this.leadScore,
     required this.convertedPropertyId,
+    this.propertyId,
+    this.property,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -50,6 +105,8 @@ class Lead {
   final String priority;
   final int leadScore;
   final String? convertedPropertyId;
+  final int? propertyId;
+  final LeadProperty? property;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -95,9 +152,12 @@ class Lead {
       priority: (json['priority'] ?? '').toString(),
       leadScore: (json['lead_score'] as num?)?.toInt() ?? _toIntOrNull(json['lead_score']) ?? 0,
       convertedPropertyId: json['converted_property_id']?.toString(),
+      propertyId: json['property_id'] != null ? (json['property_id'] as num).toInt() : null,
+      property: json['property'] != null && json['property'] is Map
+          ? LeadProperty.fromJson(Map<String, dynamic>.from(json['property'] as Map))
+          : null,
       createdAt: _toDateTimeOrNull(json['created_at']),
       updatedAt: _toDateTimeOrNull(json['updated_at']),
     );
   }
 }
-
