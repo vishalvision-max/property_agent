@@ -1257,7 +1257,9 @@ class Property extends Equatable {
     'number_of_lifts': numberOfLifts,
     'tax_included': taxIncluded,
     'price_negotiable_office': officeNegotiable,
+    'office_maintenance_charges': officeMaintenanceCharges,
     'maintenance_charges_office': officeMaintenanceCharges,
+    'office_booking_amount': officeBookingAmount,
     'booking_amount_office': officeBookingAmount,
     'shop_type': shopType,
     'shop_area': shopArea,
@@ -1842,15 +1844,19 @@ class Property extends Equatable {
       ),
       officeMaintenanceCharges: toDouble(
         f['officeMaintenanceCharges'] ??
+            f['office_maintenance_charges'] ??
             f['maintenance_charges_office'] ??
             f['maintenance_charges'] ??
+            office['office_maintenance_charges'] ??
             office['maintenance_charges_office'] ??
             office['maintenance_charges'],
       ),
       officeBookingAmount: toDouble(
         f['officeBookingAmount'] ??
+            f['office_booking_amount'] ??
             f['booking_amount_office'] ??
             f['booking_amount'] ??
+            office['office_booking_amount'] ??
             office['booking_amount_office'] ??
             office['booking_amount'],
       ),
@@ -1883,7 +1889,7 @@ class Property extends Equatable {
             f['main_road_facing'] ??
             shop['main_road_facing'],
       ),
-      cornerShop: toBoolInverted(
+      cornerShop: toBool(
         f['cornerShop'] ?? f['corner_shop'] ?? shop['corner_shop'],
       ),
       washroomAvailable: toBool(
@@ -1927,7 +1933,7 @@ class Property extends Equatable {
             f['showroom_main_road_facing'] ??
             showroom['showroom_main_road_facing'],
       ),
-      showroomCorner: toBoolInverted(
+      showroomCorner: toBool(
         f['showroomCorner'] ??
             f['corner_showroom'] ??
             showroom['corner_showroom'],
@@ -2041,7 +2047,7 @@ class Property extends Equatable {
           f['plotAreaUnit']?.toString() ??
           f['plot_area_unit']?.toString() ??
           plot['plot_area_unit']?.toString(),
-      plotCorner: toBoolInverted(
+      plotCorner: toBool(
         f['plotCorner'] ??
             f['corner_plot'] ??
             f['plot_corner'] ??
@@ -2068,10 +2074,10 @@ class Property extends Equatable {
       additionalRooms: toStringList(
         f['additionalRooms'] ?? f['additional_rooms'],
       ),
-      cornerProperty: toBoolInverted(
+      cornerProperty: toBool(
         f['cornerProperty'] ?? f['corner_property'],
       ),
-      priceNegotiable: toBoolInverted(
+      priceNegotiable: toBool(
         f['priceNegotiable'] ?? f['price_negotiable'],
       ),
       maintenanceCharges: toDouble(
@@ -2087,7 +2093,7 @@ class Property extends Equatable {
       rentAdditionalRooms: toStringList(
         f['rentAdditionalRooms'] ?? f['rent_additional_rooms'],
       ),
-      rentCornerProperty: toBoolInverted(
+      rentCornerProperty: toBool(
         f['rentCornerProperty'] ?? f['rent_corner_property'],
       ),
       petFriendly: toBool(f['petFriendly'] ?? f['pet_friendly']),
@@ -2172,7 +2178,7 @@ class Property extends Equatable {
       villaAdditionalRooms: toStringList(
         f['villaAdditionalRooms'] ?? f['villa_additional_rooms'],
       ),
-      villaCornerProperty: toBoolInverted(
+      villaCornerProperty: toBool(
         f['villaCornerProperty'] ?? f['villa_corner_property'],
       ),
       gatedCommunity: toBool(f['gatedCommunity'] ?? f['gated_community']),
@@ -2183,7 +2189,7 @@ class Property extends Equatable {
           f['villa_water_source']?.toString() ??
           f['water_source']?.toString(),
       connections: toStringList(f['connections']),
-      villaPriceNegotiable: toBoolInverted(
+      villaPriceNegotiable: toBool(
         f['villaPriceNegotiable'] ??
             f['villa_price_negotiable'] ??
             f['price_negotiable'],
@@ -2195,7 +2201,7 @@ class Property extends Equatable {
         f['villaBookingAmount'] ?? f['villa_booking_amount'],
       ),
 
-      builderCornerProperty: toBoolInverted(
+      builderCornerProperty: toBool(
         f['builderCornerProperty'] ?? f['builder_corner_property'],
       ),
       builderGatedSociety: toBool(
@@ -2206,11 +2212,11 @@ class Property extends Equatable {
       ),
       builderUtilities: toStringList(f['builderUtilities'] ?? f['utilities']),
       pricePerSqft: toDouble(f['pricePerSqft'] ?? f['price_per_sqft']),
-      builderNegotiable: toBoolInverted(
+      builderNegotiable: toBool(
         f['builderNegotiable'] ?? f['negotiable'],
       ),
 
-      duplexCornerPlot: toBoolInverted(
+      duplexCornerPlot: toBool(
         f['duplexCornerPlot'] ??
             f['duplex_corner_plot'] ??
             f['corner_property'],
@@ -2236,7 +2242,7 @@ class Property extends Equatable {
         f['connections'],
         f['utilities'],
       ),
-      duplexNegotiable: toBoolInverted(
+      duplexNegotiable: toBool(
         f['duplexNegotiable'] ??
             f['duplex_negotiable'] ??
             f['price_negotiable'],

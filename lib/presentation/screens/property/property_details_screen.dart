@@ -522,6 +522,97 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                           ),
                         ],
                       ],
+                      // Additional features section
+                      () {
+                        final list = <String>[];
+                        final isCorner = (p.cornerProperty ?? false) ||
+                            (p.rentCornerProperty ?? false) ||
+                            (p.villaCornerProperty ?? false) ||
+                            (p.builderCornerProperty ?? false) ||
+                            (p.duplexCornerPlot ?? false) ||
+                            (p.cornerShop ?? false) ||
+                            (p.showroomCorner ?? false) ||
+                            (p.plotCorner ?? false);
+                        if (isCorner) {
+                          list.add('Corner Property');
+                        }
+
+                        final isGated = (p.gatedCommunity ?? false) ||
+                            (p.rentGatedSociety ?? false) ||
+                            (p.builderGatedSociety ?? false) ||
+                            (p.duplexGatedCommunity ?? false);
+                        if (isGated) {
+                          list.add('Gated Society/Community');
+                        }
+
+                        final isMainRoad = (p.mainRoadFacing ?? false) ||
+                            (p.showroomMainRoadFacing ?? false);
+                        if (isMainRoad) {
+                          list.add('Main Road Facing');
+                        }
+
+                        final isWashroom = (p.washroomAvailable ?? false) ||
+                            (p.showroomWashroom ?? false) ||
+                            ((p.washrooms ?? 0) > 0);
+                        if (isWashroom) {
+                          list.add('Washroom Available');
+                        }
+
+                        if (p.preLeased ?? false) list.add('Pre-Leased');
+                        if (p.pantry ?? false) list.add('Pantry Available');
+                        if (p.cafeteria ?? false) list.add('Cafeteria Available');
+                        if (p.serverRoom ?? false) list.add('Server Room');
+                        if (p.fireSafetyInstalled ?? false) list.add('Fire Safety Installed');
+                        if (p.centralAC ?? false) list.add('Central AC');
+                        if (p.visitorParking ?? false) list.add('Visitor Parking');
+                        if (p.boundaryWall ?? false) list.add('Boundary Wall');
+                        if (p.constructionDone ?? false) list.add('Construction Done');
+                        if ((p.plotRoadAccess ?? false) || (p.duplexRoadAccess ?? false)) list.add('Road Access');
+                        if ((p.agriFencing ?? false) || (p.rentFarmFencing ?? false)) list.add('Fencing Done');
+                        if (p.petFriendly ?? false) list.add('Pet Friendly');
+                        if (p.wheelchairFriendly ?? false) list.add('Wheelchair Friendly');
+                        if (p.rentSolarPower ?? false) list.add('Solar Power');
+                        if (p.rentIndependentEntry ?? false) list.add('Independent Entry');
+                        if ((p.rentLiftAvailable ?? false) || (p.liftAvailable ?? false)) list.add('Lift Available');
+                        if (p.rentFarmPool ?? false) list.add('Swimming Pool');
+
+                        if (list.isEmpty) return const SizedBox.shrink();
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AppSpacing.vLg,
+                            Text(
+                              'Key Features',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: AppTheme.gold,
+                              ),
+                            ),
+                            AppSpacing.vSm,
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: list
+                                  .map(
+                                    (item) => Chip(
+                                      avatar: const Icon(Icons.check_circle_outline, size: 16, color: AppTheme.gold),
+                                      label: Text(item),
+                                      visualDensity: VisualDensity.compact,
+                                      backgroundColor: AppTheme.gold.withValues(
+                                        alpha: 0.12,
+                                      ),
+                                      side: BorderSide(
+                                        color: AppTheme.gold.withValues(alpha: 0.35),
+                                      ),
+                                      labelStyle: const TextStyle(color: Colors.black, fontSize: 12),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ],
+                        );
+                      }(),
                       AppSpacing.vLg,
                       Text(
                         'Description',

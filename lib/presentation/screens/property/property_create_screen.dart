@@ -77,8 +77,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _breadth = TextEditingController();
   final _floorsAllowed = TextEditingController();
   int _openSides = 0;
-  bool _boundaryWall = false;
-  bool _constructionDone = false;
+  bool? _boundaryWall;
+  bool? _constructionDone;
 
   String _availability = '';
   String _readyTimeframe = '';
@@ -121,9 +121,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   String _shopAreaUnit = 'sqft';
   final _frontageWidth = TextEditingController();
   final _ceilingHeight = TextEditingController();
-  bool _mainRoadFacing = false;
-  bool _cornerShop = false;
-  bool _washroomAvailable = false;
+  bool? _mainRoadFacing;
+  bool? _cornerShop;
+  bool? _washroomAvailable;
   String _floorType = '';
   final _marketName = TextEditingController();
   final _locality = TextEditingController();
@@ -133,9 +133,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   String _showroomAreaUnit = 'sqft';
   final _showroomFrontageWidth = TextEditingController();
   final _showroomCeilingHeight = TextEditingController();
-  bool _showroomMainRoadFacing = false;
-  bool _showroomCorner = false;
-  bool _showroomWashroom = false;
+  bool? _showroomMainRoadFacing;
+  bool? _showroomCorner;
+  bool? _showroomWashroom;
   final _showroomParkingSlots = TextEditingController();
   String _showroomFurnishing = '';
   String _showroomFloorType = '';
@@ -152,7 +152,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _warehouseLoadingBays = TextEditingController();
   final _warehouseDockLevelers = TextEditingController();
   final _warehousePowerSupply = TextEditingController();
-  bool _warehouseIndustrialLicense = false;
+  bool? _warehouseIndustrialLicense;
   String _warehouseTruckAccess = ''; // heavy, medium, small
   final _warehouseAreaName = TextEditingController();
   final _warehouseCity = TextEditingController();
@@ -161,7 +161,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   String _landType = '';
   final _roadWidth = TextEditingController();
   String _plotAreaUnit = 'sqft';
-  bool _plotCorner = false;
+  bool? _plotCorner;
   bool? _plotRoadAccess;
   bool _agriFencing = false;
   String _agriWaterSource =
@@ -169,7 +169,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // Sell -> Residential -> Flat/Apartment specific
   final Set<String> _additionalRooms = <String>{};
-  bool _cornerProperty = false;
+  bool? _cornerProperty;
   bool? _priceNegotiable;
   final _maintenanceCharges = TextEditingController();
   final _bookingAmount = TextEditingController();
@@ -179,10 +179,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // Rent/Lease -> Residential -> Flat/Apartment specific
   final Set<String> _rentAdditionalRooms = <String>{};
-  bool _rentCornerProperty = false;
+  bool? _rentCornerProperty;
   bool _petFriendly = false;
   bool _wheelchairFriendly = false;
-  bool _rentGatedSociety = false;
+  bool? _rentGatedSociety;
   final _securityDeposit = TextEditingController();
   final _rentMaintenanceCharges = TextEditingController();
   final _brokerage = TextEditingController();
@@ -279,8 +279,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // Sell -> Residential -> Independent House / Villa specific
   final Set<String> _villaAdditionalRooms = <String>{};
-  bool _villaCornerProperty = false;
-  bool _gatedCommunity = false;
+  bool? _villaCornerProperty;
+  bool? _gatedCommunity;
   final Set<String> _villaParking = <String>{}; // open, covered (multi)
   final Set<String> _outdoors = <String>{};
   String _waterSource = '';
@@ -290,16 +290,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _villaBookingAmount = TextEditingController();
 
   // Sell -> Residential -> Builder Floor specific
-  bool _builderCornerProperty = false;
-  bool _builderGatedSociety = false;
+  bool? _builderCornerProperty;
+  bool? _builderGatedSociety;
   bool? _constructionAllowed;
   final Set<String> _builderUtilities = <String>{};
   final _pricePerSqft = TextEditingController();
   bool? _builderNegotiable;
 
   // Sell -> Residential -> Duplex specific (plot-style details)
-  bool _duplexCornerPlot = false;
-  bool _duplexGatedCommunity = false;
+  bool? _duplexCornerPlot;
+  bool? _duplexGatedCommunity;
   bool? _duplexConstructionAllowed;
   bool? _duplexWaterConnection;
   bool? _duplexElectricityConnection;
@@ -312,8 +312,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _farmBuiltUpArea = TextEditingController();
   final Set<String> _farmUtilities = <String>{};
   final _farmRooms = TextEditingController();
-  bool _farmGarden = false;
-  bool _farmSwimmingPool = false;
+  bool? _farmGarden;
+  bool? _farmSwimmingPool;
   final _village = TextEditingController();
   final _landmark = TextEditingController();
   final _ownerName = TextEditingController();
@@ -512,6 +512,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'bare_shell',
     'warm_shell',
     'fully_furnished',
+    'semi_furnished',
+    'plug_and_play',
+    'customizable',
+    'co_working',
+    'private',
+    'managed',
+    'virtual',
+    'corporate',
   ];
 
   static const _shopTypes = <String>['retail', 'mall', 'high_street'];
@@ -1175,7 +1183,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     );
 
     // ── 2. Category / kind — restore so the correct section is shown ────────
-    final isFarmhouse = f.containsKey('farm_land_area') ||
+    final isFarmhouse =
+        f.containsKey('farm_land_area') ||
         f.containsKey('farm_land_area_rent') ||
         f.containsKey('farm_built_up_area') ||
         f.containsKey('farm_rooms') ||
@@ -1565,11 +1574,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     ], fallback: _fb(office, ['tax_included']));
     _officeNegotiable =
         p.priceNegotiable ??
-        _fbNullableInverted(f, ['price_negotiable_office', 'negotiable']) ??
-        _fbNullableInverted(office, ['price_negotiable_office', 'negotiable']);
+        _fbNullable(f, ['price_negotiable_office', 'negotiable']) ??
+        _fbNullable(office, ['price_negotiable_office', 'negotiable']);
     _officeMaintenanceCharges.text =
-        (_fd(f, ['maintenance_charges_office', 'maintenance_charges']) ??
+        (_fd(f, [
+                  'office_maintenance_charges',
+                  'maintenance_charges_office',
+                  'maintenance_charges',
+                ]) ??
                 _fd(office, [
+                  'office_maintenance_charges',
                   'maintenance_charges_office',
                   'maintenance_charges',
                 ]))
@@ -1577,8 +1591,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         '';
     _officeBookingAmount.text =
         p.bookingAmount?.toString() ??
-        (_fd(f, ['booking_amount_office', 'booking_amount']) ??
-                _fd(office, ['booking_amount_office', 'booking_amount']))
+        (_fd(f, [
+                  'office_booking_amount',
+                  'booking_amount_office',
+                  'booking_amount',
+                ]) ??
+                _fd(office, [
+                  'office_booking_amount',
+                  'booking_amount_office',
+                  'booking_amount',
+                ]))
             ?.toString() ??
         '';
 
@@ -1785,12 +1807,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _additionalRooms
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['additional_rooms']));
-    _cornerProperty = p.cornerProperty ?? _fb(f, ['corner_property']);
+    _cornerProperty = p.cornerProperty ?? _fbNullable(f, ['corner_property']);
     _priceNegotiable =
         p.priceNegotiable ??
-        _fbNullableInverted(f, ['negotiable']) ??
-        _fbNullableInverted(f, ['villa_price_negotiable']) ??
-        _fbNullableInverted(f, ['duplex_negotiable']);
+        _fbNullable(f, ['negotiable']) ??
+        _fbNullable(f, ['villa_price_negotiable']) ??
+        _fbNullable(f, ['duplex_negotiable']);
     _maintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
         _fd(f, ['maintenance_charges'])?.toString() ??
@@ -1812,10 +1834,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ..clear()
       ..addAll(p.additionalRooms ?? _fl(f, ['rent_additional_rooms']));
     _rentCornerProperty =
-        p.rentCornerProperty ?? _fb(f, ['rent_corner_property']);
+        p.rentCornerProperty ?? _fbNullable(f, ['rent_corner_property']);
     _petFriendly = _fb(f, ['pet_friendly']);
     _wheelchairFriendly = _fb(f, ['wheelchair_friendly']);
-    _rentGatedSociety = _fb(f, ['gated_society_rent']);
+    _rentGatedSociety = _fbNullable(f, ['gated_society_rent']);
     _securityDeposit.text = _fd(f, ['security_deposit'])?.toString() ?? '';
     _rentMaintenanceCharges.text =
         _fd(f, [
@@ -1887,9 +1909,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _villaCornerProperty =
         p.villaCornerProperty ??
         p.cornerProperty ??
-        _fb(f, ['villa_corner_property', 'corner_property']);
+        _fbNullable(f, ['villa_corner_property', 'corner_property']);
     _gatedCommunity =
-        p.gatedCommunity ?? _fb(f, ['gated_community', 'gated_society']);
+        p.gatedCommunity ?? _fbNullable(f, ['gated_community', 'gated_society']);
     _villaParking
       ..clear()
       ..addAll(p.villaParking ?? _fl(f, ['parking_types']));
@@ -1906,7 +1928,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _villaPriceNegotiable =
         p.villaPriceNegotiable ??
         p.priceNegotiable ??
-        _fbNullableInverted(f, ['villa_price_negotiable', 'price_negotiable']);
+        _fbNullable(f, ['villa_price_negotiable', 'price_negotiable']);
     _villaMaintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
         _fd(f, ['villa_maintenance_charges'])?.toString() ??
@@ -1920,8 +1942,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _builderCornerProperty =
         p.builderCornerProperty ??
         (p.cornerProperty ??
-            _fb(f, ['builder_corner_property', 'corner_property']));
-    _builderGatedSociety = _fb(f, ['builder_gated_society', 'gated_society']);
+            _fbNullable(f, ['builder_corner_property', 'corner_property']));
+    _builderGatedSociety = _fbNullable(f, ['builder_gated_society', 'gated_society']);
     _constructionAllowed =
         p.constructionAllowed ?? _fbNullable(f, ['construction_allowed']);
     _builderUtilities
@@ -1929,7 +1951,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ..addAll(_fl(f, ['utilities']));
     _pricePerSqft.text = _fd(f, ['price_per_sqft'])?.toString() ?? '';
     _builderNegotiable =
-        p.builderNegotiable ?? _fbNullableInverted(f, ['negotiable']);
+        p.builderNegotiable ?? _fbNullable(f, ['negotiable']);
     _maintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
         _fd(f, ['maintenance_charges'])?.toString() ??
@@ -1990,7 +2012,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     }
     _duplexNegotiable =
         p.duplexNegotiable ??
-        _fbNullableInverted(f, ['duplex_negotiable', 'price_negotiable']);
+        _fbNullable(f, ['duplex_negotiable', 'price_negotiable']);
     _duplexRoadAccess =
         p.duplexRoadAccess ??
         _fbNullable(f, ['duplex_road_access', 'road_access']);
@@ -3919,12 +3941,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? double.tryParse(_officeBookingAmount.text.trim())
           : _isResidential
           ? double.tryParse(
-        (_isSellResidentialVillaHouse
-            ? _villaBookingAmount
-            : _bookingAmount)
-            .text
-            .trim(),
-      )
+              (_isSellResidentialVillaHouse
+                      ? _villaBookingAmount
+                      : _bookingAmount)
+                  .text
+                  .trim(),
+            )
           : double.tryParse(_bookingAmount.text.trim()),
 
       maintenanceCharges: isPgCoLiving
@@ -4012,7 +4034,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   }
 
   Map<String, dynamic> _buildApiFields() {
-
     final isLandPlot = _isLandPlotContext;
     final isCommercial = _isCommercialContext;
     final isPgCoLiving =
@@ -4269,18 +4290,25 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? _taxIncluded
           : null,
       'price_negotiable_office': (isCommercial && _commercialType == 'office')
-          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 0 : 1))
+          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 1 : 0))
           : null,
       'negotiable': (isCommercial && _commercialType == 'office')
-          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 0 : 1))
+          ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 1 : 0))
           : (_isSellResidentialBuilderFloor
                 ? (_builderNegotiable == null
                       ? null
-                      : (_builderNegotiable! ? 0 : 1))
+                      : (_builderNegotiable! ? 1 : 0))
                 : null),
+      'office_maintenance_charges':
+          (isCommercial && _commercialType == 'office')
+          ? double.tryParse(_officeMaintenanceCharges.text.trim())
+          : null,
       'maintenance_charges_office':
           (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeMaintenanceCharges.text.trim())
+          : null,
+      'office_booking_amount': (isCommercial && _commercialType == 'office')
+          ? double.tryParse(_officeBookingAmount.text.trim())
           : null,
       'booking_amount_office': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
@@ -4336,18 +4364,20 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 ? null
                 : _ceilingHeight.text.trim())
           : null,
-      'main_road_facing': (isCommercial && _commercialType == 'shop')
-          ? _mainRoadFacing
+      'main_road_facing': (isCommercial && _commercialType == 'shop' && _mainRoadFacing != null)
+          ? (_mainRoadFacing! ? 1 : 0)
           : null,
-      'corner_shop': (isCommercial && _commercialType == 'shop')
-          ? (_cornerShop ? 0 : 1)
+      'corner_shop': (isCommercial && _commercialType == 'shop' && _cornerShop != null)
+          ? (_cornerShop! ? 1 : 0)
           : null,
-      'washroom_available': (isCommercial && _commercialType == 'shop')
-          ? _washroomAvailable
+      'washroom_available': (isCommercial && _commercialType == 'shop' && _washroomAvailable != null)
+          ? (_washroomAvailable! ? 1 : 0)
           : null,
-      'floor_type': (isCommercial && _commercialType == 'shop')
-          ? _floorType
-          : null,
+      'floor_type': (isCommercial && _commercialType == 'shop' && _floorType.trim().isNotEmpty)
+          ? _floorType.trim()
+          : (isCommercial && _commercialType == 'showroom' && _showroomFloorType.trim().isNotEmpty)
+              ? _showroomFloorType.trim()
+              : null,
       'parking_slots': (isCommercial && _commercialType == 'shop')
           ? _parking
           : null,
@@ -4411,15 +4441,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? double.tryParse(_showroomCeilingHeight.text.trim())
           : null,
       'showroom_main_road_facing':
-          (isCommercial && _commercialType == 'showroom')
-          ? _showroomMainRoadFacing
+          (isCommercial && _commercialType == 'showroom' && _showroomMainRoadFacing != null)
+          ? (_showroomMainRoadFacing! ? 1 : 0)
           : null,
-      'corner_showroom': (isCommercial && _commercialType == 'showroom')
-          ? (_showroomCorner ? 0 : 1)
+      'corner_showroom': (isCommercial && _commercialType == 'showroom' && _showroomCorner != null)
+          ? (_showroomCorner! ? 1 : 0)
           : null,
       'showroom_washroom_available':
-          (isCommercial && _commercialType == 'showroom')
-          ? _showroomWashroom
+          (isCommercial && _commercialType == 'showroom' && _showroomWashroom != null)
+          ? (_showroomWashroom! ? 1 : 0)
           : null,
       'showroom_parking_slots': (isCommercial && _commercialType == 'showroom')
           ? int.tryParse(_showroomParkingSlots.text.trim())
@@ -4428,8 +4458,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           (isCommercial && _commercialType == 'showroom')
           ? _showroomFurnishing
           : null,
-      'showroom_floor_type': (isCommercial && _commercialType == 'showroom')
-          ? _showroomFloorType
+      'showroom_floor_type': (isCommercial && _commercialType == 'showroom' && _showroomFloorType.trim().isNotEmpty)
+          ? _showroomFloorType.trim()
           : null,
       'showroom_market_name': (isCommercial && _commercialType == 'showroom')
           ? (_showroomMarketName.text.trim().isEmpty
@@ -4571,24 +4601,24 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
       // Sell -> Residential -> Flat/Apartment extra fields
       'corner_property':
-          (_cornerProperty ||
-              _rentCornerProperty ||
-              _villaCornerProperty ||
-              _builderCornerProperty ||
-              _duplexCornerPlot ||
-              _cornerShop ||
-              _showroomCorner ||
-              _plotCorner)
-          ? 0
-          : 1,
+          ((_cornerProperty ?? false) ||
+              (_rentCornerProperty ?? false) ||
+              (_villaCornerProperty ?? false) ||
+              (_builderCornerProperty ?? false) ||
+              (_duplexCornerPlot ?? false) ||
+              (_cornerShop ?? false) ||
+              (_showroomCorner ?? false) ||
+              (_plotCorner ?? false))
+          ? 1
+          : 0,
       'price_negotiable': (_propertyKind == _CreatePropertyKind.sale)
           ? (_isSellResidentialVillaHouse
                 ? (_villaPriceNegotiable == null
                       ? null
-                      : (_villaPriceNegotiable! ? 0 : 1))
+                      : (_villaPriceNegotiable! ? 1 : 0))
                 : (_priceNegotiable == null
                       ? null
-                      : (_priceNegotiable! ? 0 : 1)))
+                      : (_priceNegotiable! ? 1 : 0)))
           : null,
       'additional_rooms': () {
         if (!_isResidential) return null;
@@ -4736,7 +4766,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? _duplexElectricityConnection
           : null,
       'duplex_negotiable': _isSellResidentialDuplex
-          ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 0 : 1))
+          ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 1 : 0))
           : null,
       'duplex_road_access': _isSellResidentialDuplex ? _duplexRoadAccess : null,
       'duplex_nearby_facilities': _isSellResidentialDuplex
@@ -4818,16 +4848,28 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   }
 
   String _normalizeOfficeTypeForApi(String value) {
-    switch (value.trim().toLowerCase()) {
-      case 'bare_shell':
-        return 'bare_shell';
-      case 'warm_shell':
-        return 'co_working';
-      case 'fully_furnished':
-        return 'fully_furnished';
-      default:
-        return 'co_working';
+    final norm = value
+        .trim()
+        .toLowerCase()
+        .replaceAll('-', '_')
+        .replaceAll(' ', '_');
+    const validTypes = {
+      'bare_shell',
+      'warm_shell',
+      'fully_furnished',
+      'semi_furnished',
+      'plug_and_play',
+      'customizable',
+      'co_working',
+      'private',
+      'managed',
+      'virtual',
+      'corporate',
+    };
+    if (validTypes.contains(norm)) {
+      return norm;
     }
+    return 'bare_shell';
   }
 
   int? _normalizeOfficeMaxSeats({
@@ -6615,7 +6657,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _buildChoiceChipRow(
             'Corner Plot',
             const ['yes', 'no'],
-            _plotCorner ? 'yes' : 'no',
+            _plotCorner == null ? '' : (_plotCorner! ? 'yes' : 'no'),
             (v) {
               setState(() => _plotCorner = v == 'yes');
               _scheduleSaveDraft();
@@ -6625,8 +6667,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _buildChoiceChipRow(
             'Boundary Wall',
             const ['yes', 'no'],
-            _boundaryWall ? 'yes' : 'no',
-            (v) => setState(() => _boundaryWall = v == 'yes'),
+            _boundaryWall == null ? '' : (_boundaryWall! ? 'yes' : 'no'),
+            (v) {
+              setState(() => _boundaryWall = v == 'yes');
+              _scheduleSaveDraft();
+            },
           ),
           const SizedBox(height: 12),
           _buildStepper(
@@ -6640,8 +6685,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _buildChoiceChipRow(
             'Construction Done',
             const ['yes', 'no'],
-            _constructionDone ? 'yes' : 'no',
-            (v) => setState(() => _constructionDone = v == 'yes'),
+            _constructionDone == null ? '' : (_constructionDone! ? 'yes' : 'no'),
+            (v) {
+              setState(() => _constructionDone = v == 'yes');
+              _scheduleSaveDraft();
+            },
           ),
           const SizedBox(height: 12),
           _buildTextField(
@@ -6880,7 +6928,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Main Road Facing',
               const ['yes', 'no'],
-              _showroomMainRoadFacing ? 'yes' : 'no',
+              _showroomMainRoadFacing == null ? '' : (_showroomMainRoadFacing! ? 'yes' : 'no'),
               (v) {
                 setState(() => _showroomMainRoadFacing = v == 'yes');
                 _scheduleSaveDraft();
@@ -6890,7 +6938,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Corner Showroom',
               const ['yes', 'no'],
-              _showroomCorner ? 'yes' : 'no',
+              _showroomCorner == null ? '' : (_showroomCorner! ? 'yes' : 'no'),
               (v) {
                 setState(() => _showroomCorner = v == 'yes');
                 _scheduleSaveDraft();
@@ -6900,7 +6948,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Washroom Available',
               const ['yes', 'no'],
-              _showroomWashroom ? 'yes' : 'no',
+              _showroomWashroom == null ? '' : (_showroomWashroom! ? 'yes' : 'no'),
               (v) {
                 setState(() => _showroomWashroom = v == 'yes');
                 _scheduleSaveDraft();
@@ -7091,7 +7139,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Industrial License',
               const ['yes', 'no'],
-              _warehouseIndustrialLicense ? 'yes' : 'no',
+              _warehouseIndustrialLicense == null ? '' : (_warehouseIndustrialLicense! ? 'yes' : 'no'),
               (v) {
                 setState(() => _warehouseIndustrialLicense = v == 'yes');
                 _scheduleSaveDraft();
@@ -7209,7 +7257,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Main Road Facing',
               const ['yes', 'no'],
-              _mainRoadFacing ? 'yes' : 'no',
+              _mainRoadFacing == null ? '' : (_mainRoadFacing! ? 'yes' : 'no'),
               (v) {
                 setState(() => _mainRoadFacing = v == 'yes');
                 _scheduleSaveDraft();
@@ -7219,7 +7267,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Corner Shop',
               const ['yes', 'no'],
-              _cornerShop ? 'yes' : 'no',
+              _cornerShop == null ? '' : (_cornerShop! ? 'yes' : 'no'),
               (v) {
                 setState(() => _cornerShop = v == 'yes');
                 _scheduleSaveDraft();
@@ -7229,7 +7277,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Washroom Available',
               const ['yes', 'no'],
-              _washroomAvailable ? 'yes' : 'no',
+              _washroomAvailable == null ? '' : (_washroomAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _washroomAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -7410,7 +7458,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Garden',
               const ['yes', 'no'],
-              _farmGarden ? 'yes' : 'no',
+              _farmGarden == null ? '' : (_farmGarden! ? 'yes' : 'no'),
               (v) {
                 setState(() => _farmGarden = v == 'yes');
                 _scheduleSaveDraft();
@@ -7420,7 +7468,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Swimming Pool',
               const ['yes', 'no'],
-              _farmSwimmingPool ? 'yes' : 'no',
+              _farmSwimmingPool == null ? '' : (_farmSwimmingPool! ? 'yes' : 'no'),
               (v) {
                 setState(() => _farmSwimmingPool = v == 'yes');
                 _scheduleSaveDraft();
@@ -7770,7 +7818,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Corner Property',
                   const ['yes', 'no'],
-                  _cornerProperty ? 'yes' : 'no',
+                  _cornerProperty == null ? '' : (_cornerProperty! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _cornerProperty = v == 'yes');
                     _scheduleSaveDraft();
@@ -7865,7 +7913,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Corner Property',
                   const ['yes', 'no'],
-                  _rentCornerProperty ? 'yes' : 'no',
+                  _rentCornerProperty == null ? '' : (_rentCornerProperty! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _rentCornerProperty = v == 'yes');
                     _scheduleSaveDraft();
@@ -7895,7 +7943,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Gated Society',
                   const ['yes', 'no'],
-                  _rentGatedSociety ? 'yes' : 'no',
+                  _rentGatedSociety == null ? '' : (_rentGatedSociety! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _rentGatedSociety = v == 'yes');
                     _scheduleSaveDraft();
@@ -8232,7 +8280,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Gated Society',
                   const ['yes', 'no'],
-                  _rentGatedSociety ? 'yes' : 'no',
+                  _rentGatedSociety == null ? '' : (_rentGatedSociety! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _rentGatedSociety = v == 'yes');
                     _scheduleSaveDraft();
@@ -8573,7 +8621,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Gated Society',
                   const ['yes', 'no'],
-                  _rentGatedSociety ? 'yes' : 'no',
+                  _rentGatedSociety == null ? '' : (_rentGatedSociety! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _rentGatedSociety = v == 'yes');
                     _scheduleSaveDraft();
@@ -8659,7 +8707,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Corner Property',
                   const ['yes', 'no'],
-                  _villaCornerProperty ? 'yes' : 'no',
+                  _villaCornerProperty == null ? '' : (_villaCornerProperty! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _villaCornerProperty = v == 'yes');
                     _scheduleSaveDraft();
@@ -8856,7 +8904,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Corner Property',
                   const ['yes', 'no'],
-                  _builderCornerProperty ? 'yes' : 'no',
+                  _builderCornerProperty == null ? '' : (_builderCornerProperty! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _builderCornerProperty = v == 'yes');
                     _scheduleSaveDraft();
@@ -8866,7 +8914,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Gated Society',
                   const ['yes', 'no'],
-                  _builderGatedSociety ? 'yes' : 'no',
+                  _builderGatedSociety == null ? '' : (_builderGatedSociety! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _builderGatedSociety = v == 'yes');
                     _scheduleSaveDraft();
@@ -8922,8 +8970,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _buildChoiceChipRow(
                   'Boundary Wall',
                   const ['yes', 'no'],
-                  _boundaryWall ? 'yes' : 'no',
-                  (v) => setState(() => _boundaryWall = v == 'yes'),
+                  _boundaryWall == null ? '' : (_boundaryWall! ? 'yes' : 'no'),
+                  (v) {
+                    setState(() => _boundaryWall = v == 'yes');
+                    _scheduleSaveDraft();
+                  },
                 ),
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
@@ -9498,7 +9549,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Corner Plot',
               const ['yes', 'no'],
-              _plotCorner ? 'yes' : 'no',
+              _plotCorner == null ? '' : (_plotCorner! ? 'yes' : 'no'),
               (v) {
                 setState(() => _plotCorner = v == 'yes');
                 _scheduleSaveDraft();
@@ -9508,8 +9559,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Boundary Wall',
               const ['yes', 'no'],
-              _boundaryWall ? 'yes' : 'no',
-              (v) => setState(() => _boundaryWall = v == 'yes'),
+              _boundaryWall == null ? '' : (_boundaryWall! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _boundaryWall = v == 'yes');
+                _scheduleSaveDraft();
+              },
             ),
             const SizedBox(height: 12),
             _buildStepper(
@@ -9523,8 +9577,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _buildChoiceChipRow(
               'Construction Done',
               const ['yes', 'no'],
-              _constructionDone ? 'yes' : 'no',
-              (v) => setState(() => _constructionDone = v == 'yes'),
+              _constructionDone == null ? '' : (_constructionDone! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _constructionDone = v == 'yes');
+                _scheduleSaveDraft();
+              },
             ),
             const SizedBox(height: 12),
             _buildTextField(

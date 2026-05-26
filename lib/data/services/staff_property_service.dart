@@ -884,28 +884,28 @@ class StaffPropertyService implements PropertyService {
       // dio.options.headers. Log a reminder rather than a misleading "null".
       debugPrint(
         _yellow(
-          '[StaffPropertyService] POST ${dio.options.baseUrl}/staff/properties (auth set by interceptor)',
+          '[StaffPropertyService] POST ${dio.options.baseUrl}/staff/add/property (auth set by interceptor)',
         ),
       );
     }
     _debugLogMultipart(
       dio: dio,
       method: 'POST',
-      path: '/staff/properties',
+      path: '/staff/add/property',
       form: formData,
       filePaths: _collectCreateFilePaths(property),
     );
     Response<Map<String, dynamic>> res;
     try {
       res = await dio.post<Map<String, dynamic>>(
-        '/staff/properties',
+        '/staff/add/property',
         data: formData,
       );
     } on DioException catch (e) {
       if (kDebugMode) {
         debugPrint(
           _yellow(
-            '[StaffPropertyService] POST /staff/properties ERROR ${e.response?.statusCode}: ${e.response?.data}',
+            '[StaffPropertyService] POST  /staff/add/property ERROR ${e.response?.statusCode}: ${e.response?.data}',
           ),
         );
       }
@@ -919,7 +919,7 @@ class StaffPropertyService implements PropertyService {
     final dio = await _dioFuture;
     final form = await _toUpdateForm(property);
     Response<Map<String, dynamic>> res;
-    final path = '/staff/properties/${property.id}';
+    final path = '/staff/add/property/${property.id}';
 
     // PHP/Laravel backends natively expect method override for multipart PUT/PATCH requests.
     // By using POST with '_method: PUT', we ensure robust, native PHP parsing of all fields and files.
@@ -960,7 +960,7 @@ class StaffPropertyService implements PropertyService {
     // The public /properties/{id} endpoint only returns base fields.
     Response<Map<String, dynamic>> res;
     try {
-      res = await dio.get<Map<String, dynamic>>('/staff/properties/$id');
+      res = await dio.get<Map<String, dynamic>>('/staff/add/property/$id');
     } on DioException catch (_) {
       // Fallback to public endpoint if staff endpoint is unavailable.
       res = await dio.get<Map<String, dynamic>>('/properties/$id');
