@@ -741,6 +741,7 @@ class StaffPropertyService implements PropertyService {
           property.possessionStatus!.trim().isNotEmpty)
         'possession_status': property.possessionStatus!.trim(),
       if (property.bedrooms != null) 'bedrooms': property.bedrooms,
+      if (property.bedrooms != null) 'bhk': property.bedrooms,
       if (property.bathrooms != null) 'bathrooms': property.bathrooms,
       if (property.furnishing != null && property.furnishing!.trim().isNotEmpty)
         'furnishing': property.furnishing!.trim(),
@@ -763,6 +764,8 @@ class StaffPropertyService implements PropertyService {
       if (property.featuredExpiry != null)
         'featured_expiry': property.featuredExpiry!.toIso8601String(),
       if (images.isNotEmpty) 'images[]': images,
+      if (images.isNotEmpty)
+        'images_general[]': images.map((f) => f.clone()).toList(),
       if (documentFiles.isNotEmpty) 'documents[]': documentFiles,
       if (videoFiles.isNotEmpty) 'videos[]': videoFiles,
     });
@@ -774,8 +777,62 @@ class StaffPropertyService implements PropertyService {
       );
     }
 
-    final extra = property.apiFields ?? const <String, dynamic>{};
-    // Keys that are server-managed and must never be sent back in a create/update.
+    for (var i = 0; i < videoFiles.length; i++) {
+      form.files.add(
+        MapEntry('videos[$i][file]', videoFiles[i].clone()),
+      );
+    }
+
+    final extraRaw = property.apiFields ?? const <String, dynamic>{};
+    final extra = Map<String, dynamic>.from(extraRaw);
+
+    // 1. Water Source alignment: map villa_water_source / rent_villa_water_source to water_source
+    final wSource = extra['villa_water_source'] ?? extra['rent_villa_water_source'];
+    if (wSource != null && wSource.toString().trim().isNotEmpty) {
+      extra['water_source'] = wSource;
+    }
+
+    // 2. Parking alignment: map villa_parking / rent_villa_parking / parking_types list to parking_independent_house
+    final pTypes = extra['parking_types'] ?? extra['villa_parking'] ?? extra['rent_villa_parking'];
+    if (pTypes is Iterable && pTypes.isNotEmpty) {
+      final list = pTypes.map((e) => e.toString().toLowerCase()).toList();
+      if (list.contains('open') && list.contains('covered')) {
+        extra['parking_independent_house'] = 'both';
+      } else if (list.contains('open')) {
+        extra['parking_independent_house'] = 'open_parking';
+      } else if (list.contains('covered')) {
+        extra['parking_independent_house'] = 'covered_parking';
+      }
+    }
+
+    // 3. Outdoors alignment: map rent_villa_outdoors / outdoors list to outdoors
+    final outdoorsList = extra['rent_villa_outdoors'] ?? extra['outdoors'];
+    if (outdoorsList is Iterable && outdoorsList.isNotEmpty) {
+      extra['outdoors'] = outdoorsList.toList();
+    }
+
+    // 4. Owner Name & Phone alignment
+    final oName = extra['owner_name'] ?? (property.ownerName.trim().isNotEmpty ? property.ownerName.trim() : null);
+    if (oName != null) {
+      extra['owner_name'] = oName;
+    }
+    final oPhone = extra['owner_phone'] ?? extra['owner_mobile'] ?? (property.ownerPhone != null && property.ownerPhone!.trim().isNotEmpty ? property.ownerPhone!.trim() : null);
+    if (oPhone != null) {
+      extra['owner_phone'] = oPhone;
+      extra['owner_mobile'] = oPhone;
+    }
+
+    // 5. Commercial Office Space alignment: match frontend keys to backend expectations
+    final fpArea = extra['floor_plate_area'];
+    if (fpArea != null) {
+      extra['office_area'] = fpArea;
+    }
+    final cRooms = extra['conference_rooms'];
+    if (cRooms != null) {
+      extra['conference_seats'] = cRooms;
+    }
+
+    // Keys that are server-managed or have been explicitly translated/mapped and must never be sent back in raw format.
     const _serverOnlyKeys = {
       'id', 'created_at', 'updated_at', 'deleted_at',
       'status', 'approval_status', 'rejection_reason',
@@ -799,6 +856,10 @@ class StaffPropertyService implements PropertyService {
       'additional_rooms',
       'booking_amount',
       'maintenance_charges',
+      'villa_water_source', 'rent_villa_water_source',
+      'parking_types', 'villa_parking', 'rent_villa_parking',
+      'rent_villa_outdoors',
+      'floor_plate_area', 'conference_rooms',
     };
     for (final e in extra.entries) {
       final key = e.key.trim();
@@ -884,28 +945,28 @@ class StaffPropertyService implements PropertyService {
       // dio.options.headers. Log a reminder rather than a misleading "null".
       debugPrint(
         _yellow(
-          '[StaffPropertyService] POST ${dio.options.baseUrl}/staff/add/property (auth set by interceptor)',
+          '[StaffPropertyService] POST ${dio.options.baseUrl}/staff/properties (auth set by interceptor)',
         ),
       );
     }
     _debugLogMultipart(
       dio: dio,
       method: 'POST',
-      path: '/staff/add/property',
+      path: '/staff/properties',
       form: formData,
       filePaths: _collectCreateFilePaths(property),
     );
     Response<Map<String, dynamic>> res;
     try {
       res = await dio.post<Map<String, dynamic>>(
-        '/staff/add/property',
+        '/staff/properties',
         data: formData,
       );
     } on DioException catch (e) {
       if (kDebugMode) {
         debugPrint(
           _yellow(
-            '[StaffPropertyService] POST  /staff/add/property ERROR ${e.response?.statusCode}: ${e.response?.data}',
+            '[StaffPropertyService] POST  /staff/properties ERROR ${e.response?.statusCode}: ${e.response?.data}',
           ),
         );
       }
@@ -919,7 +980,7 @@ class StaffPropertyService implements PropertyService {
     final dio = await _dioFuture;
     final form = await _toUpdateForm(property);
     Response<Map<String, dynamic>> res;
-    final path = '/staff/add/property/${property.id}';
+    final path = '/staff/properties/${property.id}';
 
     // PHP/Laravel backends natively expect method override for multipart PUT/PATCH requests.
     // By using POST with '_method: PUT', we ensure robust, native PHP parsing of all fields and files.
@@ -960,7 +1021,7 @@ class StaffPropertyService implements PropertyService {
     // The public /properties/{id} endpoint only returns base fields.
     Response<Map<String, dynamic>> res;
     try {
-      res = await dio.get<Map<String, dynamic>>('/staff/add/property/$id');
+      res = await dio.get<Map<String, dynamic>>('/staff/properties/$id');
     } on DioException catch (_) {
       // Fallback to public endpoint if staff endpoint is unavailable.
       res = await dio.get<Map<String, dynamic>>('/properties/$id');

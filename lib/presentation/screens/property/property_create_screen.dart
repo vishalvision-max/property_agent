@@ -359,6 +359,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'description': false,
     'promotion': false,
   };
+  final Map<String, GlobalKey> _sectionKeys = {};
 
   // Address autocomplete
   final _addressFocus = FocusNode();
@@ -5508,7 +5509,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       case 'amenities':
         return 'furnishings';
       case 'furnishings':
-        return _isSellResidentialApartment ? 'promotion' : 'media';
+        return 'media';
       case 'promotion':
         return 'media';
       case 'media':
@@ -5559,12 +5560,27 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       _expandedSections[key] = false;
       _expandedSections[next] = true;
     });
+
+    // Scroll to the next section to ensure its header is at the top of the screen
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (!mounted) return;
+      final targetKey = _sectionKeys[next];
+      if (targetKey != null && targetKey.currentContext != null) {
+        Scrollable.ensureVisible(
+          targetKey.currentContext!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.02, // anchor the top of the section to the top of the screen
+        );
+      }
+    });
   }
 
   Widget _buildSection(String title, String key, IconData icon, Widget child) {
     final theme = Theme.of(context);
     final expanded = _expandedSections[key] ?? true;
-    final canNext = expanded && _isSectionComplete(key);
+    final canNext = expanded && key != 'description' && _isSectionComplete(key);
+    _sectionKeys[key] ??= GlobalKey();
     if (kDebugMode && expanded) {
       debugPrint(
         'Section "$key" expanded=$expanded complete=${_isSectionComplete(key)} canNext=$canNext',
@@ -5572,6 +5588,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     }
 
     return GlassContainer(
+      key: _sectionKeys[key],
       blur: false, // Fix ANR in scroll views
       borderRadius: const BorderRadius.all(Radius.circular(20)),
       padding: EdgeInsets.zero,
@@ -5895,17 +5912,21 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         .watch(categoriesProvider)
         .when(
           data: (cats) {
-            final filtered = _segmentLockedToResidential
-                ? cats
-                      .where(
-                        (c) =>
-                            c.slug != 'commercial' &&
-                            c.slug != 'land-plot' &&
-                            c.slug != 'agriculture' &&
-                            c.slug != 'agricultural',
-                      )
-                      .toList()
-                : cats;
+            final isRent = _propertyKind == _CreatePropertyKind.rent;
+            final filtered = cats.where((c) {
+              if (_segmentLockedToResidential) {
+                return c.slug != 'commercial' &&
+                       c.slug != 'land-plot' &&
+                       c.slug != 'agriculture' &&
+                       c.slug != 'agricultural';
+              }
+              if (isRent) {
+                return c.slug != 'land-plot' &&
+                       c.slug != 'agriculture' &&
+                       c.slug != 'agricultural';
+              }
+              return true;
+            }).toList();
 
             // For PG/Co-Living, default parent category to Residential.
             if (_segmentLockedToResidential &&
