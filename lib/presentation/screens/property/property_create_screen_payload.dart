@@ -8,6 +8,10 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
     final isPgCoLiving =
         _propertyKind == _CreatePropertyKind.pg ||
         _propertyKind == _CreatePropertyKind.coLiving;
+    final isSale = _propertyKind == _CreatePropertyKind.sale;
+    final isRentLease =
+        _propertyKind == _CreatePropertyKind.rent ||
+        _propertyKind == _CreatePropertyKind.lease;
     final seatsValue = int.tryParse(_seats.text.trim());
     final maxSeatsValue = int.tryParse(_maxSeats.text.trim());
     final normalizedMaxSeats = (isCommercial && _commercialType == 'office')
@@ -510,6 +514,147 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           ? (_warehouseCity.text.trim().isEmpty
                 ? null
                 : _warehouseCity.text.trim())
+          : null,
+      'shed_carpet_area': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedCarpetArea.text.trim())
+          : null,
+      'shed_built_up_area': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedBuiltUpArea.text.trim())
+          : null,
+      'shed_super_built_up_area': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedSuperBuiltUpArea.text.trim())
+          : null,
+      'shed_plot_area': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedPlotArea.text.trim())
+          : null,
+      'shed_plot_area_unit': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedAreaUnit
+          : null,
+      'shed_ownership_type': (isCommercial && _commercialType == 'industrial_shed')
+          ? (_shedOwnership.trim().isEmpty ? null : _shedOwnership)
+          : null,
+      'shed_property_age': (isCommercial && _commercialType == 'industrial_shed')
+          ? (_shedPropertyAge.trim().isEmpty ? null : _shedPropertyAge)
+          : null,
+      'shed_facing': (isCommercial && _commercialType == 'industrial_shed')
+          ? (_shedFacing.trim().isEmpty ? null : _shedFacing)
+          : null,
+      'shed_ceiling_height_ft': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedCeilingHeight.text.trim())
+          : null,
+      'shed_floor_load_capacity': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedFloorLoadCapacity.text.trim())
+          : null,
+      'shed_power_load_kw': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedPowerLoad.text.trim())
+          : null,
+      'shed_three_phase_electricity': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedThreePhaseElectricity
+          : null,
+      'shed_water_connection': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedWaterConnection
+          : null,
+      'shed_borewell_available': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedBorewellAvailable
+          : null,
+      'shed_loading_bay': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedLoadingBay
+          : null,
+      'shed_dock_leveler': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedDockLeveler
+          : null,
+      'shed_truck_access': (isCommercial && _commercialType == 'industrial_shed')
+          ? (_shedTruckAccess.trim().isEmpty ? null : _shedTruckAccess)
+          : null,
+      'shed_container_access': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedContainerAccess
+          : null,
+      'shed_parking_available': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedParkingAvailable
+          : null,
+      'shed_visitor_parking': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedVisitorParking
+          : null,
+      'shed_security_cabin': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedSecurityCabin
+          : null,
+      'shed_boundary_wall': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedBoundaryWall
+          : null,
+      'shed_cctv_surveillance': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedCctvSurveillance
+          : null,
+      'shed_office_space_available': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedOfficeSpaceAvailable
+          : null,
+      'shed_pantry': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedPantry
+          : null,
+      'shed_washrooms': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedWashrooms
+          : null,
+      'shed_labour_accommodation': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedLabourAccommodation
+          : null,
+      'shed_main_road_facing': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedMainRoadFacing
+          : null,
+      'shed_corner_property': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedCornerProperty
+          : null,
+      'shed_gated_industrial_estate': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedGatedIndustrialEstate
+          : null,
+      'shed_industrial_license': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedIndustrialLicense
+          : null,
+      'shed_factory_license': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedFactoryLicense
+          : null,
+      'shed_fire_noc': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedFireNoc
+          : null,
+      'shed_pollution_clearance': (isCommercial && _commercialType == 'industrial_shed')
+          ? _shedPollutionClearance
+          : null,
+      'shed_booking_amount': (isCommercial && _commercialType == 'industrial_shed' && isSale)
+          ? double.tryParse(_shedBookingAmount.text.trim())
+          : null,
+      'shed_maintenance_charges': (isCommercial && _commercialType == 'industrial_shed')
+          ? double.tryParse(_shedMaintenanceCharges.text.trim())
+          : null,
+      'shed_price_negotiable': (isCommercial && _commercialType == 'industrial_shed' && isSale)
+          ? _shedPriceNegotiable
+          : null,
+      'shed_possession_status': (isCommercial && _commercialType == 'industrial_shed' && isSale)
+          ? _shedPossessionStatus
+          : null,
+      'shed_security_deposit': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+          ? double.tryParse(_shedSecurityDeposit.text.trim())
+          : null,
+      'shed_brokerage': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+          ? double.tryParse(_shedBrokerage.text.trim())
+          : null,
+      'shed_available_from': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+          ? (_shedAvailableFrom.text.trim().isEmpty ? null : _shedAvailableFrom.text.trim())
+          : null,
+      'shed_lock_in_period_months': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+          ? int.tryParse(_shedLockInMonths.text.trim())
+          : null,
+      'shed_notice_period_months': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+          ? int.tryParse(_shedNoticePeriodValue.text.trim())
+          : null,
+      'shed_rent_negotiable': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.rent)
+          ? _shedRentNegotiable
+          : null,
+      'shed_lease_duration_years': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+          ? int.tryParse(_shedLeaseDuration.text.trim())
+          : null,
+      'shed_escalation_clause': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+          ? _shedEscalationClause
+          : null,
+      'shed_renewal_option': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+          ? _shedRenewalOption
           : null,
       'shop_facade': isCommercial
           ? (_shopFacade.text.trim().isEmpty ? null : _shopFacade.text.trim())

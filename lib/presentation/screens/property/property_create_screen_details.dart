@@ -804,7 +804,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         ? 'Showroom Details'
                         : (_commercialType == 'warehouse'
                               ? 'Warehouse Details'
-                              : 'Office Space Details')),
+                              : (_commercialType == 'industrial_shed'
+                                    ? 'Industrial Shed Details'
+                                    : 'Office Space Details'))),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -1229,6 +1231,585 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 ),
               ],
             ),
+          ],
+          if (_commercialType == 'industrial_shed') ...[
+            _buildSectionLabel('Area Details'),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    _shedCarpetArea,
+                    'Carpet Area (sqft)',
+                    'e.g., 5000',
+                    Icons.crop_square,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildTextField(
+                    _shedBuiltUpArea,
+                    'Built-up Area (sqft)',
+                    'e.g., 6000',
+                    Icons.crop_square,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    _shedSuperBuiltUpArea,
+                    'Super Built-up (sqft)',
+                    'e.g., 7000',
+                    Icons.crop_square,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _shedPlotArea,
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) => _scheduleSaveDraft(),
+                    decoration: InputDecoration(
+                      labelText: 'Plot Area',
+                      hintText: 'e.g., 10000',
+                      prefixIcon: const Icon(Icons.terrain, size: 18),
+                      suffixIcon: Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _shedAreaUnit,
+                            isDense: true,
+                            dropdownColor: Colors.white,
+                            iconEnabledColor: Colors.black,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 13,
+                            ),
+                            items: _PropertyCreateScreenState._areaUnits
+                                .map(
+                                  (u) => DropdownMenuItem<String>(
+                                    value: u,
+                                    child: Text(
+                                      u,
+                                      style: const TextStyle(color: AppColors.dark),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (v) {
+                              setState(() => _shedAreaUnit = v ?? _shedAreaUnit);
+                              _scheduleSaveDraft();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Property Details'),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Ownership Type',
+              const ['freehold', 'leasehold', 'co-operative_society', 'power_of_attorney'],
+              _shedOwnership,
+              (v) {
+                setState(() => _shedOwnership = v);
+                _scheduleSaveDraft();
+              },
+              displayFor: (v) {
+                switch (v) {
+                  case 'freehold':
+                    return 'Freehold';
+                  case 'leasehold':
+                    return 'Leasehold';
+                  case 'co-operative_society':
+                    return 'Co-operative Society';
+                  case 'power_of_attorney':
+                    return 'Power of Attorney';
+                  default:
+                    return v;
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Property Age',
+              _PropertyCreateScreenState._readyTimeframes,
+              _shedPropertyAge,
+              (v) {
+                setState(() => _shedPropertyAge = v);
+                _scheduleSaveDraft();
+              },
+              displayFor: (v) {
+                switch (v) {
+                  case '0_1':
+                    return '0-1 year';
+                  case '1_5':
+                    return '1-5 years';
+                  case '5_10':
+                    return '5-10 years';
+                  case '10_plus':
+                    return '10+ years';
+                  default:
+                    return v.replaceAll('_', ' ');
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Facing',
+              _PropertyCreateScreenState._facings,
+              _shedFacing,
+              (v) {
+                setState(() => _shedFacing = v);
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildTextField(
+                    _shedCeilingHeight,
+                    'Ceiling Height (ft)',
+                    'e.g., 25',
+                    Icons.height,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildTextField(
+                    _shedFloorLoadCapacity,
+                    'Floor Load Capacity (tons/sqm)',
+                    'e.g., 5',
+                    Icons.fitness_center,
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Infrastructure & Utilities'),
+            const SizedBox(height: 12),
+            _buildTextField(
+              _shedPowerLoad,
+              'Power Load (KW)',
+              'e.g., 50',
+              Icons.bolt,
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Three Phase Electricity',
+              const ['yes', 'no'],
+              _shedThreePhaseElectricity == null ? '' : (_shedThreePhaseElectricity! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedThreePhaseElectricity = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Water Connection',
+              const ['yes', 'no'],
+              _shedWaterConnection == null ? '' : (_shedWaterConnection! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedWaterConnection = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Borewell Available',
+              const ['yes', 'no'],
+              _shedBorewellAvailable == null ? '' : (_shedBorewellAvailable! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedBorewellAvailable = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Industrial Operations'),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Loading Bay',
+              const ['yes', 'no'],
+              _shedLoadingBay == null ? '' : (_shedLoadingBay! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedLoadingBay = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Dock Leveler',
+              const ['yes', 'no'],
+              _shedDockLeveler == null ? '' : (_shedDockLeveler! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedDockLeveler = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Truck Access',
+              _PropertyCreateScreenState._shedTruckAccessOptions,
+              _shedTruckAccess,
+              (v) {
+                setState(() => _shedTruckAccess = v);
+                _scheduleSaveDraft();
+              },
+              displayFor: (v) {
+                switch (v) {
+                  case 'heavy_vehicle':
+                    return 'Heavy Vehicle';
+                  case 'medium_vehicle':
+                    return 'Medium Vehicle';
+                  case 'small_vehicle':
+                    return 'Small Vehicle';
+                  default:
+                    return v;
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Container Access',
+              const ['yes', 'no'],
+              _shedContainerAccess == null ? '' : (_shedContainerAccess! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedContainerAccess = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Amenities & Facilities'),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Parking Available',
+              const ['yes', 'no'],
+              _shedParkingAvailable == null ? '' : (_shedParkingAvailable! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedParkingAvailable = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Visitor Parking',
+              const ['yes', 'no'],
+              _shedVisitorParking == null ? '' : (_shedVisitorParking! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedVisitorParking = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Security Cabin',
+              const ['yes', 'no'],
+              _shedSecurityCabin == null ? '' : (_shedSecurityCabin! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedSecurityCabin = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Boundary Wall',
+              const ['yes', 'no'],
+              _shedBoundaryWall == null ? '' : (_shedBoundaryWall! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedBoundaryWall = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'CCTV Surveillance',
+              const ['yes', 'no'],
+              _shedCctvSurveillance == null ? '' : (_shedCctvSurveillance! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedCctvSurveillance = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Office Space Available',
+              const ['yes', 'no'],
+              _shedOfficeSpaceAvailable == null ? '' : (_shedOfficeSpaceAvailable! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedOfficeSpaceAvailable = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Pantry',
+              const ['yes', 'no'],
+              _shedPantry == null ? '' : (_shedPantry! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedPantry = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Washrooms',
+              const ['yes', 'no'],
+              _shedWashrooms == null ? '' : (_shedWashrooms! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedWashrooms = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Labour Accommodation',
+              const ['yes', 'no'],
+              _shedLabourAccommodation == null ? '' : (_shedLabourAccommodation! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedLabourAccommodation = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Location Characteristics'),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Main Road Facing',
+              const ['yes', 'no'],
+              _shedMainRoadFacing == null ? '' : (_shedMainRoadFacing! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedMainRoadFacing = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Corner Property',
+              const ['yes', 'no'],
+              _shedCornerProperty == null ? '' : (_shedCornerProperty! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedCornerProperty = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Gated Industrial Estate',
+              const ['yes', 'no'],
+              _shedGatedIndustrialEstate == null ? '' : (_shedGatedIndustrialEstate! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedGatedIndustrialEstate = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Legal & Compliance'),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Industrial License',
+              const ['yes', 'no'],
+              _shedIndustrialLicense == null ? '' : (_shedIndustrialLicense! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedIndustrialLicense = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Factory License',
+              const ['yes', 'no'],
+              _shedFactoryLicense == null ? '' : (_shedFactoryLicense! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedFactoryLicense = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Fire NOC',
+              const ['yes', 'no'],
+              _shedFireNoc == null ? '' : (_shedFireNoc! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedFireNoc = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildChoiceChipRow(
+              'Pollution Clearance',
+              const ['yes', 'no'],
+              _shedPollutionClearance == null ? '' : (_shedPollutionClearance! ? 'yes' : 'no'),
+              (v) {
+                setState(() => _shedPollutionClearance = v == 'yes');
+                _scheduleSaveDraft();
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildSectionLabel('Transaction Details'),
+            const SizedBox(height: 12),
+            if (isSale) ...[
+              _buildTextField(
+                _shedBookingAmount,
+                'Booking Amount (Optional)',
+                'e.g., 100000',
+                Icons.currency_rupee,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _shedMaintenanceCharges,
+                'Maintenance Charges (Monthly)',
+                'e.g., 5000',
+                Icons.handyman_outlined,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              _buildChoiceChipRow(
+                'Price Negotiable',
+                const ['yes', 'no'],
+                _shedPriceNegotiable == null ? '' : (_shedPriceNegotiable! ? 'yes' : 'no'),
+                (v) {
+                  setState(() => _shedPriceNegotiable = v == 'yes');
+                  _scheduleSaveDraft();
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildChoiceChipRow(
+                'Possession Status',
+                const ['ready_to_move', 'under_construction'],
+                _shedPossessionStatus,
+                (v) {
+                  setState(() => _shedPossessionStatus = v);
+                  _scheduleSaveDraft();
+                },
+                displayFor: (v) {
+                  switch (v) {
+                    case 'ready_to_move':
+                      return 'Ready to Move';
+                    case 'under_construction':
+                      return 'Under Construction';
+                    default:
+                      return v;
+                  }
+                },
+              ),
+            ],
+            if (isRentLease) ...[
+              _buildTextField(
+                _shedSecurityDeposit,
+                'Security Deposit',
+                'e.g., 300000',
+                Icons.payments,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _shedMaintenanceCharges,
+                'Maintenance Charges (Monthly)',
+                'e.g., 5000',
+                Icons.handyman_outlined,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _shedBrokerage,
+                'Brokerage Charges (Optional)',
+                'e.g., 50000',
+                Icons.badge_outlined,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _shedAvailableFrom,
+                'Available From (Optional)',
+                'YYYY-MM-DD',
+                Icons.event_available_outlined,
+                readOnly: true,
+                onTap: () => _pickDateForController(_shedAvailableFrom),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      _shedLockInMonths,
+                      'Lock-in Period (Months)',
+                      'e.g., 12',
+                      Icons.lock_clock,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildTextField(
+                      _shedNoticePeriodValue,
+                      'Notice Period (Months)',
+                      'e.g., 3',
+                      Icons.campaign,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (_propertyKind == _CreatePropertyKind.rent) ...[
+                _buildChoiceChipRow(
+                  'Rent Negotiable',
+                  const ['yes', 'no'],
+                  _shedRentNegotiable == null ? '' : (_shedRentNegotiable! ? 'yes' : 'no'),
+                  (v) {
+                    setState(() => _shedRentNegotiable = v == 'yes');
+                    _scheduleSaveDraft();
+                  },
+                ),
+              ],
+              if (_propertyKind == _CreatePropertyKind.lease) ...[
+                _buildTextField(
+                  _shedLeaseDuration,
+                  'Lease Duration (Years)',
+                  'e.g., 5',
+                  Icons.assignment,
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                _buildChoiceChipRow(
+                  'Escalation Clause',
+                  const ['yes', 'no'],
+                  _shedEscalationClause == null ? '' : (_shedEscalationClause! ? 'yes' : 'no'),
+                  (v) {
+                    setState(() => _shedEscalationClause = v == 'yes');
+                    _scheduleSaveDraft();
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildChoiceChipRow(
+                  'Renewal Option',
+                  const ['yes', 'no'],
+                  _shedRenewalOption == null ? '' : (_shedRenewalOption! ? 'yes' : 'no'),
+                  (v) {
+                    setState(() => _shedRenewalOption = v == 'yes');
+                    _scheduleSaveDraft();
+                  },
+                ),
+              ],
+            ],
+            const SizedBox(height: 12),
           ],
           if (_commercialType == 'shop') ...[
             _buildChoiceChipRow(

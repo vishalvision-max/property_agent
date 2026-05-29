@@ -157,6 +157,65 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final _showroomOwnerName = TextEditingController();
   final _showroomOwnerMobile = TextEditingController();
 
+  // Sell -> Commercial -> Industrial Shed specific
+  static const _shedTruckAccessOptions = <String>['heavy_vehicle', 'medium_vehicle', 'small_vehicle'];
+  final _shedCarpetArea = TextEditingController();
+  final _shedBuiltUpArea = TextEditingController();
+  final _shedSuperBuiltUpArea = TextEditingController();
+  final _shedPlotArea = TextEditingController();
+  String _shedAreaUnit = 'sqft';
+  String _shedOwnership = ''; // freehold, leasehold, co-operative_society, power_of_attorney
+  String _shedPropertyAge = ''; // 0_1, 1_5, 5_10, 10_plus
+  String _shedFacing = '';
+  final _shedCeilingHeight = TextEditingController();
+  final _shedFloorLoadCapacity = TextEditingController();
+
+  final _shedPowerLoad = TextEditingController();
+  bool? _shedThreePhaseElectricity;
+  bool? _shedWaterConnection;
+  bool? _shedBorewellAvailable;
+
+  bool? _shedLoadingBay;
+  bool? _shedDockLeveler;
+  String _shedTruckAccess = ''; // heavy_vehicle, medium_vehicle, small_vehicle
+  bool? _shedContainerAccess;
+
+  bool? _shedParkingAvailable;
+  bool? _shedVisitorParking;
+  bool? _shedSecurityCabin;
+  bool? _shedBoundaryWall;
+  bool? _shedCctvSurveillance;
+  bool? _shedOfficeSpaceAvailable;
+  bool? _shedPantry;
+  bool? _shedWashrooms;
+  bool? _shedLabourAccommodation;
+
+  bool? _shedMainRoadFacing;
+  bool? _shedCornerProperty;
+  bool? _shedGatedIndustrialEstate;
+
+  bool? _shedIndustrialLicense;
+  bool? _shedFactoryLicense;
+  bool? _shedFireNoc;
+  bool? _shedPollutionClearance;
+
+  // Transaction specific
+  final _shedBookingAmount = TextEditingController();
+  final _shedMaintenanceCharges = TextEditingController();
+  bool? _shedPriceNegotiable;
+  String _shedPossessionStatus = 'ready_to_move'; // ready_to_move, under_construction
+
+  final _shedSecurityDeposit = TextEditingController();
+  final _shedBrokerage = TextEditingController();
+  final _shedAvailableFrom = TextEditingController();
+  final _shedLockInMonths = TextEditingController();
+  final _shedNoticePeriodValue = TextEditingController();
+  bool? _shedRentNegotiable;
+
+  final _shedLeaseDuration = TextEditingController();
+  bool? _shedEscalationClause;
+  bool? _shedRenewalOption;
+
   // Sell -> Commercial -> Warehouse specific
   String _warehouseType = ''; // warehouse, factory, industrial_building
   final _warehousePlotArea = TextEditingController();
@@ -2768,6 +2827,53 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         'warehouseTruckAccess': _warehouseTruckAccess,
         'warehouseAreaName': _warehouseAreaName.text,
         'warehouseCity': _warehouseCity.text,
+        'shedCarpetArea': _shedCarpetArea.text,
+        'shedBuiltUpArea': _shedBuiltUpArea.text,
+        'shedSuperBuiltUpArea': _shedSuperBuiltUpArea.text,
+        'shedPlotArea': _shedPlotArea.text,
+        'shedAreaUnit': _shedAreaUnit,
+        'shedOwnership': _shedOwnership,
+        'shedPropertyAge': _shedPropertyAge,
+        'shedFacing': _shedFacing,
+        'shedCeilingHeight': _shedCeilingHeight.text,
+        'shedFloorLoadCapacity': _shedFloorLoadCapacity.text,
+        'shedPowerLoad': _shedPowerLoad.text,
+        'shedThreePhaseElectricity': _shedThreePhaseElectricity,
+        'shedWaterConnection': _shedWaterConnection,
+        'shedBorewellAvailable': _shedBorewellAvailable,
+        'shedLoadingBay': _shedLoadingBay,
+        'shedDockLeveler': _shedDockLeveler,
+        'shedTruckAccess': _shedTruckAccess,
+        'shedContainerAccess': _shedContainerAccess,
+        'shedParkingAvailable': _shedParkingAvailable,
+        'shedVisitorParking': _shedVisitorParking,
+        'shedSecurityCabin': _shedSecurityCabin,
+        'shedBoundaryWall': _shedBoundaryWall,
+        'shedCctvSurveillance': _shedCctvSurveillance,
+        'shedOfficeSpaceAvailable': _shedOfficeSpaceAvailable,
+        'shedPantry': _shedPantry,
+        'shedWashrooms': _shedWashrooms,
+        'shedLabourAccommodation': _shedLabourAccommodation,
+        'shedMainRoadFacing': _shedMainRoadFacing,
+        'shedCornerProperty': _shedCornerProperty,
+        'shedGatedIndustrialEstate': _shedGatedIndustrialEstate,
+        'shedIndustrialLicense': _shedIndustrialLicense,
+        'shedFactoryLicense': _shedFactoryLicense,
+        'shedFireNoc': _shedFireNoc,
+        'shedPollutionClearance': _shedPollutionClearance,
+        'shedBookingAmount': _shedBookingAmount.text,
+        'shedMaintenanceCharges': _shedMaintenanceCharges.text,
+        'shedPriceNegotiable': _shedPriceNegotiable,
+        'shedPossessionStatus': _shedPossessionStatus,
+        'shedSecurityDeposit': _shedSecurityDeposit.text,
+        'shedBrokerage': _shedBrokerage.text,
+        'shedAvailableFrom': _shedAvailableFrom.text,
+        'shedLockInMonths': _shedLockInMonths.text,
+        'shedNoticePeriodValue': _shedNoticePeriodValue.text,
+        'shedRentNegotiable': _shedRentNegotiable,
+        'shedLeaseDuration': _shedLeaseDuration.text,
+        'shedEscalationClause': _shedEscalationClause,
+        'shedRenewalOption': _shedRenewalOption,
         'shopFacade': _shopFacade.text,
         'washrooms': _washrooms.text,
         'parkingType': _parkingType,
@@ -3138,6 +3244,53 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           (decoded['warehouseTruckAccess'] as String?) ?? _warehouseTruckAccess;
       _warehouseAreaName.text = (decoded['warehouseAreaName'] as String?) ?? '';
       _warehouseCity.text = (decoded['warehouseCity'] as String?) ?? '';
+      _shedCarpetArea.text = (decoded['shedCarpetArea'] as String?) ?? '';
+      _shedBuiltUpArea.text = (decoded['shedBuiltUpArea'] as String?) ?? '';
+      _shedSuperBuiltUpArea.text = (decoded['shedSuperBuiltUpArea'] as String?) ?? '';
+      _shedPlotArea.text = (decoded['shedPlotArea'] as String?) ?? '';
+      _shedAreaUnit = (decoded['shedAreaUnit'] as String?) ?? _shedAreaUnit;
+      _shedOwnership = (decoded['shedOwnership'] as String?) ?? _shedOwnership;
+      _shedPropertyAge = (decoded['shedPropertyAge'] as String?) ?? _shedPropertyAge;
+      _shedFacing = (decoded['shedFacing'] as String?) ?? _shedFacing;
+      _shedCeilingHeight.text = (decoded['shedCeilingHeight'] as String?) ?? '';
+      _shedFloorLoadCapacity.text = (decoded['shedFloorLoadCapacity'] as String?) ?? '';
+      _shedPowerLoad.text = (decoded['shedPowerLoad'] as String?) ?? '';
+      _shedThreePhaseElectricity = (decoded['shedThreePhaseElectricity'] as bool?) ?? _shedThreePhaseElectricity;
+      _shedWaterConnection = (decoded['shedWaterConnection'] as bool?) ?? _shedWaterConnection;
+      _shedBorewellAvailable = (decoded['shedBorewellAvailable'] as bool?) ?? _shedBorewellAvailable;
+      _shedLoadingBay = (decoded['shedLoadingBay'] as bool?) ?? _shedLoadingBay;
+      _shedDockLeveler = (decoded['shedDockLeveler'] as bool?) ?? _shedDockLeveler;
+      _shedTruckAccess = (decoded['shedTruckAccess'] as String?) ?? _shedTruckAccess;
+      _shedContainerAccess = (decoded['shedContainerAccess'] as bool?) ?? _shedContainerAccess;
+      _shedParkingAvailable = (decoded['shedParkingAvailable'] as bool?) ?? _shedParkingAvailable;
+      _shedVisitorParking = (decoded['shedVisitorParking'] as bool?) ?? _shedVisitorParking;
+      _shedSecurityCabin = (decoded['shedSecurityCabin'] as bool?) ?? _shedSecurityCabin;
+      _shedBoundaryWall = (decoded['shedBoundaryWall'] as bool?) ?? _shedBoundaryWall;
+      _shedCctvSurveillance = (decoded['shedCctvSurveillance'] as bool?) ?? _shedCctvSurveillance;
+      _shedOfficeSpaceAvailable = (decoded['shedOfficeSpaceAvailable'] as bool?) ?? _shedOfficeSpaceAvailable;
+      _shedPantry = (decoded['shedPantry'] as bool?) ?? _shedPantry;
+      _shedWashrooms = (decoded['shedWashrooms'] as bool?) ?? _shedWashrooms;
+      _shedLabourAccommodation = (decoded['shedLabourAccommodation'] as bool?) ?? _shedLabourAccommodation;
+      _shedMainRoadFacing = (decoded['shedMainRoadFacing'] as bool?) ?? _shedMainRoadFacing;
+      _shedCornerProperty = (decoded['shedCornerProperty'] as bool?) ?? _shedCornerProperty;
+      _shedGatedIndustrialEstate = (decoded['shedGatedIndustrialEstate'] as bool?) ?? _shedGatedIndustrialEstate;
+      _shedIndustrialLicense = (decoded['shedIndustrialLicense'] as bool?) ?? _shedIndustrialLicense;
+      _shedFactoryLicense = (decoded['shedFactoryLicense'] as bool?) ?? _shedFactoryLicense;
+      _shedFireNoc = (decoded['shedFireNoc'] as bool?) ?? _shedFireNoc;
+      _shedPollutionClearance = (decoded['shedPollutionClearance'] as bool?) ?? _shedPollutionClearance;
+      _shedBookingAmount.text = (decoded['shedBookingAmount'] as String?) ?? '';
+      _shedMaintenanceCharges.text = (decoded['shedMaintenanceCharges'] as String?) ?? '';
+      _shedPriceNegotiable = (decoded['shedPriceNegotiable'] as bool?) ?? _shedPriceNegotiable;
+      _shedPossessionStatus = (decoded['shedPossessionStatus'] as String?) ?? _shedPossessionStatus;
+      _shedSecurityDeposit.text = (decoded['shedSecurityDeposit'] as String?) ?? '';
+      _shedBrokerage.text = (decoded['shedBrokerage'] as String?) ?? '';
+      _shedAvailableFrom.text = (decoded['shedAvailableFrom'] as String?) ?? '';
+      _shedLockInMonths.text = (decoded['shedLockInMonths'] as String?) ?? '';
+      _shedNoticePeriodValue.text = (decoded['shedNoticePeriodValue'] as String?) ?? '';
+      _shedRentNegotiable = (decoded['shedRentNegotiable'] as bool?) ?? _shedRentNegotiable;
+      _shedLeaseDuration.text = (decoded['shedLeaseDuration'] as String?) ?? '';
+      _shedEscalationClause = (decoded['shedEscalationClause'] as bool?) ?? _shedEscalationClause;
+      _shedRenewalOption = (decoded['shedRenewalOption'] as bool?) ?? _shedRenewalOption;
       _shopFacade.text = (decoded['shopFacade'] as String?) ?? '';
       _washrooms.text = (decoded['washrooms'] as String?) ?? '';
       _parkingType = (decoded['parkingType'] as String?) ?? _parkingType;
@@ -4314,6 +4467,21 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       _pricePerSqft,
       _officeMaintenanceCharges,
       _officeBookingAmount,
+      _shedCarpetArea,
+      _shedBuiltUpArea,
+      _shedSuperBuiltUpArea,
+      _shedPlotArea,
+      _shedCeilingHeight,
+      _shedFloorLoadCapacity,
+      _shedPowerLoad,
+      _shedBookingAmount,
+      _shedMaintenanceCharges,
+      _shedSecurityDeposit,
+      _shedBrokerage,
+      _shedAvailableFrom,
+      _shedLockInMonths,
+      _shedNoticePeriodValue,
+      _shedLeaseDuration,
       _shopArea,
       _frontageWidth,
       _ceilingHeight,
@@ -4403,6 +4571,21 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _warehouseDockLevelers.dispose();
     _warehousePowerSupply.dispose();
     _warehouseAreaName.dispose();
+    _shedCarpetArea.dispose();
+    _shedBuiltUpArea.dispose();
+    _shedSuperBuiltUpArea.dispose();
+    _shedPlotArea.dispose();
+    _shedCeilingHeight.dispose();
+    _shedFloorLoadCapacity.dispose();
+    _shedPowerLoad.dispose();
+    _shedBookingAmount.dispose();
+    _shedMaintenanceCharges.dispose();
+    _shedSecurityDeposit.dispose();
+    _shedBrokerage.dispose();
+    _shedAvailableFrom.dispose();
+    _shedLockInMonths.dispose();
+    _shedNoticePeriodValue.dispose();
+    _shedLeaseDuration.dispose();
     _warehouseCity.dispose();
     _shopFacade.dispose();
     _washrooms.dispose();
