@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_protected_member
 part of 'property_create_screen.dart';
 
 extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
@@ -393,16 +394,64 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
             var effectiveChildren = children.toList();
 
             if (!isPgCoLiving) {
+              final isSale = _propertyKind == _CreatePropertyKind.sale;
+              final isLease = _propertyKind == _CreatePropertyKind.lease;
+              final isRent = _propertyKind == _CreatePropertyKind.rent;
+              final kind = _propertyKind;
+
               effectiveChildren = effectiveChildren.where((c) {
                 final slug = (c.slug ?? '').toLowerCase();
-                return !slug.contains('pg') &&
-                       !slug.contains('guest-house') &&
-                       !slug.contains('hostel') &&
-                       !slug.contains('co-living') &&
-                       !slug.contains('coliving') &&
-                       !slug.contains('dormitory');
+
+                // Always hide PG / hostel / co-living / dormitory variants in non-PG modes
+                if (slug.contains('pg') ||
+                    slug.contains('hostel') ||
+                    slug.contains('co-living') ||
+                    slug.contains('coliving') ||
+                    slug.contains('dormitory') ||
+                    slug.contains('guest-house')) {
+                  return false;
+                }
+
+                // ── Residential filter ──────────────────────────────────────
+                if (parentSlug == 'residential') {
+                  if (isSale || isLease) {
+                    // Sale & Lease: Apartment, Builder Floor, Independent House,
+                    // Villa, Duplex, Farm House
+                    return _PropertyCreateScreenState._saleResidentialAllowedKeywords
+                        .any((kw) => slug.contains(kw));
+                  }
+                  if (isRent) {
+                    // Rent: no Farmhouse, Duplex
+                    return !_PropertyCreateScreenState._rentResidentialExcludedKeywords
+                        .any((kw) => slug.contains(kw));
+                  }
+                }
+
+                // ── Commercial filter ───────────────────────────────────────
+                if (parentSlug == 'commercial') {
+                  // All modes: Office, Shop, Showroom, Warehouse, Industrial Shed
+                  // The list coming from the API should already be correct;
+                  // just keep the existing items
+                  return true;
+                }
+
+                // ── Land / Plot filter ──────────────────────────────────────
+                if (parentSlug == 'land-plot') {
+                  if (isRent) {
+                    // Rent has no Land/Plot — this branch is already hidden at
+                    // parent level; return true defensively.
+                    return true;
+                  }
+                  // Sale & Lease: Residential Plot, Commercial Plot,
+                  // Industrial Plot, Agricultural Land
+                  return _PropertyCreateScreenState._saleLeaseLandAllowedKeywords
+                      .any((kw) => slug.contains(kw));
+                }
+
+                return true;
               }).toList();
             }
+
 
             return Column(
               children: [
@@ -442,8 +491,12 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                 if (isPgCoLiving && parentSlug == 'residential') ...[
                   const SizedBox(height: 12),
                   _buildChoiceGrid<String>(
-                    label: 'PG / Hostel Type',
-                    values: _PropertyCreateScreenState._pgResidentialSubcategories,
+                    label: _propertyKind == _CreatePropertyKind.coLiving
+                        ? 'Co-Living Type'
+                        : 'PG / Hostel Type',
+                    values: _propertyKind == _CreatePropertyKind.coLiving
+                        ? _PropertyCreateScreenState._coLivingResidentialSubcategories
+                        : _PropertyCreateScreenState._pgResidentialSubcategories,
                     value: _selectedCategorySlug,
                     labelFor: (s) => s.replaceAll('_', ' ').toUpperCase(),
                     onChanged: (slug) {
@@ -452,6 +505,58 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                         _selectedCategorySlug = slug;
                         for (final child in children) {
                           if (child.slug == slug) {
+                            _selectedCategoryId = child.id;
+                            break;
+                          }
+                        }
+                        _syncDetailsFromSelectedCategorySlugs();
+                      });
+                      _scheduleSaveDraft();
+                    },
+                  ),
+                ] else if (parentSlug == 'commercial' && !isPgCoLiving) ...[
+                  const SizedBox(height: 12),
+                  _buildChoiceGrid<String>(
+                    label: 'Sub Category',
+                    values: _PropertyCreateScreenState._commercialSubcategorySlugs,
+                    value: _selectedCategorySlug,
+                    labelFor: (s) =>
+                        _PropertyCreateScreenState._commercialSubcategoryLabels[s] ??
+                        s.replaceAll('_', ' '),
+                    onChanged: (slug) {
+                      setState(() {
+                        _selectedCategoryId = null;
+                        _selectedCategorySlug = slug;
+                        // Try to match to an API child if available
+                        for (final child in children) {
+                          if ((child.slug ?? '').toLowerCase().contains(slug) ||
+                              slug.contains((child.slug ?? '').toLowerCase())) {
+                            _selectedCategoryId = child.id;
+                            break;
+                          }
+                        }
+                        _syncDetailsFromSelectedCategorySlugs();
+                      });
+                      _scheduleSaveDraft();
+                    },
+                  ),
+                ] else if (parentSlug == 'land-plot' && !isPgCoLiving) ...[
+                  const SizedBox(height: 12),
+                  _buildChoiceGrid<String>(
+                    label: 'Sub Category',
+                    values: _PropertyCreateScreenState._landPlotSubcategorySlugs,
+                    value: _selectedCategorySlug,
+                    labelFor: (s) =>
+                        _PropertyCreateScreenState._landPlotSubcategoryLabels[s] ??
+                        s.replaceAll('_', ' '),
+                    onChanged: (slug) {
+                      setState(() {
+                        _selectedCategoryId = null;
+                        _selectedCategorySlug = slug;
+                        // Try to match to an API child if available
+                        for (final child in children) {
+                          if ((child.slug ?? '').toLowerCase().contains(slug) ||
+                              slug.contains((child.slug ?? '').toLowerCase())) {
                             _selectedCategoryId = child.id;
                             break;
                           }

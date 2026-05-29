@@ -217,8 +217,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       <
         String
       >{}; // students, working_professionals, couples_allowed, family_pg, interns_trainees
-  String _pgFoodAvailability =
-      ''; // with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
+  final Set<String> _pgFoodAvailability =
+      <
+        String
+      >{}; // multi-select: with_food, without_food, veg_only, non_veg_allowed, self_cooking_allowed
   String _pgPropertyType =
       ''; // independent_house_pg, apartment_pg, hostel, co_living_space, service_apartment
   String _pgBathroomType = ''; // attached, common
@@ -409,7 +411,27 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'shop',
     'warehouse',
     'showroom',
+    'industrial_shed',
   ];
+
+  /// Hardcoded commercial subcategory slugs shown when the API returns no
+  /// children for a Commercial parent.  Order matches the spec hierarchy.
+  static const _commercialSubcategorySlugs = <String>[
+    'office',
+    'shop',
+    'showroom',
+    'warehouse',
+    'industrial_shed',
+  ];
+
+  /// Human-readable display labels for the hardcoded commercial subcategories.
+  static const _commercialSubcategoryLabels = <String, String>{
+    'office': 'Office Space',
+    'shop': 'Shop',
+    'showroom': 'Showroom',
+    'warehouse': 'Warehouse',
+    'industrial_shed': 'Industrial Shed',
+  };
   static const _warehouseTypes = <String>[
     'warehouse',
     'factory',
@@ -422,6 +444,22 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'agricultural',
     'industrial',
   ];
+
+  /// Hardcoded Land/Plot subcategory slugs (Sale & Lease).
+  static const _landPlotSubcategorySlugs = <String>[
+    'residential_plot',
+    'commercial_plot',
+    'industrial_plot',
+    'agricultural_land',
+  ];
+
+  /// Human-readable labels for the hardcoded Land/Plot subcategories.
+  static const _landPlotSubcategoryLabels = <String, String>{
+    'residential_plot': 'Residential Plot',
+    'commercial_plot': 'Commercial Plot',
+    'industrial_plot': 'Industrial Plot',
+    'agricultural_land': 'Agricultural Land',
+  };
   static const _agriWaterSources = <String>[
     'municipal',
     'borewell',
@@ -506,20 +544,100 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     'long_term',
   ];
 
+  // PG → Residential subcategories (all PG modes)
   static const _pgResidentialSubcategories = <String>[
     'boys_pg',
     'girls_pg',
-    // 'co_living_space',
+    'co_ed_pg',
     'student_pg',
     'working_professional_pg',
-    // 'hostel',
-    // 'room_sharing_pg',
+    'hostel',
     'single_room_pg',
     'twin_sharing_pg',
     'triple_sharing_pg',
     'dormitory',
-    // 'managed_pg',
-    // 'luxury_pg',
+    'luxury_pg',
+    'managed_pg',
+  ];
+
+  // Co-Living → Residential subcategories
+  static const _coLivingResidentialSubcategories = <String>[
+    'co_living_space',
+    'managed_co_living',
+    'student_co_living',
+    'working_professional_co_living',
+    'luxury_co_living',
+    'shared_apartment',
+    'shared_villa',
+    'shared_independent_house',
+    'shared_builder_floor',
+  ];
+
+  // Sale → Residential allowed sub-slugs (keywords)
+  static const _saleResidentialAllowedKeywords = <String>[
+    'apartment',
+    'flat',
+    'builder',
+    'floor',
+    'independent',
+    'house',
+    'villa',
+    'duplex',
+    'farm',
+    'farmhouse',
+  ];
+
+  // Rent → Residential: slugs/keywords to EXCLUDE
+  static const _rentResidentialExcludedKeywords = <String>[
+    'pg',
+    'hostel',
+    'co-living',
+    'coliving',
+    'dormitory',
+    'farm',
+    'farmhouse',
+    'duplex',
+  ];
+
+  // Lease → Residential allowed sub-slugs (keywords) — same as Sale
+  static const _leaseResidentialAllowedKeywords = <String>[
+    'apartment',
+    'flat',
+    'builder',
+    'floor',
+    'independent',
+    'house',
+    'villa',
+    'duplex',
+    'farm',
+    'farmhouse',
+  ];
+
+  // Sale → Commercial allowed sub-slugs (keywords)
+  static const _saleCommercialAllowedKeywords = <String>[
+    'office',
+    'shop',
+    'showroom',
+    'warehouse',
+    'industrial',
+  ];
+
+  // Rent/Lease → Commercial allowed sub-slugs (keywords)
+  static const _rentLeaseCommercialAllowedKeywords = <String>[
+    'office',
+    'shop',
+    'showroom',
+    'warehouse',
+    'industrial',
+  ];
+
+  // Sale/Lease → Land/Plot allowed sub-slugs (keywords)
+  static const _saleLeaseLandAllowedKeywords = <String>[
+    'residential',
+    'commercial',
+    'industrial',
+    'agricultural',
+    'agri',
   ];
 
   static const _officeTypes = <String>[
@@ -852,6 +970,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _commercialType = 'shop';
       } else if (slug.contains('retail')) {
         _commercialType = 'retail';
+      } else if (slug.contains('industrial')) {
+        _commercialType = 'industrial_shed';
       }
     }
 
@@ -1262,8 +1382,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _pgOccupancyType =
         _f(f, ['pg_occupancy_type']) ?? _f(pg, ['occupancy_type']) ?? '';
 
-    _pgFoodAvailability =
-        _f(f, ['pg_food_availability']) ?? _f(pg, ['food_available']) ?? '';
+    _pgFoodAvailability
+      ..clear()
+      ..addAll(_fl(f, ['pg_food_availability']));
+    final _legacyFood =
+        _f(f, ['pg_food_availability']) ?? _f(pg, ['food_available']);
+    if (_pgFoodAvailability.isEmpty &&
+        _legacyFood != null &&
+        _legacyFood.isNotEmpty)
+      _pgFoodAvailability.add(_legacyFood);
 
     _pgPropertyType =
         _f(f, ['pg_property_type']) ?? _f(pg, ['property_type']) ?? '';
@@ -1329,42 +1456,66 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
     _pgSharing = _fi(f, ['pg_sharing']) ?? _fi(pg, ['pg_sharing']) ?? 0;
 
-    _pgAttachedBathroom = _fbNullable(f, ['pg_attached_bathroom']) ?? _fbNullable(pg, ['attached_bathroom']);
+    _pgAttachedBathroom =
+        _fbNullable(f, ['pg_attached_bathroom']) ??
+        _fbNullable(pg, ['attached_bathroom']);
 
     _pgBalcony = _fbNullable(f, ['pg_balcony']) ?? _fbNullable(pg, ['balcony']);
 
-    _pgCupboardAvailable = _fbNullable(f, ['pg_cupboard_available']) ?? _fbNullable(pg, ['cupboard_available']);
+    _pgCupboardAvailable =
+        _fbNullable(f, ['pg_cupboard_available']) ??
+        _fbNullable(pg, ['cupboard_available']);
 
-    _pgStudyTableAvailable = _fbNullable(f, ['pg_study_table_available']) ?? _fbNullable(pg, ['study_table_available']);
+    _pgStudyTableAvailable =
+        _fbNullable(f, ['pg_study_table_available']) ??
+        _fbNullable(pg, ['study_table_available']);
 
-    _pgElectricityIncluded = _fbNullable(f, ['pg_electricity_included']) ?? _fbNullable(pg, ['electricity_included']);
+    _pgElectricityIncluded =
+        _fbNullable(f, ['pg_electricity_included']) ??
+        _fbNullable(pg, ['electricity_included']);
 
-    _pgWaterIncluded = _fbNullable(f, ['pg_water_included']) ?? _fbNullable(pg, ['water_included']);
+    _pgWaterIncluded =
+        _fbNullable(f, ['pg_water_included']) ??
+        _fbNullable(pg, ['water_included']);
 
-    _pgFoodChargesIncluded = _fbNullable(f, ['pg_food_charges_included']) ?? _fbNullable(pg, ['food_charges_included']);
+    _pgFoodChargesIncluded =
+        _fbNullable(f, ['pg_food_charges_included']) ??
+        _fbNullable(pg, ['food_charges_included']);
 
-    _pgBrokerageRequired = _fbNullable(f, ['pg_brokerage_required']) ?? _fbNullable(pg, ['brokerage_required']);
+    _pgBrokerageRequired =
+        _fbNullable(f, ['pg_brokerage_required']) ??
+        _fbNullable(pg, ['brokerage_required']);
 
-    _pgCoupleFriendly = _fbNullable(f, ['pg_couple_friendly']) ?? _fbNullable(pg, ['couple_friendly']);
+    _pgCoupleFriendly =
+        _fbNullable(f, ['pg_couple_friendly']) ??
+        _fbNullable(pg, ['couple_friendly']);
 
-    _pgIdProofRequired = _fbNullable(f, ['pg_id_proof_required']) ?? _fbNullable(pg, ['id_proof_required']);
+    _pgIdProofRequired =
+        _fbNullable(f, ['pg_id_proof_required']) ??
+        _fbNullable(pg, ['id_proof_required']);
 
     _pgSmokingAllowed =
-        _fbNullable(f, ['pg_smoking_allowed']) ?? _fbNullable(pg, ['smoking_allowed']);
+        _fbNullable(f, ['pg_smoking_allowed']) ??
+        _fbNullable(pg, ['smoking_allowed']);
 
     _pgDrinkingAllowed =
-        _fbNullable(f, ['pg_drinking_allowed']) ?? _fbNullable(pg, ['drinking_allowed']);
+        _fbNullable(f, ['pg_drinking_allowed']) ??
+        _fbNullable(pg, ['drinking_allowed']);
 
-    _pgPetsAllowed = _fbNullable(f, ['pg_pets_allowed']) ?? _fbNullable(pg, ['pets_allowed']);
+    _pgPetsAllowed =
+        _fbNullable(f, ['pg_pets_allowed']) ??
+        _fbNullable(pg, ['pets_allowed']);
 
     _pgVisitorsAllowed =
-        _fbNullable(f, ['pg_visitors_allowed']) ?? _fbNullable(pg, ['visitors_allowed']);
+        _fbNullable(f, ['pg_visitors_allowed']) ??
+        _fbNullable(pg, ['visitors_allowed']);
 
     _pgGateLockedAtNight =
         _fbNullable(f, ['pg_gate_locked_at_night']) ??
         _fbNullable(pg, ['gate_locked_at_night']);
 
-    _pgSecurity = _fbNullable(f, ['pg_security']) ?? _fbNullable(pg, ['pg_security']);
+    _pgSecurity =
+        _fbNullable(f, ['pg_security']) ?? _fbNullable(pg, ['pg_security']);
 
     _pgTenantTypes
       ..clear()
@@ -1548,32 +1699,34 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       'lift_available',
       'goods_lift',
     ], fallback: _fb(office, ['lift_available', 'goods_lift'], fallback: true));
-    _preLeased = _fbNullable(f, ['pre_leased']) ?? _fbNullable(office, ['pre_leased']);
+    _preLeased =
+        _fbNullable(f, ['pre_leased']) ?? _fbNullable(office, ['pre_leased']);
     _officeType =
         _f(f, ['office_type']) ?? _f(office, ['office_type']) ?? _officeType;
-    _receptionArea = (_fbNullable(f, [
-      'reception_area',
-    ]) ?? _fbNullable(office, ['reception_area']));
+    _receptionArea =
+        (_fbNullable(f, ['reception_area']) ??
+        _fbNullable(office, ['reception_area']));
     _pantry = (_fbNullable(f, ['pantry']) ?? _fbNullable(office, ['pantry']));
-    _cafeteria = (_fbNullable(f, ['cafeteria']) ?? _fbNullable(office, ['cafeteria']));
-    _serverRoom = (_fbNullable(f, [
-      'server_room',
-    ]) ?? _fbNullable(office, ['server_room']));
-    _fireSafetyInstalled = (_fbNullable(f, [
-      'fire_safety_installed',
-    ]) ?? _fbNullable(office, ['fire_safety_installed']));
-    _centralAC = (_fbNullable(f, ['central_ac']) ?? _fbNullable(office, ['central_ac']));
-    _visitorParking = (_fbNullable(f, [
-      'visitor_parking',
-      'commercial_parking',
-    ]) ?? _fbNullable(office, ['visitor_parking', 'commercial_parking']));
+    _cafeteria =
+        (_fbNullable(f, ['cafeteria']) ?? _fbNullable(office, ['cafeteria']));
+    _serverRoom =
+        (_fbNullable(f, ['server_room']) ??
+        _fbNullable(office, ['server_room']));
+    _fireSafetyInstalled =
+        (_fbNullable(f, ['fire_safety_installed']) ??
+        _fbNullable(office, ['fire_safety_installed']));
+    _centralAC =
+        (_fbNullable(f, ['central_ac']) ?? _fbNullable(office, ['central_ac']));
+    _visitorParking =
+        (_fbNullable(f, ['visitor_parking', 'commercial_parking']) ??
+        _fbNullable(office, ['visitor_parking', 'commercial_parking']));
     _numberOfLifts.text =
         (_fi(f, ['number_of_lifts']) ?? _fi(office, ['number_of_lifts']))
             ?.toString() ??
         '';
-    _taxIncluded = _fbNullable(f, [
-      'tax_included',
-    ]) ?? _fbNullable(office, ['tax_included']);
+    _taxIncluded =
+        _fbNullable(f, ['tax_included']) ??
+        _fbNullable(office, ['tax_included']);
     _officeNegotiable =
         p.priceNegotiable ??
         _fbNullable(f, ['price_negotiable_office', 'negotiable']) ??
@@ -1624,15 +1777,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _fd(shop, ['ceiling_height_ft', 'ceiling_height']))
             ?.toString() ??
         '';
-    _mainRoadFacing = (_fbNullable(f, [
-      'main_road_facing',
-    ]) ?? _fbNullable(shop, ['main_road_facing']));
+    _mainRoadFacing =
+        (_fbNullable(f, ['main_road_facing']) ??
+        _fbNullable(shop, ['main_road_facing']));
     _cornerShop =
         p.cornerShop ??
         (_fbNullable(f, ['corner_shop']) ?? _fbNullable(shop, ['corner_shop']));
-    _washroomAvailable = (_fbNullable(f, [
-      'washroom_available',
-    ]) ?? _fbNullable(shop, ['washroom_available']));
+    _washroomAvailable =
+        (_fbNullable(f, ['washroom_available']) ??
+        _fbNullable(shop, ['washroom_available']));
     _floorType =
         _f(f, ['floor_type']) ?? _f(shop, ['floor_type']) ?? _floorType;
     _marketName.text =
@@ -1658,17 +1811,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 _fd(showroom, ['showroom_ceiling_height_ft']))
             ?.toString() ??
         '';
-    _showroomMainRoadFacing = (_fbNullable(f, [
-      'showroom_main_road_facing',
-    ]) ?? _fbNullable(showroom, ['showroom_main_road_facing']));
+    _showroomMainRoadFacing =
+        (_fbNullable(f, ['showroom_main_road_facing']) ??
+        _fbNullable(showroom, ['showroom_main_road_facing']));
     _showroomCorner =
         p.showroomCorner ??
-        (_fbNullable(f, [
-          'corner_showroom',
-        ]) ?? _fbNullable(showroom, ['corner_showroom']));
-    _showroomWashroom = (_fbNullable(f, [
-      'showroom_washroom_available',
-    ]) ?? _fbNullable(showroom, ['showroom_washroom_available']));
+        (_fbNullable(f, ['corner_showroom']) ??
+            _fbNullable(showroom, ['corner_showroom']));
+    _showroomWashroom =
+        (_fbNullable(f, ['showroom_washroom_available']) ??
+        _fbNullable(showroom, ['showroom_washroom_available']));
     _showroomParkingSlots.text =
         (_fi(f, ['showroom_parking_slots']) ??
                 _fi(showroom, ['showroom_parking_slots']))
@@ -1718,13 +1870,25 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _warehousePlotAreaUnit =
         _f(f, ['warehouse_plot_area_unit', 'area_unit']) ??
         _f(warehouse, ['warehouse_plot_area_unit', 'area_unit']) ??
-        (p.warehousePlotAreaUnit?.isNotEmpty == true ? p.warehousePlotAreaUnit : null) ??
+        (p.warehousePlotAreaUnit?.isNotEmpty == true
+            ? p.warehousePlotAreaUnit
+            : null) ??
         _warehousePlotAreaUnit;
 
     // ceiling_height: try all backend variants
     _warehouseCeilingHeight.text =
-        (_fd(f, ['warehouse_ceiling_height_ft', 'warehouse_ceiling_height', 'ceiling_height_ft', 'ceiling_height']) ??
-                _fd(warehouse, ['warehouse_ceiling_height_ft', 'warehouse_ceiling_height', 'ceiling_height_ft', 'ceiling_height']))
+        (_fd(f, [
+                  'warehouse_ceiling_height_ft',
+                  'warehouse_ceiling_height',
+                  'ceiling_height_ft',
+                  'ceiling_height',
+                ]) ??
+                _fd(warehouse, [
+                  'warehouse_ceiling_height_ft',
+                  'warehouse_ceiling_height',
+                  'ceiling_height_ft',
+                  'ceiling_height',
+                ]))
             ?.toString() ??
         p.warehouseCeilingHeight?.toString() ??
         '';
@@ -1832,18 +1996,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _plotAreaUnit;
     _plotCorner =
         p.plotCorner ??
-        (_fbNullable(f, [
-          'corner_plot',
-          'plot_corner',
-        ]) ?? _fbNullable(plot, ['corner_plot', 'plot_corner']));
+        (_fbNullable(f, ['corner_plot', 'plot_corner']) ??
+            _fbNullable(plot, ['corner_plot', 'plot_corner']));
     _plotRoadAccess =
         p.plotRoadAccess ??
         _fbNullable(f, ['road_access']) ??
         _fbNullable(plot, ['road_access']);
-    _agriFencing = (_fbNullable(f, [
-      'fencing',
-      'agri_fencing',
-    ]) ?? _fbNullable(plot, ['fencing', 'agri_fencing']));
+    _agriFencing =
+        (_fbNullable(f, ['fencing', 'agri_fencing']) ??
+        _fbNullable(plot, ['fencing', 'agri_fencing']));
     _agriWaterSource =
         _f(f, ['water_source', 'agri_water_source']) ??
         _f(plot, ['water_source', 'agri_water_source']) ??
@@ -1866,7 +2027,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     // maintenance_charges: model field + direct API key fallback
     _maintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
-        _fd(f, ['maintenance_charges', 'office_maintenance_charges', 'maintenance_charges_office'])?.toString() ??
+        _fd(f, [
+          'maintenance_charges',
+          'office_maintenance_charges',
+          'maintenance_charges_office',
+        ])?.toString() ??
         '';
     _bookingAmount.text =
         p.bookingAmount?.toString() ??
@@ -1969,7 +2134,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         p.cornerProperty ??
         _fbNullable(f, ['villa_corner_property', 'corner_property']);
     _gatedCommunity =
-        p.gatedCommunity ?? _fbNullable(f, ['gated_community', 'gated_society']);
+        p.gatedCommunity ??
+        _fbNullable(f, ['gated_community', 'gated_society']);
     _villaParking
       ..clear()
       ..addAll(p.villaParking ?? _fl(f, ['parking_types']));
@@ -2001,15 +2167,17 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         p.builderCornerProperty ??
         (p.cornerProperty ??
             _fbNullable(f, ['builder_corner_property', 'corner_property']));
-    _builderGatedSociety = _fbNullable(f, ['builder_gated_society', 'gated_society']);
+    _builderGatedSociety = _fbNullable(f, [
+      'builder_gated_society',
+      'gated_society',
+    ]);
     _constructionAllowed =
         p.constructionAllowed ?? _fbNullable(f, ['construction_allowed']);
     _builderUtilities
       ..clear()
       ..addAll(_fl(f, ['utilities']));
     _pricePerSqft.text = _fd(f, ['price_per_sqft'])?.toString() ?? '';
-    _builderNegotiable =
-        p.builderNegotiable ?? _fbNullable(f, ['negotiable']);
+    _builderNegotiable = p.builderNegotiable ?? _fbNullable(f, ['negotiable']);
     _maintenanceCharges.text =
         p.maintenanceCharges?.toString() ??
         _fd(f, ['maintenance_charges'])?.toString() ??
@@ -2188,7 +2356,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _f(pg, ['food_preference']) ??
         f['food_preference'];
     if (foodVal != null || foodPref != null) {
-      _pgFoodAvailability = normalizeFood(foodVal, foodPref);
+      final norm = normalizeFood(foodVal, foodPref);
+      _pgFoodAvailability.clear();
+      if (norm.isNotEmpty) _pgFoodAvailability.add(norm);
     }
 
     // Normalizing property type
@@ -2234,10 +2404,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _pgRoomType;
     _pgAttachedBathroom =
         p.pgDetails?.attachedBathroom ??
-        _fb(f, ['pg_attached_bathroom', 'attached_bathroom']) ?? _fbNullable(pg, ['attached_bathroom']);
+        _fb(f, ['pg_attached_bathroom', 'attached_bathroom']) ??
+        _fbNullable(pg, ['attached_bathroom']);
     _pgBalcony =
         p.pgDetails?.balcony ??
-        _fb(f, ['pg_balcony', 'balcony']) ?? _fbNullable(pg, ['balcony']);
+        _fb(f, ['pg_balcony', 'balcony']) ??
+        _fbNullable(pg, ['balcony']);
     _pgRoomSize.text =
         p.pgDetails?.roomSize ??
         _f(f, ['pg_room_size', 'room_size']) ??
@@ -2250,10 +2422,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _pgBedType;
     _pgCupboardAvailable =
         p.pgDetails?.cupboardAvailable ??
-        _fb(f, ['pg_cupboard_available', 'cupboard_available']) ?? _fbNullable(pg, ['cupboard_available']);
+        _fb(f, ['pg_cupboard_available', 'cupboard_available']) ??
+        _fbNullable(pg, ['cupboard_available']);
     _pgStudyTableAvailable =
         p.pgDetails?.studyTableAvailable ??
-        _fb(f, ['pg_study_table_available', 'study_table_available']) ?? _fbNullable(pg, ['study_table_available']);
+        _fb(f, ['pg_study_table_available', 'study_table_available']) ??
+        _fbNullable(pg, ['study_table_available']);
     _pgSecurityDeposit.text =
         (p.pgDetails?.securityDeposit ??
                 _fd(f, ['pg_security_deposit', 'security_deposit']) ??
@@ -2268,22 +2442,28 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         '';
     _pgElectricityIncluded =
         p.pgDetails?.electricityIncluded ??
-        _fb(f, ['pg_electricity_included', 'electricity_included']) ?? _fbNullable(pg, ['electricity_included']);
+        _fb(f, ['pg_electricity_included', 'electricity_included']) ??
+        _fbNullable(pg, ['electricity_included']);
     _pgWaterIncluded =
         p.pgDetails?.waterIncluded ??
-        _fb(f, ['pg_water_included', 'water_included']) ?? _fbNullable(pg, ['water_included']);
+        _fb(f, ['pg_water_included', 'water_included']) ??
+        _fbNullable(pg, ['water_included']);
     _pgFoodChargesIncluded =
         p.pgDetails?.foodChargesIncluded ??
-        _fb(f, ['pg_food_charges_included', 'food_charges_included']) ?? _fbNullable(pg, ['food_charges_included']);
+        _fb(f, ['pg_food_charges_included', 'food_charges_included']) ??
+        _fbNullable(pg, ['food_charges_included']);
     _pgBrokerageRequired =
         p.pgDetails?.brokerageRequired ??
-        _fb(f, ['pg_brokerage_required']) ?? _fbNullable(pg, ['brokerage_required']);
+        _fb(f, ['pg_brokerage_required']) ??
+        _fbNullable(pg, ['brokerage_required']);
     _pgCoupleFriendly =
         p.pgDetails?.coupleFriendly ??
-        _fb(f, ['pg_couple_friendly']) ?? _fbNullable(pg, ['couple_friendly']);
+        _fb(f, ['pg_couple_friendly']) ??
+        _fbNullable(pg, ['couple_friendly']);
     _pgIdProofRequired =
         p.pgDetails?.idProofRequired ??
-        _fb(f, ['pg_id_proof_required']) ?? _fbNullable(pg, ['id_proof_required']);
+        _fb(f, ['pg_id_proof_required']) ??
+        _fbNullable(pg, ['id_proof_required']);
     _pgAvailableFrom.text =
         p.pgDetails?.availableFrom ??
         _f(f, ['pg_available_from']) ??
@@ -2309,16 +2489,20 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         '';
     _pgSmokingAllowed =
         p.pgDetails?.smokingAllowed ??
-        _fbNullable(f, ['pg_smoking_allowed']) ?? _fbNullable(pg, ['smoking_allowed']);
+        _fbNullable(f, ['pg_smoking_allowed']) ??
+        _fbNullable(pg, ['smoking_allowed']);
     _pgDrinkingAllowed =
         p.pgDetails?.drinkingAllowed ??
-        _fbNullable(f, ['pg_drinking_allowed']) ?? _fbNullable(pg, ['drinking_allowed']);
+        _fbNullable(f, ['pg_drinking_allowed']) ??
+        _fbNullable(pg, ['drinking_allowed']);
     _pgPetsAllowed =
         p.pgDetails?.petsAllowed ??
-        _fbNullable(f, ['pg_pets_allowed']) ?? _fbNullable(pg, ['pets_allowed']);
+        _fbNullable(f, ['pg_pets_allowed']) ??
+        _fbNullable(pg, ['pets_allowed']);
     _pgVisitorsAllowed =
         p.pgDetails?.visitorsAllowed ??
-        _fbNullable(f, ['pg_visitors_allowed']) ?? _fbNullable(pg, ['visitors_allowed']);
+        _fbNullable(f, ['pg_visitors_allowed']) ??
+        _fbNullable(pg, ['visitors_allowed']);
 
     // Curfew time format conversion (e.g., 22:00:00 -> 10:00 PM)
     final rawCurfew =
@@ -2351,7 +2535,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _pgGateLockedAtNight =
         p.pgDetails?.gateLockedAtNight ??
         _fbNullable(f, ['pg_gate_locked_at_night']) ??
-            _fbNullable(pg, ['gate_locked_at_night']);
+        _fbNullable(pg, ['gate_locked_at_night']);
     _pgNearbyPreferences
       ..clear()
       ..addAll(
@@ -2373,7 +2557,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _pgSecurity =
         p.pgDetails?.security ??
         _fbNullable(f, ['pg_security']) ??
-            _fbNullable(pg, ['pg_security', 'security_features', 'security']);
+        _fbNullable(pg, ['pg_security', 'security_features', 'security']);
 
     // ── 19. Open all sections so the user can see everything ────────────────
     for (final key in _expandedSections.keys.toList()) {
@@ -2625,7 +2809,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         'pgGenderBased': _pgGenderBased,
         'pgOccupancyType': _pgOccupancyType,
         'pgTenantTypes': _pgTenantTypes.toList(growable: false),
-        'pgFoodAvailability': _pgFoodAvailability,
+        'pgFoodAvailability': _pgFoodAvailability.toList(growable: false),
         'pgPropertyType': _pgPropertyType,
         'pgBathroomType': _pgBathroomType,
         'pgSuitableFor': _pgSuitableFor,
@@ -3050,8 +3234,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                   .where((e) => e.isNotEmpty) ??
               const <String>[],
         );
-      _pgFoodAvailability =
-          (decoded['pgFoodAvailability'] as String?) ?? _pgFoodAvailability;
+      _pgFoodAvailability
+        ..clear()
+        ..addAll(
+          ((decoded['pgFoodAvailability'] as List?)?.cast<String>() ?? []),
+        );
       _pgPropertyType =
           (decoded['pgPropertyType'] as String?) ?? _pgPropertyType;
       _pgBathroomType =
@@ -3528,7 +3715,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     ref.read(addressSuggestionsProvider.notifier).clear();
     // Start loader via new FormSubmitState for place details
     ref.read(formSubmitStateProvider.notifier).setSubmitting(true);
-    
+
     try {
       final resolved = await _places.placeDetails(placeId: p.placeId);
       if (!mounted) return;
@@ -3570,17 +3757,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         err = Validators.positiveNum(_area.text, label: 'Area');
         break;
       case 'desc':
-        err = Validators.minLen(
-          _description.text,
-          15,
-          label: 'Description',
-        );
+        err = Validators.minLen(_description.text, 15, label: 'Description');
         break;
       case 'address':
-        err = Validators.requiredText(
-          _address.text,
-          label: 'Address',
-        );
+        err = Validators.requiredText(_address.text, label: 'Address');
         break;
       case 'city':
         err = Validators.requiredText(_city.text, label: 'City');
@@ -3589,13 +3769,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         err = Validators.requiredText(_state.text, label: 'State');
         break;
       case 'pincode':
-        err = Validators.requiredText(
-          _pincode.text,
-          label: 'Pincode',
-        );
+        err = Validators.requiredText(_pincode.text, label: 'Pincode');
         break;
     }
-    
+
     // Instead of setState, send the error to Riverpod
     ref.read(propertyFormProvider.notifier).setError(field, err);
     _maybeAutoAdvanceSections();
@@ -3737,7 +3914,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _validateField('city');
     _validateField('state');
     _validateField('pincode');
-    
+
     final updatedState = ref.read(propertyFormProvider);
     return updatedState.errorFor('price') == null &&
         areaOk &&
@@ -3886,7 +4063,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       final st = ref.read(propertyFormProvider);
       if (st.errorFor('price') != null) issues.add('enter valid price');
       if (st.errorFor('area') != null) issues.add('enter valid area');
-      if (st.errorFor('desc') != null) issues.add('enter description (min 15 chars)');
+      if (st.errorFor('desc') != null)
+        issues.add('enter description (min 15 chars)');
       if (st.errorFor('address') != null ||
           st.errorFor('city') != null ||
           st.errorFor('state') != null ||
@@ -4686,7 +4864,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           targetKey.currentContext!,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          alignment: 0.02, // anchor the top of the section to the top of the screen
+          alignment:
+              0.02, // anchor the top of the section to the top of the screen
         );
       }
     });
@@ -5008,6 +5187,20 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSectionLabel(String text) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+      ),
     );
   }
 
@@ -5476,4 +5669,3 @@ extension _CreatePropertyKindX on _CreatePropertyKind {
 }
 
 enum MediaType { image, video }
-

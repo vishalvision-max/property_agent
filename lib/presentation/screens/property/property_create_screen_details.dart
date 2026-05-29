@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_protected_member
 part of 'property_create_screen.dart';
 
 extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
@@ -17,16 +18,16 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
     if (isPgCoLiving) {
       return Column(
         children: [
-          _buildChoiceChipRow(
-            'Gender Based',
-            _PropertyCreateScreenState._pgGenderBasedOptions,
-            _pgGenderBased,
-            (v) {
-              setState(() => _pgGenderBased = v);
-              _scheduleSaveDraft();
-            },
-          ),
-          const SizedBox(height: 12),
+          // _buildChoiceChipRow(
+          //   'Gender Based',
+          //   _PropertyCreateScreenState._pgGenderBasedOptions,
+          //   _pgGenderBased,
+          //   (v) {
+          //     setState(() => _pgGenderBased = v);
+          //     _scheduleSaveDraft();
+          //   },
+          // ),
+          // const SizedBox(height: 12),
           _buildChoiceChipRow(
             'Occupancy Type',
             _PropertyCreateScreenState._pgOccupancyTypeOptions,
@@ -77,14 +78,33 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             ),
           ),
           const SizedBox(height: 12),
-          _buildChoiceChipRow(
-            'Food Availability',
-            _PropertyCreateScreenState._pgFoodAvailabilityOptions,
-            _pgFoodAvailability,
-            (v) {
-              setState(() => _pgFoodAvailability = v);
-              _scheduleSaveDraft();
-            },
+          _buildSectionLabel('Food Availability'),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              runAlignment: WrapAlignment.start,
+              spacing: 8,
+              runSpacing: 8,
+              children: _PropertyCreateScreenState._pgFoodAvailabilityOptions
+                  .map(
+                    (k) => _simpleFilterChip(
+                      label: k.replaceAll('_', ' ').toUpperCase(),
+                      selected: _pgFoodAvailability.contains(k),
+                      onSelected: (s) {
+                        setState(() {
+                          if (s)
+                            _pgFoodAvailability.add(k);
+                          else
+                            _pgFoodAvailability.remove(k);
+                        });
+                        _scheduleSaveDraft();
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
           const SizedBox(height: 12),
           _buildChoiceChipRow(
@@ -120,7 +140,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           _buildChoiceChipRow(
             'Smoking Allowed',
             const ['yes', 'no'],
-            _pgSmokingAllowed == null ? null : (_pgSmokingAllowed! ? 'yes' : 'no'),
+            _pgSmokingAllowed == null
+                ? null
+                : (_pgSmokingAllowed! ? 'yes' : 'no'),
             (v) {
               setState(() => _pgSmokingAllowed = v == 'yes');
               _scheduleSaveDraft();
@@ -132,7 +154,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           _buildChoiceChipRow(
             'Drinking Allowed',
             const ['yes', 'no'],
-            _pgDrinkingAllowed == null ? null : (_pgDrinkingAllowed! ? 'yes' : 'no'),
+            _pgDrinkingAllowed == null
+                ? null
+                : (_pgDrinkingAllowed! ? 'yes' : 'no'),
             (v) {
               setState(() => _pgDrinkingAllowed = v == 'yes');
               _scheduleSaveDraft();
@@ -156,7 +180,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           _buildChoiceChipRow(
             'Visitor Allowed',
             const ['yes', 'no'],
-            _pgVisitorsAllowed == null ? null : (_pgVisitorsAllowed! ? 'yes' : 'no'),
+            _pgVisitorsAllowed == null
+                ? null
+                : (_pgVisitorsAllowed! ? 'yes' : 'no'),
             (v) {
               setState(() => _pgVisitorsAllowed = v == 'yes');
               _scheduleSaveDraft();
@@ -168,7 +194,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           _buildChoiceChipRow(
             'Gate Locked At Night',
             const ['yes', 'no'],
-            _pgGateLockedAtNight == null ? null : (_pgGateLockedAtNight! ? 'yes' : 'no'),
+            _pgGateLockedAtNight == null
+                ? null
+                : (_pgGateLockedAtNight! ? 'yes' : 'no'),
             (v) {
               setState(() => _pgGateLockedAtNight = v == 'yes');
               _scheduleSaveDraft();
@@ -195,6 +223,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             readOnly: false,
           ),
           const SizedBox(height: 12),
+          _buildSectionLabel('Nearby'),
+          const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
 
@@ -399,6 +429,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             ],
           ),
           const SizedBox(height: 12),
+          _buildSectionLabel('House Rules & Policies'),
+          const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
 
@@ -1876,7 +1908,36 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   },
                 ),
                 const SizedBox(height: 12),
-                // Property highlights removed (not needed).
+                const SizedBox(height: 12),
+                _buildSectionLabel('Near by'),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._apartmentHighlights
+                        .map(
+                          (h) => _simpleFilterChip(
+                            label: h.toUpperCase(),
+                            selected: _propertyHighlights.contains(h),
+                            onSelected: (s) {
+                              setState(() {
+                                if (s) {
+                                  _propertyHighlights.add(h);
+                                } else {
+                                  _propertyHighlights.remove(h);
+                                }
+                              });
+                              _scheduleSaveDraft();
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ],
 
               if (_isRentLeaseResidentialApartment) ...[
@@ -1986,7 +2047,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Wheelchair Friendly',
                   const ['yes', 'no'],
-                  _wheelchairFriendly == null ? null : (_wheelchairFriendly! ? 'yes' : 'no'),
+                  _wheelchairFriendly == null
+                      ? null
+                      : (_wheelchairFriendly! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _wheelchairFriendly = v == 'yes');
                     _scheduleSaveDraft();
@@ -2003,6 +2066,36 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     setState(() => _rentGatedSociety = v == 'yes');
                     _scheduleSaveDraft();
                   },
+                ),
+                const SizedBox(height: 12),
+                _buildSectionLabel('Near by'),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._apartmentHighlights
+                        .map(
+                          (h) => _simpleFilterChip(
+                            label: h.toUpperCase(),
+                            selected: _propertyHighlights.contains(h),
+                            onSelected: (s) {
+                              setState(() {
+                                if (s) {
+                                  _propertyHighlights.add(h);
+                                } else {
+                                  _propertyHighlights.remove(h);
+                                }
+                              });
+                              _scheduleSaveDraft();
+                            },
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -3244,14 +3337,18 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _buildChoiceChipRow(
                 'Lift',
                 const ['available', 'not_available'],
-                _liftAvailable == null ? null : (_liftAvailable! ? 'available' : 'not_available'),
+                _liftAvailable == null
+                    ? null
+                    : (_liftAvailable! ? 'available' : 'not_available'),
                 (v) => setState(() => _liftAvailable = v == 'available'),
               ),
               const SizedBox(height: 12),
               _buildChoiceChipRow(
                 'Reception Area',
                 const ['yes', 'no'],
-                _receptionArea == null ? null : (_receptionArea! ? 'yes' : 'no'),
+                _receptionArea == null
+                    ? null
+                    : (_receptionArea! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _receptionArea = v == 'yes');
                   _scheduleSaveDraft();
@@ -3300,7 +3397,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _buildChoiceChipRow(
                 'Fire Safety Installed',
                 const ['yes', 'no'],
-                _fireSafetyInstalled == null ? null : (_fireSafetyInstalled! ? 'yes' : 'no'),
+                _fireSafetyInstalled == null
+                    ? null
+                    : (_fireSafetyInstalled! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _fireSafetyInstalled = v == 'yes');
                   _scheduleSaveDraft();
@@ -3368,7 +3467,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _buildChoiceChipRow(
                 'Visitor Parking',
                 const ['yes', 'no'],
-                _visitorParking == null ? null : (_visitorParking! ? 'yes' : 'no'),
+                _visitorParking == null
+                    ? null
+                    : (_visitorParking! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _visitorParking = v == 'yes');
                   _scheduleSaveDraft();

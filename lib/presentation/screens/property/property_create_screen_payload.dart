@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_protected_member
 part of 'property_create_screen.dart';
 
 extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
@@ -51,7 +52,7 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
                 ? 'plot'
                 : (isCommercial ? 'commercial' : 'residential')),
       'pg_food_availability': isPgCoLiving
-          ? _normalizePgFoodAvailabilityForApi(_pgFoodAvailability)
+          ? _normalizePgFoodAvailabilityForApi(_pgFoodAvailability.join(','))
           : null,
       'pg_sharing': isPgCoLiving ? _pgSharing : null,
       'pg_gender_based': isPgCoLiving
@@ -135,7 +136,7 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'pg_food_charges_included': isPgCoLiving ? _pgFoodChargesIncluded : null,
       'food_charges_included': isPgCoLiving ? _pgFoodChargesIncluded : null,
       'food_preference': isPgCoLiving
-          ? _normalizePgFoodPreferenceForApi(_pgFoodAvailability)
+          ? _normalizePgFoodPreferenceForApi(_pgFoodAvailability.join(','))
           : (_isRentLeaseResidentialApartment ? _foodPreference : null),
       'pg_brokerage_required': isPgCoLiving ? _pgBrokerageRequired : null,
       'pg_couple_friendly': isPgCoLiving ? _pgCoupleFriendly : null,

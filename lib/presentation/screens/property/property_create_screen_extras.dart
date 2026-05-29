@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_use_of_protected_member
 part of 'property_create_screen.dart';
 
 extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
