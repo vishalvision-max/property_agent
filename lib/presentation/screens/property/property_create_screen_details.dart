@@ -61,7 +61,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               children: _PropertyCreateScreenState._pgTenantTypeOptions
                   .map(
                     (k) => _simpleFilterChip(
-                      label: k.replaceAll('_', ' ').toUpperCase(),
+                      label: toTitleCase(k),
                       selected: _pgTenantTypes.contains(k),
                       onSelected: (s) {
                         setState(() {
@@ -90,7 +90,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               children: _PropertyCreateScreenState._pgFoodAvailabilityOptions
                   .map(
                     (k) => _simpleFilterChip(
-                      label: k.replaceAll('_', ' ').toUpperCase(),
+                      label: toTitleCase(k),
                       selected: _pgFoodAvailability.contains(k),
                       onSelected: (s) {
                         setState(() {
@@ -226,7 +226,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               children: _PropertyCreateScreenState._pgNearbyPreferenceOptions
                   .map(
                     (k) => _simpleFilterChip(
-                      label: k.replaceAll('_', ' ').toUpperCase(),
+                      label: toTitleCase(k),
                       selected: _pgNearbyPreferences.contains(k),
                       onSelected: (s) {
                         setState(() {
@@ -637,7 +637,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                               (u) => DropdownMenuItem<String>(
                                 value: u,
                                 child: Text(
-                                  u,
+                                  toTitleCase(u),
                                   style: const TextStyle(color: AppColors.dark),
                                 ),
                               ),
@@ -922,7 +922,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                             (u) => DropdownMenuItem<String>(
                               value: u,
                               child: Text(
-                                u,
+                                toTitleCase(u),
                                 style: const TextStyle(color: AppColors.dark),
                               ),
                             ),
@@ -1116,7 +1116,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                             (u) => DropdownMenuItem<String>(
                               value: u,
                               child: Text(
-                                u,
+                                toTitleCase(u),
                                 style: const TextStyle(color: AppColors.dark),
                               ),
                             ),
@@ -1298,7 +1298,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                   (u) => DropdownMenuItem<String>(
                                     value: u,
                                     child: Text(
-                                      u,
+                                      toTitleCase(u),
                                       style: const TextStyle(color: AppColors.dark),
                                     ),
                                   ),
@@ -1848,7 +1848,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                             (u) => DropdownMenuItem<String>(
                               value: u,
                               child: Text(
-                                u,
+                                toTitleCase(u),
                                 style: const TextStyle(color: AppColors.dark),
                               ),
                             ),
@@ -2438,7 +2438,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         ._apartmentAdditionalRooms
                         .map((r) {
                           final selected = _additionalRooms.contains(r);
-                          final label = r[0].toUpperCase() + r.substring(1);
+                          final label = toTitleCase(r);
                           return FilterChip(
                             selected: selected,
                             showCheckmark: false,
@@ -2492,7 +2492,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     children: _PropertyCreateScreenState._apartmentHighlights
                         .map(
                           (h) => _simpleFilterChip(
-                            label: h.toUpperCase(),
+                            label: toTitleCase(h),
                             selected: _propertyHighlights.contains(h),
                             onSelected: (s) {
                               setState(() {
@@ -2548,15 +2548,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   runSpacing: 8,
                   children: _PropertyCreateScreenState._roomOptions.map((r) {
                     final selected = _rentAdditionalRooms.contains(r);
-                    final label = r
-                        .replaceAll('_', ' ')
-                        .split(' ')
-                        .map(
-                          (w) => w.isEmpty
-                              ? w
-                              : (w[0].toUpperCase() + w.substring(1)),
-                        )
-                        .join(' ');
+                    final label = toTitleCase(r);
                     return FilterChip(
                       selected: selected,
                       showCheckmark: false,
@@ -2651,7 +2643,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     children: _PropertyCreateScreenState._apartmentHighlights
                         .map(
                           (h) => _simpleFilterChip(
-                            label: h.toUpperCase(),
+                            label: toTitleCase(h),
                             selected: _propertyHighlights.contains(h),
                             onSelected: (s) {
                               setState(() {
@@ -2759,7 +2751,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                   (u) => DropdownMenuItem<String>(
                                     value: u,
                                     child: Text(
-                                      u.toUpperCase(),
+                                      toTitleCase(u),
                                       style: const TextStyle(
                                         color: AppColors.dark,
                                       ),
@@ -2818,15 +2810,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   children: _PropertyCreateScreenState._rentPromotionOptions
                       .map((p) {
                         final selected = _rentPromotionTypes.contains(p);
-                        final label = p
-                            .replaceAll('_', ' ')
-                            .split(' ')
-                            .map(
-                              (w) => w.isEmpty
-                                  ? w
-                                  : (w[0].toUpperCase() + w.substring(1)),
-                            )
-                            .join(' ');
+                        final label = toTitleCase(p);
                         return FilterChip(
                           selected: selected,
                           showCheckmark: false,
@@ -2907,15 +2891,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   children: _PropertyCreateScreenState._villaOutdoorsOptions
                       .map((o) {
                         final selected = _rentVillaOutdoors.contains(o);
-                        final label = o
-                            .replaceAll('_', ' ')
-                            .split(' ')
-                            .map(
-                              (w) => w.isEmpty
-                                  ? w
-                                  : (w[0].toUpperCase() + w.substring(1)),
-                            )
-                            .join(' ');
+                        final label = toTitleCase(o);
                         return FilterChip(
                           selected: selected,
                           showCheckmark: false,
@@ -3043,7 +3019,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     t,
                   ) {
                     final selected = _rentTenantTypes.contains(t);
-                    final label = t[0].toUpperCase() + t.substring(1);
+                    final label = toTitleCase(t);
                     return FilterChip(
                       selected: selected,
                       showCheckmark: false,
@@ -3129,7 +3105,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   children: _PropertyCreateScreenState._studioTenantOptions.map(
                     (t) {
                       final selected = _studioTenantPrefs.contains(t);
-                      final label = t[0].toUpperCase() + t.substring(1);
+                      final label = toTitleCase(t);
                       return FilterChip(
                         selected: selected,
                         showCheckmark: false,
@@ -3243,7 +3219,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     u,
                   ) {
                     final selected = _rentFarmUseCases.contains(u);
-                    final label = u[0].toUpperCase() + u.substring(1);
+                    final label = toTitleCase(u);
                     return FilterChip(
                       selected: selected,
                       showCheckmark: false,
@@ -3413,7 +3389,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         ._apartmentAdditionalRooms
                         .map((r) {
                           final selected = _villaAdditionalRooms.contains(r);
-                          final label = r[0].toUpperCase() + r.substring(1);
+                          final label = toTitleCase(r);
                           return FilterChip(
                             selected: selected,
                             showCheckmark: false,
@@ -4263,7 +4239,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                 (u) => DropdownMenuItem<String>(
                                   value: u,
                                   child: Text(
-                                    u,
+                                    toTitleCase(u),
                                     style: const TextStyle(
                                       color: AppColors.dark,
                                     ),

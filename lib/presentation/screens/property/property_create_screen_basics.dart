@@ -293,7 +293,7 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                                     (u) => DropdownMenuItem<String>(
                                       value: u,
                                       child: Text(
-                                        u,
+                                        toTitleCase(u),
                                         style: const TextStyle(
                                           color: Colors.black,
                                         ),
@@ -498,7 +498,7 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                         ? _PropertyCreateScreenState._coLivingResidentialSubcategories
                         : _PropertyCreateScreenState._pgResidentialSubcategories,
                     value: _selectedCategorySlug,
-                    labelFor: (s) => s.replaceAll('_', ' ').toUpperCase(),
+                    labelFor: (s) => toTitleCase(s),
                     onChanged: (slug) {
                       setState(() {
                         _selectedCategoryId = null;
@@ -522,7 +522,7 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                     value: _selectedCategorySlug,
                     labelFor: (s) =>
                         _PropertyCreateScreenState._commercialSubcategoryLabels[s] ??
-                        s.replaceAll('_', ' '),
+                        toTitleCase(s),
                     onChanged: (slug) {
                       setState(() {
                         _selectedCategoryId = null;
@@ -548,7 +548,7 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                     value: _selectedCategorySlug,
                     labelFor: (s) =>
                         _PropertyCreateScreenState._landPlotSubcategoryLabels[s] ??
-                        s.replaceAll('_', ' '),
+                        toTitleCase(s),
                     onChanged: (slug) {
                       setState(() {
                         _selectedCategoryId = null;

@@ -5373,6 +5373,25 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     );
   }
 
+  String toTitleCase(String value) {
+    if (value.isEmpty) return value;
+    return value
+        .replaceAll('_', ' ')
+        .replaceAll('-', ' ')
+        .split(' ')
+        .where((e) => e.isNotEmpty)
+        .map((word) {
+          if (word.isEmpty) return '';
+          final lower = word.toLowerCase();
+          if (lower == 'pg') return 'PG';
+          if (lower == 'noc') return 'NOC';
+          if (lower == 'cctv') return 'CCTV';
+          if (lower == 'ac') return 'AC';
+          return '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}';
+        })
+        .join(' ');
+  }
+
   Widget _buildSectionLabel(String text) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -5544,7 +5563,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                       label: Text(
                         (displayFor != null)
                             ? displayFor(opt)
-                            : opt.replaceAll('_', ' '),
+                            : toTitleCase(opt),
                         maxLines: 2,
                         softWrap: true,
                         style: TextStyle(
