@@ -118,16 +118,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           ),
           const SizedBox(height: 12),
           _buildChoiceChipRow(
-            'Furnishing Type',
-            _PropertyCreateScreenState._furnishings,
-            _furnishing,
-            (v) {
-              setState(() => _furnishing = v);
-              _scheduleSaveDraft();
-            },
-          ),
-          const SizedBox(height: 12),
-          _buildChoiceChipRow(
             'Bathroom Type',
             _PropertyCreateScreenState._pgBathroomTypeOptions,
             _pgBathroomType,
