@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:property_agent/data/models/media_item.dart';
 import 'package:property_agent/data/models/property.dart';
 import 'package:property_agent/data/models/property_enums.dart';
@@ -6,10 +6,14 @@ import 'package:property_agent/data/mappers/property_prefill_mapper.dart';
 import 'package:property_agent/data/models/property_kind.dart';
 import 'package:property_agent/providers/property_form/property_form_state.dart';
 
+part 'property_form_notifier.g.dart';
+
 /// Business logic for the property creation/edit form.
 /// All field mutations go through here — the UI just calls methods and reads state.
-class PropertyFormNotifier extends StateNotifier<PropertyFormState> {
-  PropertyFormNotifier() : super(const PropertyFormState());
+@riverpod
+class PropertyForm extends _$PropertyForm {
+  @override
+  PropertyFormState build() => const PropertyFormState();
 
   // ── Basic ──────────────────────────────────────────────────────────────────
 
@@ -281,11 +285,14 @@ class PropertyFormNotifier extends StateNotifier<PropertyFormState> {
 
   // ── Submit / Loading ──────────────────────────────────────────────────────
 
-  void setSubmitting(bool v) => state = state.copyWith(isSubmitting: v);
-  void setDraftSaving(bool v) => state = state.copyWith(isDraftSaving: v);
-
   void setValidationErrors(Map<String, String?> errors) =>
       state = state.copyWith(validationErrors: errors);
+
+  void setError(String field, String? error) {
+    final updated = Map<String, String?>.from(state.validationErrors);
+    updated[field] = error;
+    state = state.copyWith(validationErrors: updated);
+  }
 
   void clearError(String field) {
     final updated = Map<String, String?>.from(state.validationErrors);

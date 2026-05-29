@@ -1,21 +1,27 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../data/models/lookup_item.dart';
 import '../data/models/category.dart';
 import '../data/services/lookup_service.dart';
 
-final lookupServiceProvider = Provider<LookupService>((ref) {
+part 'lookup_provider.g.dart';
+
+@Riverpod(keepAlive: true)
+LookupService lookupService(LookupServiceRef ref) {
   return LookupService();
-});
+}
 
-final amenitiesProvider = FutureProvider<List<LookupItem>>((ref) async {
+@Riverpod(keepAlive: true)
+Future<List<LookupItem>> amenities(AmenitiesRef ref) {
   return ref.read(lookupServiceProvider).getAmenities();
-});
+}
 
-final furnishingsProvider = FutureProvider<List<LookupItem>>((ref) async {
+@Riverpod(keepAlive: true)
+Future<List<LookupItem>> furnishings(FurnishingsRef ref) {
   return ref.read(lookupServiceProvider).getFurnishings();
-});
+}
 
-final categoriesProvider = FutureProvider<List<Category>>((ref) async {
+@Riverpod(keepAlive: true)
+Future<List<Category>> categories(CategoriesRef ref) {
   return ref.read(lookupServiceProvider).getCategories();
-});
+}

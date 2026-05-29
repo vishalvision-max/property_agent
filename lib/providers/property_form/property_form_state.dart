@@ -32,8 +32,6 @@ class PropertyFormState {
       'location': false,
       'description': false,
     },
-    this.isSubmitting = false,
-    this.isDraftSaving = false,
     this.validationErrors = const {},
   });
 
@@ -50,8 +48,6 @@ class PropertyFormState {
   final Set<int> selectedFurnishingIds;
   final Map<int, int> furnishingQuantities;
   final Map<String, bool> expandedSections;
-  final bool isSubmitting;
-  final bool isDraftSaving;
   final Map<String, String?> validationErrors;
 
   // ── BACKWARD COMPATIBLE GETTERS ─────────────────────────────
@@ -221,8 +217,6 @@ class PropertyFormState {
     Set<int>? selectedFurnishingIds,
     Map<int, int>? furnishingQuantities,
     Map<String, bool>? expandedSections,
-    bool? isSubmitting,
-    bool? isDraftSaving,
     Map<String, String?>? validationErrors,
   }) {
     return PropertyFormState(
@@ -250,8 +244,6 @@ class PropertyFormState {
       selectedFurnishingIds: selectedFurnishingIds ?? this.selectedFurnishingIds,
       furnishingQuantities: furnishingQuantities ?? this.furnishingQuantities,
       expandedSections: expandedSections ?? this.expandedSections,
-      isSubmitting: isSubmitting ?? this.isSubmitting,
-      isDraftSaving: isDraftSaving ?? this.isDraftSaving,
       validationErrors: validationErrors ?? this.validationErrors,
     );
   }

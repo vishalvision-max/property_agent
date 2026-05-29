@@ -730,9 +730,7 @@ class StaffPropertyService implements PropertyService {
         'possession_by': property.possessionBy!.trim(),
       if (property.ownership != null && property.ownership!.trim().isNotEmpty)
         'ownership': property.ownership!.trim(),
-      if (property.additionalRooms != null &&
-          property.additionalRooms!.isNotEmpty)
-        'additional_rooms': property.additionalRooms!.join(','),
+      // additional_rooms[] is added below as individual array entries
       if (property.bookingAmount != null)
         'booking_amount': property.bookingAmount!.toStringAsFixed(0),
       if (property.maintenanceCharges != null)
@@ -781,6 +779,14 @@ class StaffPropertyService implements PropertyService {
       form.files.add(
         MapEntry('videos[$i][file]', videoFiles[i].clone()),
       );
+    }
+
+    // Send additional_rooms as a proper PHP array (additional_rooms[])
+    // The backend validates this field as an array; a comma-joined string fails.
+    for (final room in property.additionalRooms ?? const <String>[]) {
+      if (room.trim().isNotEmpty) {
+        form.fields.add(MapEntry('additional_rooms[]', room.trim()));
+      }
     }
 
     final extraRaw = property.apiFields ?? const <String, dynamic>{};
@@ -1167,40 +1173,47 @@ class StaffPropertyService implements PropertyService {
 
   @override
   Future<List<ActivityItem>> getDashboardActivity() async {
-    final dio = await _dioFuture;
-    final res = await dio.get<Map<String, dynamic>>('/staff/activity');
-    final body = res.data ?? const <String, dynamic>{};
+    try {
+      final dio = await _dioFuture;
+      final res = await dio.get<Map<String, dynamic>>('/staff/activity');
+      final body = res.data ?? const <String, dynamic>{};
 
-    final items = <ActivityItem>[];
+      final items = <ActivityItem>[];
 
-    final leads = body['leads'];
-    if (leads is List) {
-      for (final e in leads.whereType<Map>()) {
-        items.add(_activityFromLead(Map<String, dynamic>.from(e)));
+      final leads = body['leads'];
+      if (leads is List) {
+        for (final e in leads.whereType<Map>()) {
+          items.add(_activityFromLead(Map<String, dynamic>.from(e)));
+        }
       }
-    }
 
-    final properties = body['properties'];
-    if (properties is List) {
-      for (final e in properties.whereType<Map>()) {
-        items.add(_activityFromProperty(Map<String, dynamic>.from(e)));
+      final properties = body['properties'];
+      if (properties is List) {
+        for (final e in properties.whereType<Map>()) {
+          items.add(_activityFromProperty(Map<String, dynamic>.from(e)));
+        }
       }
-    }
 
-    final views = body['views'];
-    if (views is List) {
-      for (final e in views.whereType<Map>()) {
-        final at = _parseDateTime(e['created_at'] ?? e['updated_at']);
-        final propertyTitle = (e['property_title'] ?? e['title'] ?? '')
-            .toString();
-        final title = propertyTitle.isEmpty
-            ? 'Property viewed'
-            : 'Viewed: $propertyTitle';
-        items.add(ActivityItem(title: title, subtitle: 'New view', at: at));
+      final views = body['views'];
+      if (views is List) {
+        for (final e in views.whereType<Map>()) {
+          final at = _parseDateTime(e['created_at'] ?? e['updated_at']);
+          final propertyTitle = (e['property_title'] ?? e['title'] ?? '')
+              .toString();
+          final title = propertyTitle.isEmpty
+              ? 'Property viewed'
+              : 'Viewed: $propertyTitle';
+          items.add(ActivityItem(title: title, subtitle: 'New view', at: at));
+        }
       }
-    }
 
-    items.sort((a, b) => b.at.compareTo(a.at));
-    return items.take(8).toList(growable: false);
+      items.sort((a, b) => b.at.compareTo(a.at));
+      return items.take(8).toList(growable: false);
+    } catch (e) {
+      // /staff/activity endpoint may not yet exist on the backend.
+      // Return an empty list so the dashboard still renders with stats.
+      debugPrint('[StaffPropertyService] getDashboardActivity error: $e');
+      return const <ActivityItem>[];
+    }
   }
 }
