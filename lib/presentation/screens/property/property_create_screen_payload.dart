@@ -288,6 +288,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'booking_amount': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
+          : (isCommercial && _commercialType == 'shop')
+          ? double.tryParse(_bookingAmount.text.trim())
           : _isResidential
           ? double.tryParse(
               (_isSellResidentialVillaHouse
@@ -363,6 +365,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'parking_slots': (isCommercial && _commercialType == 'shop')
           ? _parking
+          : null,
+      'price_negotiable': (isCommercial && _commercialType == 'shop' && _priceNegotiable != null)
+          ? (_priceNegotiable! ? 1 : 0)
+          : null,
+      'corner_property': (isCommercial && _commercialType == 'shop' && _cornerShop != null)
+          ? (_cornerShop! ? 1 : 0)
           : null,
       'market_name': (isCommercial && _commercialType == 'shop')
           ? (_marketName.text.trim().isEmpty ? null : _marketName.text.trim())
