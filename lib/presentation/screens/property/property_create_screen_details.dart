@@ -566,6 +566,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _PropertyCreateScreenState._furnishings,
             _furnishing,
             (v) {
+              ////vishal
+
               setState(() => _furnishing = v);
               _scheduleSaveDraft();
             },
@@ -1299,13 +1301,17 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                     value: u,
                                     child: Text(
                                       toTitleCase(u),
-                                      style: const TextStyle(color: AppColors.dark),
+                                      style: const TextStyle(
+                                        color: AppColors.dark,
+                                      ),
                                     ),
                                   ),
                                 )
                                 .toList(),
                             onChanged: (v) {
-                              setState(() => _shedAreaUnit = v ?? _shedAreaUnit);
+                              setState(
+                                () => _shedAreaUnit = v ?? _shedAreaUnit,
+                              );
                               _scheduleSaveDraft();
                             },
                           ),
@@ -1321,7 +1327,12 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             const SizedBox(height: 12),
             _buildChoiceChipRow(
               'Ownership Type',
-              const ['freehold', 'leasehold', 'co-operative_society', 'power_of_attorney'],
+              const [
+                'freehold',
+                'leasehold',
+                'co-operative_society',
+                'power_of_attorney',
+              ],
               _shedOwnership,
               (v) {
                 setState(() => _shedOwnership = v);
@@ -1414,7 +1425,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Three Phase Electricity',
               const ['yes', 'no'],
-              _shedThreePhaseElectricity == null ? '' : (_shedThreePhaseElectricity! ? 'yes' : 'no'),
+              _shedThreePhaseElectricity == null
+                  ? ''
+                  : (_shedThreePhaseElectricity! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedThreePhaseElectricity = v == 'yes');
                 _scheduleSaveDraft();
@@ -1424,7 +1437,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Water Connection',
               const ['yes', 'no'],
-              _shedWaterConnection == null ? '' : (_shedWaterConnection! ? 'yes' : 'no'),
+              _shedWaterConnection == null
+                  ? ''
+                  : (_shedWaterConnection! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedWaterConnection = v == 'yes');
                 _scheduleSaveDraft();
@@ -1434,7 +1449,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Borewell Available',
               const ['yes', 'no'],
-              _shedBorewellAvailable == null ? '' : (_shedBorewellAvailable! ? 'yes' : 'no'),
+              _shedBorewellAvailable == null
+                  ? ''
+                  : (_shedBorewellAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedBorewellAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1456,7 +1473,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Dock Leveler',
               const ['yes', 'no'],
-              _shedDockLeveler == null ? '' : (_shedDockLeveler! ? 'yes' : 'no'),
+              _shedDockLeveler == null
+                  ? ''
+                  : (_shedDockLeveler! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedDockLeveler = v == 'yes');
                 _scheduleSaveDraft();
@@ -1488,7 +1507,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Container Access',
               const ['yes', 'no'],
-              _shedContainerAccess == null ? '' : (_shedContainerAccess! ? 'yes' : 'no'),
+              _shedContainerAccess == null
+                  ? ''
+                  : (_shedContainerAccess! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedContainerAccess = v == 'yes');
                 _scheduleSaveDraft();
@@ -1500,7 +1521,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Parking Available',
               const ['yes', 'no'],
-              _shedParkingAvailable == null ? '' : (_shedParkingAvailable! ? 'yes' : 'no'),
+              _shedParkingAvailable == null
+                  ? ''
+                  : (_shedParkingAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedParkingAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1510,7 +1533,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Visitor Parking',
               const ['yes', 'no'],
-              _shedVisitorParking == null ? '' : (_shedVisitorParking! ? 'yes' : 'no'),
+              _shedVisitorParking == null
+                  ? ''
+                  : (_shedVisitorParking! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedVisitorParking = v == 'yes');
                 _scheduleSaveDraft();
@@ -1520,7 +1545,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Security Cabin',
               const ['yes', 'no'],
-              _shedSecurityCabin == null ? '' : (_shedSecurityCabin! ? 'yes' : 'no'),
+              _shedSecurityCabin == null
+                  ? ''
+                  : (_shedSecurityCabin! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedSecurityCabin = v == 'yes');
                 _scheduleSaveDraft();
@@ -1530,7 +1557,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Boundary Wall',
               const ['yes', 'no'],
-              _shedBoundaryWall == null ? '' : (_shedBoundaryWall! ? 'yes' : 'no'),
+              _shedBoundaryWall == null
+                  ? ''
+                  : (_shedBoundaryWall! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedBoundaryWall = v == 'yes');
                 _scheduleSaveDraft();
@@ -1540,7 +1569,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'CCTV Surveillance',
               const ['yes', 'no'],
-              _shedCctvSurveillance == null ? '' : (_shedCctvSurveillance! ? 'yes' : 'no'),
+              _shedCctvSurveillance == null
+                  ? ''
+                  : (_shedCctvSurveillance! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedCctvSurveillance = v == 'yes');
                 _scheduleSaveDraft();
@@ -1550,7 +1581,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Office Space Available',
               const ['yes', 'no'],
-              _shedOfficeSpaceAvailable == null ? '' : (_shedOfficeSpaceAvailable! ? 'yes' : 'no'),
+              _shedOfficeSpaceAvailable == null
+                  ? ''
+                  : (_shedOfficeSpaceAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedOfficeSpaceAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1580,7 +1613,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Labour Accommodation',
               const ['yes', 'no'],
-              _shedLabourAccommodation == null ? '' : (_shedLabourAccommodation! ? 'yes' : 'no'),
+              _shedLabourAccommodation == null
+                  ? ''
+                  : (_shedLabourAccommodation! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedLabourAccommodation = v == 'yes');
                 _scheduleSaveDraft();
@@ -1592,7 +1627,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Main Road Facing',
               const ['yes', 'no'],
-              _shedMainRoadFacing == null ? '' : (_shedMainRoadFacing! ? 'yes' : 'no'),
+              _shedMainRoadFacing == null
+                  ? ''
+                  : (_shedMainRoadFacing! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedMainRoadFacing = v == 'yes');
                 _scheduleSaveDraft();
@@ -1602,7 +1639,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Corner Property',
               const ['yes', 'no'],
-              _shedCornerProperty == null ? '' : (_shedCornerProperty! ? 'yes' : 'no'),
+              _shedCornerProperty == null
+                  ? ''
+                  : (_shedCornerProperty! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedCornerProperty = v == 'yes');
                 _scheduleSaveDraft();
@@ -1612,7 +1651,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Gated Industrial Estate',
               const ['yes', 'no'],
-              _shedGatedIndustrialEstate == null ? '' : (_shedGatedIndustrialEstate! ? 'yes' : 'no'),
+              _shedGatedIndustrialEstate == null
+                  ? ''
+                  : (_shedGatedIndustrialEstate! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedGatedIndustrialEstate = v == 'yes');
                 _scheduleSaveDraft();
@@ -1624,7 +1665,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Industrial License',
               const ['yes', 'no'],
-              _shedIndustrialLicense == null ? '' : (_shedIndustrialLicense! ? 'yes' : 'no'),
+              _shedIndustrialLicense == null
+                  ? ''
+                  : (_shedIndustrialLicense! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedIndustrialLicense = v == 'yes');
                 _scheduleSaveDraft();
@@ -1634,7 +1677,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Factory License',
               const ['yes', 'no'],
-              _shedFactoryLicense == null ? '' : (_shedFactoryLicense! ? 'yes' : 'no'),
+              _shedFactoryLicense == null
+                  ? ''
+                  : (_shedFactoryLicense! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedFactoryLicense = v == 'yes');
                 _scheduleSaveDraft();
@@ -1654,7 +1699,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Pollution Clearance',
               const ['yes', 'no'],
-              _shedPollutionClearance == null ? '' : (_shedPollutionClearance! ? 'yes' : 'no'),
+              _shedPollutionClearance == null
+                  ? ''
+                  : (_shedPollutionClearance! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedPollutionClearance = v == 'yes');
                 _scheduleSaveDraft();
@@ -1683,7 +1730,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _buildChoiceChipRow(
                 'Price Negotiable',
                 const ['yes', 'no'],
-                _shedPriceNegotiable == null ? '' : (_shedPriceNegotiable! ? 'yes' : 'no'),
+                _shedPriceNegotiable == null
+                    ? ''
+                    : (_shedPriceNegotiable! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _shedPriceNegotiable = v == 'yes');
                   _scheduleSaveDraft();
@@ -1772,7 +1821,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Rent Negotiable',
                   const ['yes', 'no'],
-                  _shedRentNegotiable == null ? '' : (_shedRentNegotiable! ? 'yes' : 'no'),
+                  _shedRentNegotiable == null
+                      ? ''
+                      : (_shedRentNegotiable! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedRentNegotiable = v == 'yes');
                     _scheduleSaveDraft();
@@ -1791,7 +1842,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Escalation Clause',
                   const ['yes', 'no'],
-                  _shedEscalationClause == null ? '' : (_shedEscalationClause! ? 'yes' : 'no'),
+                  _shedEscalationClause == null
+                      ? ''
+                      : (_shedEscalationClause! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedEscalationClause = v == 'yes');
                     _scheduleSaveDraft();
@@ -1801,7 +1854,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Renewal Option',
                   const ['yes', 'no'],
-                  _shedRenewalOption == null ? '' : (_shedRenewalOption! ? 'yes' : 'no'),
+                  _shedRenewalOption == null
+                      ? ''
+                      : (_shedRenewalOption! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedRenewalOption = v == 'yes');
                     _scheduleSaveDraft();
