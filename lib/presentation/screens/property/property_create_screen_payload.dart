@@ -660,7 +660,7 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'shed_escalation_clause': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
           ? _shedEscalationClause
-          : null,
+          : null, 
       'shed_renewal_option': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
           ? _shedRenewalOption
           : null,
