@@ -8,8 +8,8 @@ class ShimmerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.45);
-    final hi = Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.22);
+    final base = Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.45);
+    final hi = Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.22);
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: itemCount,

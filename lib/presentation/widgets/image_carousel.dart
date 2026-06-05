@@ -36,7 +36,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
       return Container(
         height: widget.height,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+          color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.45),
           borderRadius: BorderRadius.circular(18),
         ),
         child: const Center(child: Icon(Icons.photo_outlined)),
@@ -89,7 +89,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.55),
+                color: Colors.black.withOpacity(0.55),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(

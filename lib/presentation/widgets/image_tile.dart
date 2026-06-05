@@ -11,7 +11,7 @@ class ImageTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final placeholder = Container(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.35),
     );
 
     if (src.startsWith('http')) {
@@ -30,4 +30,3 @@ class ImageTile extends StatelessWidget {
     );
   }
 }
-

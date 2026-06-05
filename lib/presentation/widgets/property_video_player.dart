@@ -201,7 +201,7 @@ class _ControlsOverlayState extends State<_ControlsOverlay> {
               alignment: Alignment.center,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.35),
+                  color: Colors.black.withOpacity(0.35),
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(

@@ -37,9 +37,12 @@ class DeviceMediaService implements MediaService {
   Future<List<MediaItem>> pickVideos({bool multi = true, ImageSource source = ImageSource.gallery}) async {
     final List<MediaItem> results = [];
     if (multi) {
-      final xfiles = await _picker.pickMultiVideo();
-      for (var f in xfiles) {
-        results.add(MediaItem(path: f.path, type: MediaType.video));
+      final xfiles = await _picker.pickMultipleMedia();
+      for (final f in xfiles) {
+        final path = f.path.toLowerCase();
+        if (path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.m4v') || path.endsWith('.avi') || path.endsWith('.mkv')) {
+          results.add(MediaItem(path: f.path, type: MediaType.video));
+        }
       }
     } else {
       final xfile = await _picker.pickVideo(source: source);

@@ -735,14 +735,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   ];
 
   static const _apartmentHighlights = <String>[
-    'Near Metro',
-    'Prime Location',
-    'Gated Society',
-    'Park Facing',
-    'Clubhouse',
-    'Near Market',
-    'Near School',
-    'Near Hospital',
+    'near_metro',
+    'prime_location',
+    'gated_society',
+    'park_facing',
+    'clubhouse',
+    'near_market',
+    'near_school',
+    'near_hospital',
   ];
 
   static const _promotionOptions = <String>['featured', 'premium', 'urgent'];
@@ -3804,12 +3804,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         return;
       }
       _didAttemptAutoLocationFill = true;
-      if (permission == LocationPermission.always ||
+        if (permission == LocationPermission.always ||
           permission == LocationPermission.whileInUse) {
         final pos = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-          ),
+          desiredAccuracy: LocationAccuracy.high,
         );
         if (!mounted) return;
         setState(() {
@@ -4166,11 +4164,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   Future<void> _pickVideos() async {
     final picker = ImagePicker();
-    final files = await picker.pickMultiVideo();
+    final files = await picker.pickMultipleMedia();
     if (files.isEmpty) return;
 
     setState(() {
       for (final f in files) {
+        final path = f.path.toLowerCase();
+        if (!(path.endsWith('.mp4') || path.endsWith('.mov') || path.endsWith('.m4v') || path.endsWith('.avi') || path.endsWith('.mkv'))) {
+          continue;
+        }
         if (_videos.length >= 5) break;
         _videos.add(
           MediaItem(path: f.path, type: MediaType.video, tag: 'property_video'),
@@ -4331,6 +4333,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       status: PropertyStatus.pending,
       area: area,
       areaUnit: _areaUnit,
+      plotArea: isLandPlot ? double.tryParse(_plotArea.text.trim()) : null,
       slug: generatedTitle.toLowerCase().replaceAll(' ', '-'),
       listingType: _listingType,
       facing: _facing,
@@ -4343,6 +4346,22 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ? null
           : _possessionBy.text.trim(),
       ownership: _ownership.isEmpty ? null : _ownership,
+      propertyAge: _isResidential && _readyTimeframe.isNotEmpty
+          ? () {
+              switch (_readyTimeframe) {
+                case '0_1':
+                  return 1;
+                case '1_5':
+                  return 3;
+                case '5_10':
+                  return 7;
+                case '10_plus':
+                  return 10;
+                default:
+                  return null;
+              }
+            }()
+          : null,
       additionalRooms: () {
         if (!_isResidential) return null;
         final rooms =
@@ -4919,7 +4938,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
-      borderSide: BorderSide(color: AppTheme.gold.withValues(alpha: 0.35)),
+      borderSide: BorderSide(color: AppTheme.gold.withOpacity(0.35)),
     );
 
     return base.copyWith(
@@ -4939,23 +4958,23 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.06),
+        fillColor: Colors.white.withOpacity(0.06),
         labelStyle: const TextStyle(color: textSecondary, fontSize: 13),
-        hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.38)),
-        prefixIconColor: AppTheme.gold.withValues(alpha: 0.95),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.38)),
+        prefixIconColor: AppTheme.gold.withOpacity(0.95),
         suffixIconColor: textSecondary,
         enabledBorder: border,
         focusedBorder: border.copyWith(
-          borderSide: BorderSide(color: AppTheme.gold.withValues(alpha: 0.80)),
+          borderSide: BorderSide(color: AppTheme.gold.withOpacity(0.80)),
         ),
         errorBorder: border.copyWith(
           borderSide: BorderSide(
-            color: Colors.redAccent.withValues(alpha: 0.85),
+            color: Colors.redAccent.withOpacity(0.85),
           ),
         ),
         focusedErrorBorder: border.copyWith(
           borderSide: BorderSide(
-            color: Colors.redAccent.withValues(alpha: 0.95),
+            color: Colors.redAccent.withOpacity(0.95),
           ),
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -4965,9 +4984,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       ),
       dropdownMenuTheme: DropdownMenuThemeData(
         menuStyle: MenuStyle(
-          backgroundColor: const WidgetStatePropertyAll(surface),
-          surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
-          shape: WidgetStatePropertyAll(
+          backgroundColor: const MaterialStatePropertyAll(surface),
+          surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
+          shape: MaterialStatePropertyAll(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
@@ -4986,24 +5005,24 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: textPrimary,
-          side: BorderSide(color: AppTheme.gold.withValues(alpha: 0.45)),
+          side: BorderSide(color: AppTheme.gold.withOpacity(0.45)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
         ),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith(
-          (s) => s.contains(WidgetState.selected)
+        fillColor: MaterialStateProperty.resolveWith(
+          (s) => s.contains(MaterialState.selected)
               ? AppTheme.gold
-              : Colors.white.withValues(alpha: 0.10),
+              : Colors.white.withOpacity(0.10),
         ),
-        checkColor: const WidgetStatePropertyAll(Color(0xFF070B14)),
-        side: BorderSide(color: AppTheme.gold.withValues(alpha: 0.55)),
+        checkColor: const MaterialStatePropertyAll(Color(0xFF070B14)),
+        side: BorderSide(color: AppTheme.gold.withOpacity(0.55)),
       ),
       chipTheme: base.chipTheme.copyWith(
-        backgroundColor: Colors.white.withValues(alpha: 0.08),
-        side: BorderSide(color: AppTheme.gold.withValues(alpha: 0.30)),
+        backgroundColor: Colors.white.withOpacity(0.08),
+        side: BorderSide(color: AppTheme.gold.withOpacity(0.30)),
         labelStyle: const TextStyle(color: textPrimary),
         deleteIconColor: textSecondary,
         selectedColor: AppTheme.gold,
@@ -5012,7 +5031,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           fontWeight: FontWeight.w800,
         ),
       ),
-      dividerColor: Colors.white.withValues(alpha: 0.10),
+      dividerColor: Colors.white.withOpacity(0.10),
     );
   }
 
@@ -5244,9 +5263,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                       height: 220,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.04),
+                        color: Colors.white.withOpacity(0.04),
                         border: Border.all(
-                          color: AppColors.border.withValues(alpha: 0.5),
+                          color: AppColors.border.withOpacity(0.5),
                           width: 1.5,
                         ),
                       ),
@@ -5290,9 +5309,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                                     boxShadow: active
                                         ? [
                                             BoxShadow(
-                                              color: AppTheme.gold.withValues(
-                                                alpha: 0.4,
-                                              ),
+                                              color: AppTheme.gold
+                                                  .withOpacity(0.4),
                                               blurRadius: 10,
                                               spreadRadius: 1,
                                             ),
@@ -5549,7 +5567,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                     selected: value == v,
                     onSelected: (_) => onChanged(v),
                     selectedColor: AppTheme.gold,
-                    backgroundColor: Colors.white.withValues(alpha: 0.08),
+                    backgroundColor: Colors.white.withOpacity(0.08),
                     side: BorderSide.none,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -5624,7 +5642,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                         vertical: 0,
                       ),
                       selectedColor: AppTheme.gold,
-                      backgroundColor: Colors.white.withValues(alpha: 0.08),
+                      backgroundColor: Colors.white.withOpacity(0.08),
                     ),
                   ),
                 )
@@ -5657,9 +5675,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
+            color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+            border: Border.all(color: Colors.white.withOpacity(0.10)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -5669,7 +5687,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -5692,7 +5710,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withOpacity(0.08),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -5731,9 +5749,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
+            color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+            border: Border.all(color: Colors.white.withOpacity(0.10)),
           ),
           child: Row(
             children: [

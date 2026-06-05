@@ -43,14 +43,14 @@ class PropertyCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             border: Border.all(
-              color: AppTheme.gold.withValues(alpha: 0.55),
+              color: AppTheme.gold.withOpacity(0.55),
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppTheme.gold.withValues(alpha: 0.12),
-                cardBg.withValues(alpha: 0.92),
+                AppTheme.gold.withOpacity(0.12),
+                cardBg.withOpacity(0.92),
               ],
             ),
           ),
@@ -69,7 +69,7 @@ class PropertyCard extends StatelessWidget {
                         child: thumb == null
                             ? Container(
                                 color:
-                                    const Color(0xFF111B2D).withValues(alpha: 0.85),
+                                    const Color(0xFF111B2D).withOpacity(0.85),
                                 child:
                                     const Icon(Icons.photo_outlined, size: 18),
                               )
@@ -124,14 +124,10 @@ class PropertyCard extends StatelessWidget {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.gold.withValues(
-                                    alpha: 0.14,
-                                  ),
+                                  color: AppTheme.gold.withOpacity(0.14),
                                   borderRadius: BorderRadius.circular(999),
                                   border: Border.all(
-                                    color: AppTheme.gold.withValues(
-                                      alpha: 0.55,
-                                    ),
+                                    color: AppTheme.gold.withOpacity(0.55),
                                   ),
                                 ),
                                 child: Text(

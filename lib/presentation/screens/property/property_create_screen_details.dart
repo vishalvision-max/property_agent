@@ -335,7 +335,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 12),
           _buildChoiceChipRow(
             'Bed Type',
-            const ['single', 'bunk'],
+            const ['single', 'bunk','double'],
             _pgBedType,
             (v) {
               setState(() => _pgBedType = v);
@@ -1995,6 +1995,14 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               ],
             ),
             const SizedBox(height: 12),
+            _buildTextField(
+              _farmRooms,
+              'Number of Rooms',
+              'e.g., 10',
+              Icons.bed_outlined,
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 12),
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
@@ -2467,6 +2475,46 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 12),
+                _buildSectionLabel('Nearby'),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._apartmentHighlights
+                        .map((h) {
+                          final selected = _propertyHighlights.contains(h);
+                          return FilterChip(
+                            selected: selected,
+                            showCheckmark: false,
+                            label: Text(
+                              toTitleCase(h),
+                              style: TextStyle(color: AppColors.dark),
+                            ),
+                            selectedColor: AppTheme.gold,
+                            labelStyle: TextStyle(
+                              color: selected
+                                  ? const Color(0xFF070B14)
+                                  : AppColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            onSelected: (v) {
+                              setState(() {
+                                v
+                                    ? _propertyHighlights.add(h)
+                                    : _propertyHighlights.remove(h);
+                              });
+                              _scheduleSaveDraft();
+                            },
+                          );
+                        })
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 _buildChoiceChipRow(
                   'Corner Property',
                   const ['yes', 'no'],
@@ -2479,35 +2527,29 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   },
                 ),
                 const SizedBox(height: 12),
-                const SizedBox(height: 12),
-                _buildSectionLabel('Near by'),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    runAlignment: WrapAlignment.start,
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _PropertyCreateScreenState._apartmentHighlights
-                        .map(
-                          (h) => _simpleFilterChip(
-                            label: toTitleCase(h),
-                            selected: _propertyHighlights.contains(h),
-                            onSelected: (s) {
-                              setState(() {
-                                if (s) {
-                                  _propertyHighlights.add(h);
-                                } else {
-                                  _propertyHighlights.remove(h);
-                                }
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          ),
-                        )
-                        .toList(),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextField(
+                        _ownerName,
+                        'Owner Name (Optional)',
+                        'Owner name',
+                        Icons.person_outline,
+                        onChanged: (_) => _scheduleSaveDraft(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildTextField(
+                        _ownerPhone,
+                        'Owner Phone (Optional)',
+                        'Owner phone',
+                        Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                        onChanged: (_) => _scheduleSaveDraft(),
+                      ),
+                    ),
+                  ],
                 ),
               ],
 
@@ -3647,6 +3689,57 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   },
                 ),
                 const SizedBox(height: 12),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Additional Rooms',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: const ['servent_room', 'pooja_room', 'study_room', 'store_room']
+                        .map((r) {
+                          final selected = _villaAdditionalRooms.contains(r);
+                          final label = toTitleCase(r);
+                          return FilterChip(
+                            selected: selected,
+                            showCheckmark: false,
+                            selectedColor: AppTheme.gold,
+                            label: Text(
+                              label,
+                              style: TextStyle(color: AppColors.dark),
+                            ),
+                            labelStyle: TextStyle(
+                              color: selected
+                                  ? const Color(0xFF070B14)
+                                  : AppColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            onSelected: (v) {
+                              setState(() {
+                                v
+                                    ? _villaAdditionalRooms.add(r)
+                                    : _villaAdditionalRooms.remove(r);
+                              });
+                              _scheduleSaveDraft();
+                            },
+                          );
+                        })
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
@@ -4277,6 +4370,31 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     Icons.straighten,
                     keyboardType: TextInputType.number,
                   ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildTextField(
+                        _ownerName,
+                        'Owner Name (Optional)',
+                        'Owner name',
+                        Icons.person_outline,
+                        onChanged: (_) => _scheduleSaveDraft(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildTextField(
+                        _ownerPhone,
+                        'Owner Phone (Optional)',
+                        'Owner phone',
+                        Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                        onChanged: (_) => _scheduleSaveDraft(),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

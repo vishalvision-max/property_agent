@@ -39,12 +39,12 @@ class StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
-            color: glow.withValues(alpha: 0.22),
+            color: glow.withOpacity(0.22),
             blurRadius: 2,
             offset: const Offset(0, 2),
           ),
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.06),
+            color: const Color(0xFF0F172A).withOpacity(0.06),
             blurRadius: 2,
             offset: const Offset(0, 2),
           ),

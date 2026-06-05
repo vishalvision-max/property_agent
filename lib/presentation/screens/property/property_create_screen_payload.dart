@@ -98,8 +98,10 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'pg_room_size_unit': isPgCoLiving ? _areaUnit : null,
       'room_size_unit': isPgCoLiving ? _areaUnit : null,
-      'pg_bed_type': isPgCoLiving ? _pgBedType : null,
-      'bed_type': isPgCoLiving ? _pgBedType : null,
+      'pg_bed_type': isPgCoLiving
+          ? _normalizePgBedTypeForApi(_pgBedType)
+          : null,
+      'bed_type': isPgCoLiving ? _normalizePgBedTypeForApi(_pgBedType) : null,
       'pg_cupboard_available': isPgCoLiving ? _pgCupboardAvailable : null,
       'cupboard_available': isPgCoLiving ? _pgCupboardAvailable : null,
       'pg_study_table_available': isPgCoLiving ? _pgStudyTableAvailable : null,
@@ -170,8 +172,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'built_up_area': double.tryParse(_builtUpArea.text.trim()),
       'super_built_up_area': double.tryParse(_superBuiltUpArea.text.trim()),
       'plot_area': double.tryParse(_plotArea.text.trim()),
-      'plot_length': double.tryParse(_length.text.trim()),
-      'plot_width': double.tryParse(_breadth.text.trim()),
+      'plot_length': _isSellResidentialBuilderFloor
+          ? null
+          : double.tryParse(_length.text.trim()),
+      'plot_width': _isSellResidentialBuilderFloor
+          ? null
+          : double.tryParse(_breadth.text.trim()),
       'floors_allowed': int.tryParse(_floorsAllowed.text.trim()),
       'open_sides': _openSides,
       'boundary_wall': _boundaryWall,
@@ -223,6 +229,9 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'seats': isCommercial ? seatsValue : null,
       'max_seats': isCommercial ? normalizedMaxSeats : null,
       'conference_rooms': isCommercial
+          ? int.tryParse(_conferenceRooms.text.trim())
+          : null,
+      'conference_seats': isCommercial
           ? int.tryParse(_conferenceRooms.text.trim())
           : null,
       'lift_available': isCommercial ? _liftAvailable : null,
@@ -339,6 +348,11 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
                 ? null
                 : _ceilingHeight.text.trim())
           : null,
+      'celling_height': (isCommercial && _commercialType == 'shop')
+          ? (_ceilingHeight.text.trim().isEmpty
+                ? null
+                : _ceilingHeight.text.trim())
+          : null,
       'main_road_facing':
           (isCommercial && _commercialType == 'shop' && _mainRoadFacing != null)
           ? (_mainRoadFacing! ? 1 : 0)
@@ -348,6 +362,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           ? (_cornerShop! ? 1 : 0)
           : null,
       'washroom_available':
+          (isCommercial &&
+              _commercialType == 'shop' &&
+              _washroomAvailable != null)
+          ? (_washroomAvailable! ? 1 : 0)
+          : null,
+      'washroom_avialable':
           (isCommercial &&
               _commercialType == 'shop' &&
               _washroomAvailable != null)
@@ -684,6 +704,17 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'plot_area_unit': isLandPlot ? _plotAreaUnit : null,
       'road_access': isLandPlot ? _plotRoadAccess : null,
+      'plot_length_ft': isLandPlot
+          ? double.tryParse(_length.text.trim())
+          : null,
+      'plot_breadth_ft': isLandPlot
+          ? double.tryParse(_breadth.text.trim())
+          : null,
+      'open_slides': isLandPlot ? _openSides : null,
+      'corner_plot': isLandPlot ? (_plotCorner == true ? 1 : 0) : null,
+      'construction_done': isLandPlot
+          ? (_constructionDone == null ? null : (_constructionDone! ? 1 : 0))
+          : null,
       'fencing': (isLandPlot && _landType == 'agricultural')
           ? _agriFencing
           : null,
@@ -711,10 +742,16 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : (_isSellResidentialFarmhouse
                 ? int.tryParse(_farmRooms.text.trim())
                 : null),
+      'number_of_rooms': _isSellResidentialFarmhouse
+          ? int.tryParse(_farmRooms.text.trim())
+          : null,
       'farm_garden': isLandPlot
           ? _boundaryWall
           : (_isSellResidentialFarmhouse ? _farmGarden : null),
       'farm_swimming_pool': isLandPlot
+          ? false
+          : (_isSellResidentialFarmhouse ? _farmSwimmingPool : null),
+      'farm_swiming_pool': isLandPlot
           ? false
           : (_isSellResidentialFarmhouse ? _farmSwimmingPool : null),
       'farm_utilities': isLandPlot
@@ -775,13 +812,18 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
                 .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),
-      'property_highlights': _isSellResidentialApartment
-          ? _propertyHighlights.toList(growable: false)
+      'nearby': _isSellResidentialApartment
+          ? _propertyHighlights
+              .map(
+                (v) => v.trim().toLowerCase().replaceAll(' ', '_'),
+              )
+              .where((v) => v.isNotEmpty)
+              .toList(growable: false)
           : null,
-      // 'whatsapp_updates': _isSellResidentialApartment ? _whatsappUpdates : null,
-      'promotion': _isSellResidentialApartment
-          ? _promotionTags.toList(growable: false)
-          : null,
+      // These apartment-only UI tags are not part of the curl payload for this
+      // flow, so keep them out of the request.
+      'property_highlights': null,
+      'promotion': null,
       'pet_friendly': _isRentLeaseResidentialApartment ? _petFriendly : null,
       'wheelchair_friendly': _isRentLeaseResidentialApartment
           ? _wheelchairFriendly
@@ -873,11 +915,26 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'gated_society': _isSellResidentialVillaHouse
           ? _gatedCommunity
           : (_isSellResidentialBuilderFloor ? _builderGatedSociety : null),
-      'parking_types': _isSellResidentialVillaHouse
-          ? _villaParking.toList(growable: false)
+      'parking_independent_house': _isSellResidentialVillaHouse
+          ? _normalizeIndependentHouseParking(_villaParking)
+          : null,
+      'parking_independent_houses': _isSellResidentialVillaHouse
+          ? _normalizeIndependentHouseParking(_villaParking)
+          : null,
+      'parking': _isSellResidentialVillaHouse
+          ? (_villaParking.isEmpty
+                ? null
+                : (_villaParking.contains('open')
+                      ? 'open_parking'
+                      : (_villaParking.contains('covered')
+                            ? 'covered_parking'
+                            : null)))
           : null,
       'outdoors': _isSellResidentialVillaHouse
           ? _outdoors.toList(growable: false)
+          : null,
+      'water_source': _isSellResidentialVillaHouse
+          ? (_waterSource.trim().isEmpty ? null : _waterSource.trim())
           : null,
       'connections': _isSellResidentialVillaHouse
           ? _connections.toList(growable: false)
@@ -893,10 +950,40 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'price_per_sqft': _isSellResidentialBuilderFloor
           ? double.tryParse(_pricePerSqft.text.trim())
           : null,
+      'plot_length_ft': _isSellResidentialBuilderFloor ||
+              _isSellResidentialDuplex
+          ? double.tryParse(_length.text.trim())
+          : null,
+      'plot_breadth_ft': _isSellResidentialBuilderFloor ||
+              _isSellResidentialDuplex
+          ? double.tryParse(_breadth.text.trim())
+          : null,
+      'open_slides': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
+          ? _openSides
+          : null,
+      'plot_area': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
+          ? double.tryParse(_plotArea.text.trim())
+          : (_isResidential ? double.tryParse(_plotArea.text.trim()) : null),
 
       // Sell -> Residential -> Duplex extra fields
       'duplex_gated_community': _isSellResidentialDuplex
           ? _duplexGatedCommunity
+          : null,
+      'construction_allowed': _isSellResidentialDuplex
+          ? _duplexConstructionAllowed
+          : null,
+      'water_connection': _isSellResidentialDuplex
+          ? _duplexWaterConnection
+          : null,
+      'electricity_connection': _isSellResidentialDuplex
+          ? _duplexElectricityConnection
+          : null,
+      'price_negotiable': _isSellResidentialDuplex
+          ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 1 : 0))
+          : null,
+      'road_access': _isSellResidentialDuplex ? _duplexRoadAccess : null,
+      'nearby_facilities': _isSellResidentialDuplex
+          ? _duplexNearbyFacilities.toList(growable: false)
           : null,
       'duplex_construction_allowed': _isSellResidentialDuplex
           ? _duplexConstructionAllowed
@@ -1020,9 +1107,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
   }) {
     final maxBase = (maxSeatsValue ?? seatsValue);
     if (maxBase == null) return null;
-    final atLeastTen = maxBase < 10 ? 10 : maxBase;
-    if (seatsValue == null) return atLeastTen;
-    return atLeastTen < seatsValue ? seatsValue : atLeastTen;
+    if (seatsValue == null) return maxBase;
+    return maxBase < seatsValue ? seatsValue : maxBase;
   }
 
   int _normalizePgFoodAvailabilityForApi(String value) {
@@ -1037,6 +1123,33 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
         return 'non_veg';
       default:
         return null;
+    }
+  }
+
+  List<String> _normalizeIndependentHouseParking(Set<String> parking) {
+    final normalized = <String>[];
+    for (final p in parking) {
+      switch (p.trim().toLowerCase()) {
+        case 'open':
+          normalized.add('open_parking');
+          break;
+        case 'covered':
+          normalized.add('covered_parking');
+          break;
+      }
+    }
+    return normalized;
+  }
+
+  String _normalizePgBedTypeForApi(String value) {
+    switch (value.trim().toLowerCase()) {
+      case 'bunk':
+        return 'double';
+      case 'single':
+      case 'double':
+        return value.trim().toLowerCase();
+      default:
+        return value.trim().toLowerCase();
     }
   }
 

@@ -140,7 +140,7 @@ class SectionSwitch extends StatelessWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeThumbColor: AppColors.gold,
+              // activeThumbColor: AppColors.gold,
             ),
           ],
         ),

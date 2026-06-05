@@ -570,12 +570,21 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                   const SizedBox(height: 12),
                   _buildChoiceGrid<int>(
                     label: 'Sub Category',
-                    values: effectiveChildren.map((c) => c.id).toList(),
+                    values: [
+                      if (_propertyKind == _CreatePropertyKind.sale &&
+                          _isResidential)
+                        -9999,
+                      ...effectiveChildren.map((c) => c.id),
+                    ],
                     value: (_selectedCategorySlug == 'farmhouse')
                         ? -9999
                         : _selectedCategoryId,
-                    labelFor: (id) =>
-                        effectiveChildren.firstWhere((c) => c.id == id).name,
+                    labelFor: (id) {
+                      if (id == -9999) return 'Farmhouse';
+                      return effectiveChildren
+                          .firstWhere((c) => c.id == id)
+                          .name;
+                    },
                     onChanged: (id) {
                       setState(() {
                         if (id == -9999) {

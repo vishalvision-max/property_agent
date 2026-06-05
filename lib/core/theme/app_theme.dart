@@ -40,18 +40,17 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 0,
         color: isDark
-            ? const Color(0xFF0E1626).withValues(alpha: 0.96)
+            ? const Color(0xFF0E1626).withOpacity(0.96)
             : const Color(0xFFFFFBF0),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: (isDark ? colorScheme.outlineVariant : gold).withValues(
-              alpha: isDark ? 0.35 : 0.28,
-            ),
+            color: (isDark ? colorScheme.outlineVariant : gold)
+                .withOpacity(isDark ? 0.35 : 0.28),
           ),
         ),
       ),
@@ -59,7 +58,7 @@ class AppTheme {
         isDense: true,
         filled: true,
         fillColor: isDark
-            ? const Color(0xFF0E1626).withValues(alpha: 0.96)
+            ? const Color(0xFF0E1626).withOpacity(0.96)
             : const Color(0xFFF4F6FB),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 12,
@@ -80,7 +79,7 @@ class AppTheme {
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: isDark
-            ? const Color(0xFF0E1626).withValues(alpha: 0.96)
+            ? const Color(0xFF0E1626).withOpacity(0.96)
             : Colors.white,
         selectedItemColor: colorScheme.primary,
         unselectedItemColor:
@@ -121,9 +120,8 @@ class AppTheme {
   static BoxShadow softShadow(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return BoxShadow(
-      color: (isDark ? Colors.black : const Color(0xFF0F172A)).withValues(
-        alpha: isDark ? 0.35 : 0.08,
-      ),
+      color: (isDark ? Colors.black : const Color(0xFF0F172A))
+          .withOpacity(isDark ? 0.35 : 0.08),
       blurRadius: 28,
       offset: const Offset(0, 12),
     );

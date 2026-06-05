@@ -73,7 +73,7 @@ class PropertyChoiceChipField extends StatelessWidget {
                         vertical: 0,
                       ),
                       selectedColor: AppTheme.gold,
-                      backgroundColor: Colors.white.withValues(alpha: 0.08),
+                      backgroundColor: Colors.white.withOpacity(0.08),
                     ),
                   ),
                 )

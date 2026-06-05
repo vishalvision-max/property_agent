@@ -112,8 +112,7 @@ class DashboardScreen extends ConsumerWidget {
           children: [
             connectivity.when(
               data: (r) {
-                final offline =
-                    r.length == 1 && r.first == ConnectivityResult.none;
+                final offline = r == ConnectivityResult.none;
                 if (!offline) return const SizedBox.shrink();
                 return Container(
                   margin: const EdgeInsets.fromLTRB(20, 12, 20, 0),
@@ -568,7 +567,7 @@ class _StatCard extends StatelessWidget {
               height: 70,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: glowColor.withValues(alpha: 0.10),
+                color: glowColor.withOpacity(0.10),
               ),
             ),
           ),
@@ -605,7 +604,7 @@ class _StatCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: (badgePositive ? AppColors.success : AppColors.danger)
-                      .withValues(alpha: 0.15),
+                      .withOpacity(0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

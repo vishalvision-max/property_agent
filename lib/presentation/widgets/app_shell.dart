@@ -100,7 +100,7 @@ class _BottomNav extends StatelessWidget {
                             borderRadius: BorderRadius.circular(99),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.gold.withValues(alpha: 0.55),
+                                color: AppColors.gold.withOpacity(0.55),
                                 blurRadius: 8,
                                 spreadRadius: 1,
                               ),

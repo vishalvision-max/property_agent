@@ -406,9 +406,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                           dense: true,
                           leading: CircleAvatar(
                             radius: 18,
-                            backgroundColor: AppTheme.gold.withValues(
-                              alpha: 0.14,
-                            ),
+                            backgroundColor: AppTheme.gold.withOpacity(0.14),
                             child: const Icon(
                               Icons.person_outline,
                               size: 18,
@@ -447,11 +445,9 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                               (a) => Chip(
                                 label: Text(a),
                                 visualDensity: VisualDensity.compact,
-                                backgroundColor: AppTheme.gold.withValues(
-                                  alpha: 0.12,
-                                ),
+                                backgroundColor: AppTheme.gold.withOpacity(0.12),
                                 side: BorderSide(
-                                  color: AppTheme.gold.withValues(alpha: 0.35),
+                                  color: AppTheme.gold.withOpacity(0.35),
                                 ),
                                 labelStyle: const TextStyle(color: Colors.black),
                               ),
@@ -493,11 +489,9 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                 (f) => Chip(
                                   label: Text(f),
                                   visualDensity: VisualDensity.compact,
-                                  backgroundColor: AppTheme.gold.withValues(
-                                    alpha: 0.12,
-                                  ),
+                                  backgroundColor: AppTheme.gold.withOpacity(0.12),
                                   side: BorderSide(
-                                    color: AppTheme.gold.withValues(alpha: 0.35),
+                                    color: AppTheme.gold.withOpacity(0.35),
                                   ),
                                   labelStyle: const TextStyle(color: Colors.black),
                                 ),
@@ -599,11 +593,9 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                                       avatar: const Icon(Icons.check_circle_outline, size: 16, color: AppTheme.gold),
                                       label: Text(item),
                                       visualDensity: VisualDensity.compact,
-                                      backgroundColor: AppTheme.gold.withValues(
-                                        alpha: 0.12,
-                                      ),
+                                      backgroundColor: AppTheme.gold.withOpacity(0.12),
                                       side: BorderSide(
-                                        color: AppTheme.gold.withValues(alpha: 0.35),
+                                        color: AppTheme.gold.withOpacity(0.35),
                                       ),
                                       labelStyle: const TextStyle(color: Colors.black, fontSize: 12),
                                     ),

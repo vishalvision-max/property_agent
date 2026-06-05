@@ -761,23 +761,17 @@ class StaffPropertyService implements PropertyService {
         'is_featured': property.isFeatured! ? '1' : '0',
       if (property.featuredExpiry != null)
         'featured_expiry': property.featuredExpiry!.toIso8601String(),
-      if (images.isNotEmpty) 'images[]': images,
       if (images.isNotEmpty)
         'images_general[]': images.map((f) => f.clone()).toList(),
       if (documentFiles.isNotEmpty) 'documents[]': documentFiles,
       if (videoFiles.isNotEmpty) 'videos[]': videoFiles,
+      if (videoFiles.isNotEmpty) 'vide': videoFiles.map((f) => f.clone()).toList(),
     });
 
     // Backend validation expects `primary_image_index.*` to be an image.
     if (primaryImageFile != null) {
       form.files.add(
         MapEntry('primary_image_index[]', primaryImageFile.clone()),
-      );
-    }
-
-    for (var i = 0; i < videoFiles.length; i++) {
-      form.files.add(
-        MapEntry('videos[$i][file]', videoFiles[i].clone()),
       );
     }
 
@@ -865,7 +859,7 @@ class StaffPropertyService implements PropertyService {
       'villa_water_source', 'rent_villa_water_source',
       'parking_types', 'villa_parking', 'rent_villa_parking',
       'rent_villa_outdoors',
-      'floor_plate_area', 'conference_rooms',
+      'floor_plate_area',
     };
     for (final e in extra.entries) {
       final key = e.key.trim();

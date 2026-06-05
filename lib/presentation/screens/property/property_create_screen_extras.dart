@@ -367,7 +367,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                           trailing: Icon(
                             Icons.north_west_rounded,
                             size: 16,
-                            color: AppTheme.gold.withValues(alpha: 0.9),
+                            color: AppTheme.gold.withOpacity(0.9),
                           ),
                           onTap: () => _selectAddressPrediction(pred),
                         );
@@ -568,9 +568,9 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
           Container(
             height: 150,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
+              color: Colors.white.withOpacity(0.06),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+              border: Border.all(color: Colors.white.withOpacity(0.10)),
             ),
             child: Center(
               child: Column(
@@ -698,9 +698,9 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0B1220).withValues(alpha: 0.92),
+                      color: const Color(0xFF0B1220).withOpacity(0.92),
                       border: Border.all(
-                        color: AppTheme.gold.withValues(alpha: 0.22),
+                        color: AppTheme.gold.withOpacity(0.22),
                       ),
                       borderRadius: BorderRadius.circular(6),
                     ),
@@ -715,7 +715,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                       icon: Icon(
                         Icons.arrow_drop_down,
                         size: 14,
-                        color: AppTheme.gold.withValues(alpha: 0.95),
+                        color: AppTheme.gold.withOpacity(0.95),
                       ),
                       style: const TextStyle(
                         color: AppColors.textPrimary,
@@ -842,7 +842,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
       selected: selected ?? false,
       showCheckmark: false,
       selectedColor: AppTheme.gold,
-      backgroundColor: Colors.white.withValues(alpha: 0.08),
+      backgroundColor: Colors.white.withOpacity(0.08),
       labelStyle: TextStyle(
         fontSize: 11,
         fontWeight: FontWeight.w700,
