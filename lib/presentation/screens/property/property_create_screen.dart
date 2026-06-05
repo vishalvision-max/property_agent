@@ -1018,6 +1018,116 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       _propertyKind == _CreatePropertyKind.coLiving;
 
   void _syncDetailsFromSelectedCategorySlugs() {
+    // Clear case-specific selections so a fresh category never inherits
+    // stale chip states from a previous case.
+    _commercialType = '';
+    _landType = '';
+    _ownership = '';
+    _availability = '';
+    _readyTimeframe = '';
+    _parkingType = '';
+    _officeType = '';
+    _shopType = '';
+    _floorType = '';
+    _showroomFurnishing = '';
+    _showroomFloorType = '';
+    _shedPropertyAge = '';
+    _shedFacing = '';
+    _shedTruckAccess = '';
+    _warehouseType = '';
+    _warehouseTruckAccess = '';
+    _preferredTenant = '';
+    _foodPreference = '';
+    _pgGenderBased = '';
+    _pgOccupancyType = '';
+    _pgPropertyType = '';
+    _pgBathroomType = '';
+    _pgSuitableFor = '';
+    _pgRoomType = '';
+    _pgBedType = '';
+    _pgAvailability = '';
+    _rentVillaWaterSource = '';
+    _studioConfig = '';
+    _kitchenType = '';
+    _waterSource = '';
+
+    _additionalRooms.clear();
+    _propertyHighlights.clear();
+    _promotionTags.clear();
+    _rentAdditionalRooms.clear();
+    _rentPromotionTypes.clear();
+    _pgTenantTypes.clear();
+    _pgFoodAvailability.clear();
+    _pgNearbyPreferences.clear();
+    _rentVillaOutdoors.clear();
+    _rentTenantTypes.clear();
+    _studioTenantPrefs.clear();
+    _rentFarmUseCases.clear();
+    _villaAdditionalRooms.clear();
+    _villaParking.clear();
+    _outdoors.clear();
+    _connections.clear();
+    _builderUtilities.clear();
+    _duplexNearbyFacilities.clear();
+    _farmUtilities.clear();
+    _selectedAmenityIds.clear();
+    _selectedFurnishingIds.clear();
+    _furnishingQuantities.clear();
+
+    _liftAvailable = null;
+    _preLeased = null;
+    _receptionArea = null;
+    _pantry = null;
+    _cafeteria = null;
+    _serverRoom = null;
+    _fireSafetyInstalled = null;
+    _centralAC = null;
+    _visitorParking = null;
+    _taxIncluded = null;
+    _officeNegotiable = null;
+    _mainRoadFacing = null;
+    _cornerShop = null;
+    _washroomAvailable = null;
+    _showroomMainRoadFacing = null;
+    _showroomCorner = null;
+    _showroomWashroom = null;
+    _warehouseIndustrialLicense = null;
+    _shedThreePhaseElectricity = null;
+    _shedWaterConnection = null;
+    _shedBorewellAvailable = null;
+    _shedLoadingBay = null;
+    _shedDockLeveler = null;
+    _shedContainerAccess = null;
+    _shedParkingAvailable = null;
+    _shedVisitorParking = null;
+    _shedSecurityCabin = null;
+    _shedBoundaryWall = null;
+    _shedCctvSurveillance = null;
+    _shedOfficeSpaceAvailable = null;
+    _shedPantry = null;
+    _shedWashrooms = null;
+    _shedLabourAccommodation = null;
+    _shedMainRoadFacing = null;
+    _shedCornerProperty = null;
+    _shedGatedIndustrialEstate = null;
+    _shedIndustrialLicense = null;
+    _shedFactoryLicense = null;
+    _shedFireNoc = null;
+    _shedPollutionClearance = null;
+    _farmGarden = null;
+    _farmSwimmingPool = null;
+    _builderCornerProperty = null;
+    _builderGatedSociety = null;
+    _constructionAllowed = null;
+    _builderNegotiable = null;
+    _duplexCornerPlot = null;
+    _duplexGatedCommunity = null;
+    _duplexConstructionAllowed = null;
+    _duplexWaterConnection = null;
+    _duplexElectricityConnection = null;
+    _duplexNegotiable = null;
+    _duplexRoadAccess = null;
+
     final parentSlug = _parentKind;
     final childSlug = (_selectedCategorySlug ?? '').trim().toLowerCase();
     final slug = childSlug.isNotEmpty ? childSlug : parentSlug;
@@ -1112,6 +1222,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         if (!mounted) return;
         _autoFillLocation();
       });
+      setState(_resetCaseSpecificSelections);
       _attachDraftListeners();
       if (widget.autoRestoreDraft) _loadDraft();
     }
@@ -1208,6 +1319,113 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     if (!_addressFocus.hasFocus) {
       ref.read(addressSuggestionsProvider.notifier).clear();
     }
+  }
+
+  void _resetCaseSpecificSelections() {
+    _commercialType = '';
+    _landType = '';
+    _ownership = '';
+    _availability = '';
+    _readyTimeframe = '';
+    _parkingType = '';
+    _officeType = '';
+    _shopType = '';
+    _floorType = '';
+    _showroomFurnishing = '';
+    _showroomFloorType = '';
+    _shedPropertyAge = '';
+    _shedFacing = '';
+    _shedTruckAccess = '';
+    _warehouseType = '';
+    _warehouseTruckAccess = '';
+    _preferredTenant = '';
+    _foodPreference = '';
+    _pgGenderBased = '';
+    _pgOccupancyType = '';
+    _pgPropertyType = '';
+    _pgBathroomType = '';
+    _pgSuitableFor = '';
+    _pgRoomType = '';
+    _pgBedType = '';
+    _pgAvailability = '';
+    _rentVillaWaterSource = '';
+    _studioConfig = '';
+    _kitchenType = '';
+    _waterSource = '';
+
+    _additionalRooms.clear();
+    _propertyHighlights.clear();
+    _promotionTags.clear();
+    _rentAdditionalRooms.clear();
+    _rentPromotionTypes.clear();
+    _pgTenantTypes.clear();
+    _pgFoodAvailability.clear();
+    _pgNearbyPreferences.clear();
+    _rentVillaOutdoors.clear();
+    _rentTenantTypes.clear();
+    _studioTenantPrefs.clear();
+    _rentFarmUseCases.clear();
+    _villaAdditionalRooms.clear();
+    _villaParking.clear();
+    _outdoors.clear();
+    _connections.clear();
+    _builderUtilities.clear();
+    _duplexNearbyFacilities.clear();
+    _farmUtilities.clear();
+
+    _liftAvailable = null;
+    _preLeased = null;
+    _receptionArea = null;
+    _pantry = null;
+    _cafeteria = null;
+    _serverRoom = null;
+    _fireSafetyInstalled = null;
+    _centralAC = null;
+    _visitorParking = null;
+    _taxIncluded = null;
+    _officeNegotiable = null;
+    _mainRoadFacing = null;
+    _cornerShop = null;
+    _washroomAvailable = null;
+    _showroomMainRoadFacing = null;
+    _showroomCorner = null;
+    _showroomWashroom = null;
+    _warehouseIndustrialLicense = null;
+    _shedThreePhaseElectricity = null;
+    _shedWaterConnection = null;
+    _shedBorewellAvailable = null;
+    _shedLoadingBay = null;
+    _shedDockLeveler = null;
+    _shedContainerAccess = null;
+    _shedParkingAvailable = null;
+    _shedVisitorParking = null;
+    _shedSecurityCabin = null;
+    _shedBoundaryWall = null;
+    _shedCctvSurveillance = null;
+    _shedOfficeSpaceAvailable = null;
+    _shedPantry = null;
+    _shedWashrooms = null;
+    _shedLabourAccommodation = null;
+    _shedMainRoadFacing = null;
+    _shedCornerProperty = null;
+    _shedGatedIndustrialEstate = null;
+    _shedIndustrialLicense = null;
+    _shedFactoryLicense = null;
+    _shedFireNoc = null;
+    _shedPollutionClearance = null;
+    _farmGarden = null;
+    _farmSwimmingPool = null;
+    _builderCornerProperty = null;
+    _builderGatedSociety = null;
+    _constructionAllowed = null;
+    _builderNegotiable = null;
+    _duplexCornerPlot = null;
+    _duplexGatedCommunity = null;
+    _duplexConstructionAllowed = null;
+    _duplexWaterConnection = null;
+    _duplexElectricityConnection = null;
+    _duplexNegotiable = null;
+    _duplexRoadAccess = null;
   }
 
   // ---------------------------------------------------------------------------
@@ -4319,6 +4537,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _propertyKind == _CreatePropertyKind.pg ||
         _propertyKind == _CreatePropertyKind.coLiving;
 
+    final resolvedLandPlotAreaText = _plotArea.text.trim().isNotEmpty
+        ? _plotArea.text.trim()
+        : _area.text.trim();
+
     final property = Property(
       id: id,
       name: generatedTitle,
@@ -4333,7 +4555,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       status: PropertyStatus.pending,
       area: area,
       areaUnit: _areaUnit,
-      plotArea: isLandPlot ? double.tryParse(_plotArea.text.trim()) : null,
+      plotArea: isLandPlot
+          ? double.tryParse(resolvedLandPlotAreaText)
+          : null,
       slug: generatedTitle.toLowerCase().replaceAll(' ', '-'),
       listingType: _listingType,
       facing: _facing,

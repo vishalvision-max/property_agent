@@ -134,6 +134,55 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
           onChanged: (_) => _validateField('price'),
           errorText: ref.watch(propertyFormProvider).errorFor('price'),
         ),
+        if (isLandPlot) ...[
+          const SizedBox(height: 12),
+          TextField(
+            controller: _plotArea,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => _scheduleSaveDraft(),
+            decoration: InputDecoration(
+              labelText: 'Plot Area',
+              hintText: 'Area',
+              prefixIcon: const Icon(Icons.terrain, size: 18),
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _plotAreaUnit,
+                    isDense: true,
+                    dropdownColor: Colors.white,
+                    iconEnabledColor: Colors.black,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
+                    items:
+                        (_landType == 'agricultural'
+                                ? _PropertyCreateScreenState._areaUnits
+                                : _PropertyCreateScreenState._areaUnits.where(
+                                    (u) => u != 'acre',
+                                  ))
+                            .map(
+                              (u) => DropdownMenuItem<String>(
+                                value: u,
+                                child: Text(
+                                  toTitleCase(u),
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (v) {
+                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
+                      _scheduleSaveDraft();
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
         if (_propertyKind == _CreatePropertyKind.sale &&
             !_isSellResidentialVillaHouse &&
             !(isCommercial && _commercialType == 'office')) ...[

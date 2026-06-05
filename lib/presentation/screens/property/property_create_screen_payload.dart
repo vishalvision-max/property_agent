@@ -26,6 +26,15 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
     final resolvedShopAreaUnit = _shopAreaUnit.trim().isNotEmpty
         ? _shopAreaUnit
         : (_showroomAreaUnit.trim().isNotEmpty ? _showroomAreaUnit : _areaUnit);
+    final resolvedLandPlotArea = _plotArea.text.trim().isNotEmpty
+        ? _plotArea.text.trim()
+        : _area.text.trim();
+    double? safePositiveDouble(String value, {double max = 100000}) {
+      final parsed = double.tryParse(value.trim());
+      if (parsed == null) return null;
+      if (parsed <= 0 || parsed > max) return null;
+      return parsed;
+    }
 
     final String resolvedType;
     switch (_propertyKind) {
@@ -171,13 +180,7 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'carpet_area': double.tryParse(_carpetArea.text.trim()),
       'built_up_area': double.tryParse(_builtUpArea.text.trim()),
       'super_built_up_area': double.tryParse(_superBuiltUpArea.text.trim()),
-      'plot_area': double.tryParse(_plotArea.text.trim()),
-      'plot_length': _isSellResidentialBuilderFloor
-          ? null
-          : double.tryParse(_length.text.trim()),
-      'plot_width': _isSellResidentialBuilderFloor
-          ? null
-          : double.tryParse(_breadth.text.trim()),
+      'plot_area': double.tryParse(resolvedLandPlotArea),
       'floors_allowed': int.tryParse(_floorsAllowed.text.trim()),
       'open_sides': _openSides,
       'boundary_wall': _boundaryWall,
@@ -700,15 +703,15 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'land_type': isLandPlot ? _landType : null,
       'road_width_ft': isLandPlot
-          ? double.tryParse(_roadWidth.text.trim())
+          ? safePositiveDouble(_roadWidth.text.trim(), max: 1000)
           : null,
       'plot_area_unit': isLandPlot ? _plotAreaUnit : null,
       'road_access': isLandPlot ? _plotRoadAccess : null,
       'plot_length_ft': isLandPlot
-          ? double.tryParse(_length.text.trim())
+          ? safePositiveDouble(_length.text.trim())
           : null,
       'plot_breadth_ft': isLandPlot
-          ? double.tryParse(_breadth.text.trim())
+          ? safePositiveDouble(_breadth.text.trim())
           : null,
       'open_slides': isLandPlot ? _openSides : null,
       'corner_plot': isLandPlot ? (_plotCorner == true ? 1 : 0) : null,
@@ -950,20 +953,24 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'price_per_sqft': _isSellResidentialBuilderFloor
           ? double.tryParse(_pricePerSqft.text.trim())
           : null,
-      'plot_length_ft': _isSellResidentialBuilderFloor ||
+      'plot_length_ft': isLandPlot ||
+              _isSellResidentialBuilderFloor ||
               _isSellResidentialDuplex
           ? double.tryParse(_length.text.trim())
           : null,
-      'plot_breadth_ft': _isSellResidentialBuilderFloor ||
+      'plot_breadth_ft': isLandPlot ||
+              _isSellResidentialBuilderFloor ||
               _isSellResidentialDuplex
           ? double.tryParse(_breadth.text.trim())
           : null,
       'open_slides': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
           ? _openSides
           : null,
-      'plot_area': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
-          ? double.tryParse(_plotArea.text.trim())
-          : (_isResidential ? double.tryParse(_plotArea.text.trim()) : null),
+      'plot_area': isLandPlot
+          ? double.tryParse(resolvedLandPlotArea)
+          : (_isSellResidentialBuilderFloor || _isSellResidentialDuplex
+                ? double.tryParse(_plotArea.text.trim())
+                : (_isResidential ? double.tryParse(_plotArea.text.trim()) : null)),
 
       // Sell -> Residential -> Duplex extra fields
       'duplex_gated_community': _isSellResidentialDuplex

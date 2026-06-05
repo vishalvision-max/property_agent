@@ -270,6 +270,53 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             Icons.apartment_outlined,
           ),
           const SizedBox(height: 12),
+          TextField(
+            controller: _plotArea,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => _scheduleSaveDraft(),
+            decoration: InputDecoration(
+              labelText: 'Plot Area',
+              hintText: 'Area',
+              prefixIcon: const Icon(Icons.terrain, size: 18),
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _plotAreaUnit,
+                    isDense: true,
+                    dropdownColor: Colors.white,
+                    iconEnabledColor: Colors.black,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                    ),
+                    items:
+                        (_landType == 'agricultural'
+                                ? _PropertyCreateScreenState._areaUnits
+                                : _PropertyCreateScreenState._areaUnits.where(
+                                    (u) => u != 'acre',
+                                  ))
+                            .map(
+                              (u) => DropdownMenuItem<String>(
+                                value: u,
+                                child: Text(
+                                  toTitleCase(u),
+                                  style: const TextStyle(color: AppColors.dark),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (v) {
+                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
+                      _scheduleSaveDraft();
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -4355,7 +4402,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 Expanded(
                   child: _buildTextField(
                     _length,
-                    'Length (ft)',
+                    'Plot Length (ft)',
                     'e.g., 60',
                     Icons.straighten,
                     keyboardType: TextInputType.number,
@@ -4365,7 +4412,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 Expanded(
                   child: _buildTextField(
                     _breadth,
-                    'Breadth (ft)',
+                    'Plot Breadth (ft)',
                     'e.g., 40',
                     Icons.straighten,
                     keyboardType: TextInputType.number,
