@@ -15,14 +15,13 @@ String _$propertyFormHash() => r'625f24d86a7440b81c759cbdbf358ad2a2e897fc';
 @ProviderFor(PropertyForm)
 final propertyFormProvider =
     AutoDisposeNotifierProvider<PropertyForm, PropertyFormState>.internal(
-      PropertyForm.new,
-      name: r'propertyFormProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$propertyFormHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  PropertyForm.new,
+  name: r'propertyFormProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$propertyFormHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$PropertyForm = AutoDisposeNotifier<PropertyFormState>;
 // ignore_for_file: type=lint

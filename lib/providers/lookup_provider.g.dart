@@ -30,9 +30,8 @@ String _$amenitiesHash() => r'2af84f9b14690667fd135d4b09d33b83d62355e5';
 final amenitiesProvider = FutureProvider<List<LookupItem>>.internal(
   amenities,
   name: r'amenitiesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$amenitiesHash,
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$amenitiesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -47,9 +46,8 @@ String _$furnishingsHash() => r'3998d4213f7364871c61369a4d337a44adb2403d';
 final furnishingsProvider = FutureProvider<List<LookupItem>>.internal(
   furnishings,
   name: r'furnishingsProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$furnishingsHash,
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$furnishingsHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
@@ -64,9 +62,8 @@ String _$categoriesHash() => r'752c750bdbf8d8d88dff24e093fc3c915673239c';
 final categoriesProvider = FutureProvider<List<Category>>.internal(
   categories,
   name: r'categoriesProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$categoriesHash,
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$categoriesHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );

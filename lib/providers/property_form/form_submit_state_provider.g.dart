@@ -12,14 +12,14 @@ String _$formSubmitStateHash() => r'99181ecc328225cf8df162265d7ebff34df0bbc3';
 @ProviderFor(FormSubmitState)
 final formSubmitStateProvider =
     AutoDisposeNotifierProvider<FormSubmitState, bool>.internal(
-      FormSubmitState.new,
-      name: r'formSubmitStateProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$formSubmitStateHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  FormSubmitState.new,
+  name: r'formSubmitStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$formSubmitStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$FormSubmitState = AutoDisposeNotifier<bool>;
 String _$formDraftSavingStateHash() =>
@@ -29,14 +29,14 @@ String _$formDraftSavingStateHash() =>
 @ProviderFor(FormDraftSavingState)
 final formDraftSavingStateProvider =
     AutoDisposeNotifierProvider<FormDraftSavingState, bool>.internal(
-      FormDraftSavingState.new,
-      name: r'formDraftSavingStateProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$formDraftSavingStateHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+  FormDraftSavingState.new,
+  name: r'formDraftSavingStateProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$formDraftSavingStateHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
 
 typedef _$FormDraftSavingState = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint

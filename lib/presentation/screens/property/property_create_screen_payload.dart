@@ -963,7 +963,7 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
               _isSellResidentialDuplex
           ? double.tryParse(_breadth.text.trim())
           : null,
-      'open_slides': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
+      'open_sides': _isSellResidentialBuilderFloor || _isSellResidentialDuplex
           ? _openSides
           : null,
       'plot_area': isLandPlot

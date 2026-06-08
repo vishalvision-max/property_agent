@@ -1437,6 +1437,8 @@ class Property extends Equatable {
     final showroom = (f['showroom_details'] as Map?) ?? {};
     final warehouse = (f['warehouse_details'] as Map?) ?? {};
     final plot = (f['plot_details'] as Map?) ?? {};
+    final res = (f['residential_details'] as Map?) ?? {};
+    final comm = (f['commercial_details'] as Map?) ?? {};
     int? toInt(dynamic val) {
       if (val == null) return null;
       if (val is num) return val.toInt();
@@ -1606,17 +1608,21 @@ class Property extends Equatable {
           ? (f['area'] as num).toDouble()
           : double.tryParse(f['area']?.toString() ?? ''),
       areaUnit: f['areaUnit']?.toString() ?? f['area_unit']?.toString(),
-      propertyAge: toInt(f['propertyAge'] ?? f['property_age']),
-      facing: f['facing']?.toString(),
-      floor: toInt(f['floor']),
-      totalFloors: toInt(f['totalFloors'] ?? f['total_floors']),
+      propertyAge: toInt(f['propertyAge'] ?? f['property_age'] ?? res['property_age'] ?? comm['property_age']),
+      facing: f['facing']?.toString() ?? res['facing']?.toString() ?? comm['facing']?.toString(),
+      floor: toInt(f['floor'] ?? res['floor'] ?? comm['floor']),
+      totalFloors: toInt(
+        f['totalFloors'] ?? f['total_floors'] ?? res['total_floors'] ?? comm['total_floors'],
+      ),
       possessionStatus:
           f['possessionStatus']?.toString() ??
-          f['possession_status']?.toString(),
-      bedrooms: toInt(f['bedrooms']),
-      bathrooms: toInt(f['bathrooms']),
-      furnishing: f['furnishing']?.toString(),
-      parking: toInt(f['parking']),
+          f['possession_status']?.toString() ??
+          res['possession_status']?.toString() ??
+          comm['possession_status']?.toString(),
+      bedrooms: toInt(f['bedrooms'] ?? res['bedrooms'] ?? f['bhk'] ?? res['bhk']),
+      bathrooms: toInt(f['bathrooms'] ?? res['bathrooms'] ?? comm['washrooms']),
+      furnishing: f['furnishing']?.toString() ?? res['furnishing']?.toString() ?? comm['furnishing']?.toString(),
+      parking: toInt(f['parking'] ?? res['parking'] ?? comm['parking']),
       address: f['address']?.toString(),
       city: f['city']?.toString(),
       state: f['state']?.toString(),
@@ -1739,10 +1745,10 @@ class Property extends Equatable {
       // Store raw API response
       apiFields: json,
 
-      carpetArea: toDouble(f['carpetArea'] ?? f['carpet_area']),
-      builtUpArea: toDouble(f['builtUpArea'] ?? f['built_up_area']),
+      carpetArea: toDouble(f['carpetArea'] ?? f['carpet_area'] ?? res['carpet_area'] ?? comm['carpet_area']),
+      builtUpArea: toDouble(f['builtUpArea'] ?? f['built_up_area'] ?? res['built_up_area'] ?? comm['built_up_area']),
       superBuiltUpArea: toDouble(
-        f['superBuiltUpArea'] ?? f['super_built_up_area'],
+        f['superBuiltUpArea'] ?? f['super_built_up_area'] ?? res['super_built_up_area'] ?? comm['super_built_up_area'],
       ),
       plotArea: toDouble(
         f['plotArea'] ??
@@ -1753,28 +1759,32 @@ class Property extends Equatable {
         f['plotLength'] ??
             f['plot_length'] ??
             f['plot_length_ft'] ??
+            f['length'] ??
             (f['plot_details'] as Map?)?['plot_length'] ??
-            (f['plot_details'] as Map?)?['plot_length_ft'],
+            (f['plot_details'] as Map?)?['plot_length_ft'] ??
+            (f['plot_details'] as Map?)?['length'],
       ),
       plotBreadth: toDouble(
         f['plotBreadth'] ??
             f['plot_breadth'] ??
             f['plot_width'] ??
             f['plot_breadth_ft'] ??
+            f['width'] ??
             (f['plot_details'] as Map?)?['plot_breadth'] ??
-            (f['plot_details'] as Map?)?['plot_breadth_ft'],
+            (f['plot_details'] as Map?)?['plot_breadth_ft'] ??
+            (f['plot_details'] as Map?)?['width'],
       ),
       floorsAllowed: toInt(f['floorsAllowed'] ?? f['floors_allowed']),
-      openSides: toInt(f['openSides'] ?? f['open_sides']),
+      openSides: toInt(f['openSides'] ?? f['open_sides'] ?? f['open_slides']),
       boundaryWall: toBool(f['boundaryWall'] ?? f['boundary_wall']),
       constructionDone: toBool(f['constructionDone'] ?? f['construction_done']),
       availability: f['availability']?.toString(),
       readyTimeframe:
           f['readyTimeframe']?.toString() ?? f['ready_timeframe']?.toString(),
       possessionBy:
-          f['possessionBy']?.toString() ?? f['possession_by']?.toString(),
-      ownership: f['ownership']?.toString(),
-      balconies: toInt(f['balconies'] ?? f['balcony']),
+          f['possessionBy']?.toString() ?? f['possession_by']?.toString() ?? res['possession_by']?.toString() ?? comm['possession_by']?.toString(),
+      ownership: f['ownership']?.toString() ?? res['ownership']?.toString() ?? comm['ownership']?.toString(),
+      balconies: toInt(f['balconies'] ?? f['balcony'] ?? res['balconies'] ?? comm['balconies']),
 
       commercialType:
           f['commercialType']?.toString() ?? f['commercial_type']?.toString(),
@@ -2091,7 +2101,7 @@ class Property extends Equatable {
         f['additionalRooms'] ?? f['additional_rooms'],
       ),
       cornerProperty: toBool(
-        f['cornerProperty'] ?? f['corner_property'] ?? f['corner_plot'],
+        f['cornerProperty'] ?? f['corner_property'] ?? f['corner_plot'] ?? res['corner_property'] ?? comm['corner_property'],
       ),
       priceNegotiable: toBool(
         f['priceNegotiable'] ??
@@ -2103,6 +2113,9 @@ class Property extends Equatable {
       maintenanceCharges: toDouble(
         f['maintenanceCharges'] ??
             f['maintenance_charges'] ??
+            res['maintenance_charges'] ??
+            comm['maintenance_charges'] ??
+            (f['pg_details'] as Map?)?['maintenance_charges'] ??
             // backend sometimes returns these column names for commercial
             f['commercial_maintenance_charges'] ??
             f['warehouse_maintenance_charges'] ??
@@ -2124,9 +2137,9 @@ class Property extends Equatable {
       rentCornerProperty: toBool(
         f['rentCornerProperty'] ?? f['rent_corner_property'],
       ),
-      petFriendly: toBool(f['petFriendly'] ?? f['pet_friendly']),
+      petFriendly: toBool(f['petFriendly'] ?? f['pet_friendly'] ?? res['pet_friendly'] ?? comm['pet_friendly']),
       wheelchairFriendly: toBool(
-        f['wheelchairFriendly'] ?? f['wheelchair_friendly'],
+        f['wheelchairFriendly'] ?? f['wheelchair_friendly'] ?? res['wheelchair_friendly'] ?? comm['wheelchair_friendly'],
       ),
       rentGatedSociety: toBool(
         f['rentGatedSociety'] ?? f['gated_society_rent'],
@@ -2209,7 +2222,7 @@ class Property extends Equatable {
       villaCornerProperty: toBool(
         f['villaCornerProperty'] ?? f['villa_corner_property'],
       ),
-      gatedCommunity: toBool(f['gatedCommunity'] ?? f['gated_community']),
+      gatedCommunity: toBool(f['gatedCommunity'] ?? f['gated_community'] ?? res['gated_community'] ?? res['gated_society'] ?? comm['gated_society']),
       villaParking: toStringList(f['villaParking'] ?? f['parking_types']),
       outdoors: toStringList(f['outdoors']),
       waterSource:
@@ -2282,18 +2295,18 @@ class Property extends Equatable {
         f['duplexNearbyFacilities'] ?? f['duplex_nearby_facilities'],
       ),
 
-      farmLandArea: toDouble(f['farmLandArea'] ?? f['farm_land_area']),
+      farmLandArea: toDouble(f['farmLandArea'] ?? f['farm_land_area'] ?? plot['farm_land_area']),
       farmBuiltUpArea: toDouble(
-        f['farmBuiltUpArea'] ?? f['farm_built_up_area'],
+        f['farmBuiltUpArea'] ?? f['farm_built_up_area'] ?? plot['farm_built_up_area'],
       ),
-      farmUtilities: toStringList(f['farmUtilities'] ?? f['farm_utilities']),
-      farmRooms: toInt(f['farmRooms'] ?? f['farm_rooms']),
-      farmGarden: toBool(f['farmGarden'] ?? f['farm_garden']),
+      farmUtilities: toStringList(f['farmUtilities'] ?? f['farm_utilities'] ?? plot['farm_utilities']),
+      farmRooms: toInt(f['farmRooms'] ?? f['farm_rooms'] ?? f['number_of_rooms'] ?? plot['farm_rooms'] ?? plot['number_of_rooms']),
+      farmGarden: toBool(f['farmGarden'] ?? f['farm_garden'] ?? plot['farm_garden']),
       farmSwimmingPool: toBool(
-        f['farmSwimmingPool'] ?? f['farm_swimming_pool'],
+        f['farmSwimmingPool'] ?? f['farm_swimming_pool'] ?? f['farm_swiming_pool'] ?? plot['farm_swimming_pool'] ?? plot['farm_swiming_pool'],
       ),
-      village: f['village']?.toString(),
-      landmark: f['landmark']?.toString(),
+      village: f['village']?.toString() ?? plot['village']?.toString(),
+      landmark: f['landmark']?.toString() ?? plot['landmark']?.toString(),
 
       pgGenderBased:
           f['pgGenderBased']?.toString() ??

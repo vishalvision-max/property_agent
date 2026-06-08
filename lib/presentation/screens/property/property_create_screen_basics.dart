@@ -619,34 +619,14 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                   const SizedBox(height: 12),
                   _buildChoiceGrid<int>(
                     label: 'Sub Category',
-                    values: [
-                      if (_propertyKind == _CreatePropertyKind.sale &&
-                          _isResidential)
-                        -9999,
-                      ...effectiveChildren.map((c) => c.id),
-                    ],
-                    value: (_selectedCategorySlug == 'farmhouse')
-                        ? -9999
-                        : _selectedCategoryId,
-                    labelFor: (id) {
-                      if (id == -9999) return 'Farmhouse';
-                      return effectiveChildren
-                          .firstWhere((c) => c.id == id)
-                          .name;
-                    },
+                    values: effectiveChildren.map((c) => c.id).toList(),
+                    value: _selectedCategoryId,
+                    labelFor: (id) => effectiveChildren.firstWhere((c) => c.id == id).name,
                     onChanged: (id) {
                       setState(() {
-                        if (id == -9999) {
-                          _selectedCategoryId =
-                              null; // backend doesn't know it yet
-                          _selectedCategorySlug = 'farmhouse';
-                        } else {
-                          final child = effectiveChildren.firstWhere(
-                            (c) => c.id == id,
-                          );
-                          _selectedCategoryId = id;
-                          _selectedCategorySlug = child.slug;
-                        }
+                        final child = effectiveChildren.firstWhere((c) => c.id == id);
+                        _selectedCategoryId = id;
+                        _selectedCategorySlug = child.slug;
                         _syncDetailsFromSelectedCategorySlugs();
 
                         // Studio apartment is strictly 1 bed / 1 bath.

@@ -17,7 +17,7 @@ import 'property_service.dart';
 
 class StaffPropertyService implements PropertyService {
   StaffPropertyService({Dio? dio})
-    : _dioFuture = (dio != null) ? Future.value(dio) : ApiDio.authed();
+      : _dioFuture = (dio != null) ? Future.value(dio) : ApiDio.authed();
 
   final Future<Dio> _dioFuture;
 
@@ -30,12 +30,10 @@ class StaffPropertyService implements PropertyService {
       final tempDir = await getTemporaryDirectory();
       final filename = file.path.split(Platform.pathSeparator).last;
       final dotIndex = filename.lastIndexOf('.');
-      final ext = dotIndex != -1
-          ? filename.substring(dotIndex).toLowerCase()
-          : '.jpg';
-      final nameWithoutExt = dotIndex != -1
-          ? filename.substring(0, dotIndex)
-          : filename;
+      final ext =
+          dotIndex != -1 ? filename.substring(dotIndex).toLowerCase() : '.jpg';
+      final nameWithoutExt =
+          dotIndex != -1 ? filename.substring(0, dotIndex) : filename;
 
       CompressFormat format = CompressFormat.jpeg;
       String targetExt = '.jpg';
@@ -56,13 +54,13 @@ class StaffPropertyService implements PropertyService {
 
       final XFile? compressedXFile =
           await FlutterImageCompress.compressAndGetFile(
-            file.absolute.path,
-            targetPath,
-            quality: 50,
-            minWidth: 1280,
-            minHeight: 720,
-            format: format,
-          );
+        file.absolute.path,
+        targetPath,
+        quality: 50,
+        minWidth: 1280,
+        minHeight: 720,
+        format: format,
+      );
 
       if (compressedXFile == null) {
         debugPrint(
@@ -124,9 +122,8 @@ class StaffPropertyService implements PropertyService {
     ];
     return ActivityItem(
       title: 'New lead: $name',
-      subtitle: subtitleParts.isEmpty
-          ? 'Lead assigned'
-          : subtitleParts.join(' • '),
+      subtitle:
+          subtitleParts.isEmpty ? 'Lead assigned' : subtitleParts.join(' • '),
       at: at,
     );
   }
@@ -188,8 +185,7 @@ class StaffPropertyService implements PropertyService {
       final city = (json['city'] ?? '').toString();
       copy['city'] = city;
 
-      final price =
-          (json['price'] as num?)?.toDouble() ??
+      final price = (json['price'] as num?)?.toDouble() ??
           double.tryParse((json['price'] ?? '0').toString()) ??
           0;
       copy['price'] = price;
@@ -200,9 +196,8 @@ class StaffPropertyService implements PropertyService {
           : PropertyType.rent;
       copy['type'] = type.name;
 
-      final imagesRaw = json['images'] is List
-          ? (json['images'] as List)
-          : const [];
+      final imagesRaw =
+          json['images'] is List ? (json['images'] as List) : const [];
       final images = imagesRaw
           .map((e) {
             if (e is Map) {
@@ -210,9 +205,8 @@ class StaffPropertyService implements PropertyService {
               final path = (m['image_path'] ?? m['url'] ?? '').toString();
               if (path.startsWith('http')) return path;
               if (path.isEmpty) return '';
-              final normalized = path.startsWith('/')
-                  ? path.substring(1)
-                  : path;
+              final normalized =
+                  path.startsWith('/') ? path.substring(1) : path;
               return '${ApiConstants.publicOrigin}/storage/$normalized';
             }
             final s = e.toString();
@@ -241,9 +235,8 @@ class StaffPropertyService implements PropertyService {
           .toList(growable: false);
       copy['images'] = images;
 
-      final videosRaw = json['videos'] is List
-          ? (json['videos'] as List)
-          : const [];
+      final videosRaw =
+          json['videos'] is List ? (json['videos'] as List) : const [];
       final videos = videosRaw
           .map((e) {
             if (e is Map) {
@@ -254,13 +247,12 @@ class StaffPropertyService implements PropertyService {
                 final normalized = url.startsWith('/') ? url.substring(1) : url;
                 url = '${ApiConstants.publicOrigin}/storage/$normalized';
               }
-              final thumbRaw = (m['thumbnail'] ?? m['thumb_url'] ?? '')
-                  .toString();
+              final thumbRaw =
+                  (m['thumbnail'] ?? m['thumb_url'] ?? '').toString();
               String? thumbUrl = thumbRaw.isEmpty ? null : thumbRaw;
               if (thumbUrl != null && !thumbUrl.startsWith('http')) {
-                final normalized = thumbUrl.startsWith('/')
-                    ? thumbUrl.substring(1)
-                    : thumbUrl;
+                final normalized =
+                    thumbUrl.startsWith('/') ? thumbUrl.substring(1) : thumbUrl;
                 thumbUrl = '${ApiConstants.publicOrigin}/storage/$normalized';
               }
               return {
@@ -272,8 +264,8 @@ class StaffPropertyService implements PropertyService {
                 'is_featured': m['is_featured'] is bool
                     ? m['is_featured'] as bool
                     : (m['is_featured'] == 1 ||
-                          m['is_featured'] == '1' ||
-                          m['is_featured']?.toString().toLowerCase() == 'true'),
+                        m['is_featured'] == '1' ||
+                        m['is_featured']?.toString().toLowerCase() == 'true'),
               };
             }
             final s = e.toString();
@@ -287,23 +279,22 @@ class StaffPropertyService implements PropertyService {
           .toList();
       copy['videos'] = videos;
 
-      final approval = (json['approval_status'] ?? json['approvalStatus'] ?? '')
-          .toString();
+      final approval =
+          (json['approval_status'] ?? json['approvalStatus'] ?? '').toString();
       final rawStatus = (json['status'] ?? '').toString(); // e.g. "available"
       final status = switch (approval) {
         'approved' => PropertyStatus.approved,
         'rejected' => PropertyStatus.rejected,
         'pending' => PropertyStatus.pending,
         _ => switch (rawStatus) {
-          'listed' => PropertyStatus.listed,
-          _ => PropertyStatus.pending,
-        },
+            'listed' => PropertyStatus.listed,
+            _ => PropertyStatus.pending,
+          },
       };
       copy['status'] = status.name;
 
-      final amenitiesRaw = json['amenities'] is List
-          ? (json['amenities'] as List)
-          : const [];
+      final amenitiesRaw =
+          json['amenities'] is List ? (json['amenities'] as List) : const [];
 
       final amenityIds = amenitiesRaw
           .map((e) {
@@ -330,9 +321,8 @@ class StaffPropertyService implements PropertyService {
           .toList(growable: false);
       copy['amenities'] = amenities;
 
-      final documentsRaw = json['documents'] is List
-          ? (json['documents'] as List)
-          : const [];
+      final documentsRaw =
+          json['documents'] is List ? (json['documents'] as List) : const [];
       final documents = documentsRaw
           .map((e) {
             if (e is Map) {
@@ -340,9 +330,8 @@ class StaffPropertyService implements PropertyService {
               final path = (m['document_path'] ?? m['url'] ?? '').toString();
               if (path.startsWith('http')) return path;
               if (path.isEmpty) return '';
-              final normalized = path.startsWith('/')
-                  ? path.substring(1)
-                  : path;
+              final normalized =
+                  path.startsWith('/') ? path.substring(1) : path;
               return '${ApiConstants.publicOrigin}/storage/$normalized';
             }
             final s = e.toString();
@@ -378,8 +367,8 @@ class StaffPropertyService implements PropertyService {
 
   Exception _apiException(DioException e) {
     final data = e.response?.data;
-    final msg = (data is Map<String, dynamic> ? data['message'] : null)
-        ?.toString();
+    final msg =
+        (data is Map<String, dynamic> ? data['message'] : null)?.toString();
     final errors = (data is Map<String, dynamic>) ? data['errors'] : null;
     String? errorDetails;
     if (errors is Map) {
@@ -396,17 +385,15 @@ class StaffPropertyService implements PropertyService {
       if (parts.isNotEmpty) errorDetails = parts.join(' • ');
     }
     final status = e.response?.statusCode;
-    final fallback = status == null
-        ? 'Request failed'
-        : 'Request failed ($status)';
+    final fallback =
+        status == null ? 'Request failed' : 'Request failed ($status)';
     final base = (msg == null || msg.isEmpty) ? fallback : msg;
 
     // When there's no HTTP response, Dio captures the failure in `type/message/error`.
     // Surface it; otherwise the UI only shows a generic "Request failed".
     if (status == null) {
       final type = e
-          .type
-          .name; // e.g. connectionTimeout, badCertificate, connectionError
+          .type.name; // e.g. connectionTimeout, badCertificate, connectionError
       final detail = (e.message ?? e.error?.toString() ?? '').trim();
       if (detail.isNotEmpty) {
         return Exception('$base ($type: $detail)');
@@ -765,7 +752,8 @@ class StaffPropertyService implements PropertyService {
         'images_general[]': images.map((f) => f.clone()).toList(),
       if (documentFiles.isNotEmpty) 'documents[]': documentFiles,
       if (videoFiles.isNotEmpty) 'videos[]': videoFiles,
-      if (videoFiles.isNotEmpty) 'vide': videoFiles.map((f) => f.clone()).toList(),
+      if (videoFiles.isNotEmpty)
+        'vide': videoFiles.map((f) => f.clone()).toList(),
     });
 
     // Backend validation expects `primary_image_index.*` to be an image.
@@ -787,13 +775,16 @@ class StaffPropertyService implements PropertyService {
     final extra = Map<String, dynamic>.from(extraRaw);
 
     // 1. Water Source alignment: map villa_water_source / rent_villa_water_source to water_source
-    final wSource = extra['villa_water_source'] ?? extra['rent_villa_water_source'];
+    final wSource =
+        extra['villa_water_source'] ?? extra['rent_villa_water_source'];
     if (wSource != null && wSource.toString().trim().isNotEmpty) {
       extra['water_source'] = wSource;
     }
 
     // 2. Parking alignment: map villa_parking / rent_villa_parking / parking_types list to parking_independent_house
-    final pTypes = extra['parking_types'] ?? extra['villa_parking'] ?? extra['rent_villa_parking'];
+    final pTypes = extra['parking_types'] ??
+        extra['villa_parking'] ??
+        extra['rent_villa_parking'];
     if (pTypes is Iterable && pTypes.isNotEmpty) {
       final list = pTypes.map((e) => e.toString().toLowerCase()).toList();
       if (list.contains('open') && list.contains('covered')) {
@@ -812,11 +803,18 @@ class StaffPropertyService implements PropertyService {
     }
 
     // 4. Owner Name & Phone alignment
-    final oName = extra['owner_name'] ?? (property.ownerName.trim().isNotEmpty ? property.ownerName.trim() : null);
+    final oName = extra['owner_name'] ??
+        (property.ownerName.trim().isNotEmpty
+            ? property.ownerName.trim()
+            : null);
     if (oName != null) {
       extra['owner_name'] = oName;
     }
-    final oPhone = extra['owner_phone'] ?? extra['owner_mobile'] ?? (property.ownerPhone != null && property.ownerPhone!.trim().isNotEmpty ? property.ownerPhone!.trim() : null);
+    final oPhone = extra['owner_phone'] ??
+        extra['owner_mobile'] ??
+        (property.ownerPhone != null && property.ownerPhone!.trim().isNotEmpty
+            ? property.ownerPhone!.trim()
+            : null);
     if (oPhone != null) {
       extra['owner_phone'] = oPhone;
       extra['owner_mobile'] = oPhone;
@@ -925,8 +923,29 @@ class StaffPropertyService implements PropertyService {
   }
 
   Future<FormData> _toUpdateForm(Property property) async {
-    // Same fields as create, but allow server to keep existing if not passed.
-    return _toCreateForm(property);
+    final form = await _toCreateForm(property);
+
+    // Remove the array syntax for amenities and furnishings generated by _toCreateForm
+    form.fields.removeWhere((e) =>
+        e.key == 'amenity_ids[]' ||
+        e.key == 'amenities[]' ||
+        e.key.startsWith('furnishings['));
+
+    // Re-add them in comma-separated format as expected by the PUT API
+    final amenityIds = property.amenityIds ?? const <int>[];
+    if (amenityIds.isNotEmpty) {
+      form.fields.add(MapEntry('amenities', amenityIds.join(',')));
+    }
+
+    final furnishingSelections = property.furnishingSelections ?? const [];
+    if (furnishingSelections.isNotEmpty) {
+      final ids = furnishingSelections.map((e) => e.id).join(',');
+      final quantities = furnishingSelections.map((e) => e.quantity).join(',');
+      form.fields.add(MapEntry('furnishings[id]', ids));
+      form.fields.add(MapEntry('furnishings[quantity]', quantities));
+    }
+
+    return form;
   }
 
   @override
@@ -980,19 +999,12 @@ class StaffPropertyService implements PropertyService {
     final dio = await _dioFuture;
     final form = await _toUpdateForm(property);
     Response<Map<String, dynamic>> res;
-    final path = '/staff/properties/${property.id}';
-
-    // PHP/Laravel backends natively expect method override for multipart PUT/PATCH requests.
-    // By using POST with '_method: PUT', we ensure robust, native PHP parsing of all fields and files.
-    final formData = FormData();
-    formData.fields.add(const MapEntry('_method', 'PUT'));
-    formData.fields.addAll(form.fields);
-    formData.files.addAll(form.files);
+    final path = '/staff/property/edit/${property.id}';
 
     debugPrint('[StaffPropertyService] updateProperty path=$path');
     debugPrint(
       '[StaffPropertyService] updateProperty fields=' +
-          formData.fields
+          form.fields
               .map((e) => '${e.key}: ${e.value}')
               .toList()
               .toString(),
@@ -1000,13 +1012,13 @@ class StaffPropertyService implements PropertyService {
 
     _debugLogMultipart(
       dio: dio,
-      method: 'POST',
+      method: 'PUT',
       path: path,
-      form: formData,
+      form: form,
       filePaths: _collectCreateFilePaths(property),
     );
     try {
-      res = await dio.post<Map<String, dynamic>>(path, data: formData);
+      res = await dio.put<Map<String, dynamic>>(path, data: form);
     } on DioException catch (e) {
       throw _apiException(e);
     }
@@ -1021,7 +1033,7 @@ class StaffPropertyService implements PropertyService {
     // The public /properties/{id} endpoint only returns base fields.
     Response<Map<String, dynamic>> res;
     try {
-      res = await dio.get<Map<String, dynamic>>('/staff/properties/$id');
+      res = await dio.get<Map<String, dynamic>>('/staff/property/$id');
     } on DioException catch (_) {
       // Fallback to public endpoint if staff endpoint is unavailable.
       res = await dio.get<Map<String, dynamic>>('/properties/$id');
@@ -1049,7 +1061,6 @@ class StaffPropertyService implements PropertyService {
     }
     return _fromApi(rawData);
   }
-
 
   @override
   Future<List<Property>> getAssignedProperties() async {
@@ -1103,8 +1114,7 @@ class StaffPropertyService implements PropertyService {
           ? (body['data'] as Map<String, dynamic>)
           : body;
 
-      final assignedCount =
-          int.tryParse(
+      final assignedCount = int.tryParse(
             (data['assigned_properties'] ??
                     data['assignedProperties'] ??
                     data['lead_assigned'] ??
@@ -1116,8 +1126,7 @@ class StaffPropertyService implements PropertyService {
           ) ??
           0;
 
-      final pendingCount =
-          int.tryParse(
+      final pendingCount = int.tryParse(
             (data['pending_properties'] ??
                     data['pending'] ??
                     data['pendingProperties'] ??
@@ -1126,8 +1135,7 @@ class StaffPropertyService implements PropertyService {
           ) ??
           0;
 
-      final listedCount =
-          int.tryParse(
+      final listedCount = int.tryParse(
             (data['total_properties'] ??
                     data['totalProperties'] ??
                     data['total_listed'] ??
@@ -1143,8 +1151,7 @@ class StaffPropertyService implements PropertyService {
           ) ??
           0;
 
-      final rejectedCount =
-          int.tryParse(
+      final rejectedCount = int.tryParse(
             (data['rejected_properties'] ??
                     data['rejected'] ??
                     data['rejectedProperties'] ??
@@ -1192,8 +1199,8 @@ class StaffPropertyService implements PropertyService {
       if (views is List) {
         for (final e in views.whereType<Map>()) {
           final at = _parseDateTime(e['created_at'] ?? e['updated_at']);
-          final propertyTitle = (e['property_title'] ?? e['title'] ?? '')
-              .toString();
+          final propertyTitle =
+              (e['property_title'] ?? e['title'] ?? '').toString();
           final title = propertyTitle.isEmpty
               ? 'Property viewed'
               : 'Viewed: $propertyTitle';
