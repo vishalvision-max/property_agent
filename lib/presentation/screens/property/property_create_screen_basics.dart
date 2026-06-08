@@ -112,260 +112,52 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
   }
 
   Widget buildPricingAndArea() {
-    final isLandPlot = _isLandPlotContext;
-    final isCommercial = _isCommercialContext;
-    final isPgCoLiving =
-        _propertyKind == _CreatePropertyKind.pg ||
-        _propertyKind == _CreatePropertyKind.coLiving;
-
-    final priceLabel = isPgCoLiving
-        ? 'Monthly Rent'
-        : (_type == PropertyType.rent ? 'Monthly Rent' : 'Price');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildTextField(
-          _price,
-          priceLabel,
-          'Amount',
-          Icons.currency_rupee,
-          keyboardType: TextInputType.number,
-          onChanged: (_) => _validateField('price'),
-          errorText: ref.watch(propertyFormProvider).errorFor('price'),
-        ),
-        if (isLandPlot) ...[
-          const SizedBox(height: 12),
-          TextField(
-            controller: _plotArea,
-            keyboardType: TextInputType.number,
-            onChanged: (_) => _scheduleSaveDraft(),
-            decoration: InputDecoration(
-              labelText: 'Plot Area',
-              hintText: 'Area',
-              prefixIcon: const Icon(Icons.terrain, size: 18),
-              suffixIcon: Container(
-                margin: const EdgeInsets.only(right: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _plotAreaUnit,
-                    isDense: true,
-                    dropdownColor: Colors.white,
-                    iconEnabledColor: Colors.black,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
-                    items:
-                        (_landType == 'agricultural'
-                                ? _PropertyCreateScreenState._areaUnits
-                                : _PropertyCreateScreenState._areaUnits.where(
-                                    (u) => u != 'acre',
-                                  ))
-                            .map(
-                              (u) => DropdownMenuItem<String>(
-                                value: u,
-                                child: Text(
-                                  toTitleCase(u),
-                                  style: const TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged: (v) {
-                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
-                      _scheduleSaveDraft();
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-        if (_propertyKind == _CreatePropertyKind.sale &&
-            !_isSellResidentialVillaHouse &&
-            !(isCommercial && _commercialType == 'office')) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  _maintenanceCharges,
-                  'Maintenance Charges (Optional)',
-                  '₹ 3500/month',
-                  Icons.payments_outlined,
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTextField(
-                  _bookingAmount,
-                  'Booking Amount (Optional)',
-                  '₹ 2,00,000',
-                  Icons.account_balance_wallet_outlined,
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-        ],
-        if (_isSellResidentialVillaHouse) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  _villaMaintenanceCharges,
-                  'Maintenance Charges (Optional)',
-                  '₹ 3500/month',
-                  Icons.payments_outlined,
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTextField(
-                  _villaBookingAmount,
-                  'Booking Amount (Optional)',
-                  '₹ 2,00,000',
-                  Icons.account_balance_wallet_outlined,
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-        ],
-        if (_propertyKind == _CreatePropertyKind.sale) ...[
-          const SizedBox(height: 12),
-          _buildChoiceChipRow(
-            'Price Negotiable',
-            const ['yes', 'no'],
-            _priceNegotiable == null ? '' : (_priceNegotiable! ? 'yes' : 'no'),
-            (v) {
-              setState(() => _priceNegotiable = v == 'yes');
-              _scheduleSaveDraft();
-            },
-          ),
-        ],
-        if ((_propertyKind == _CreatePropertyKind.rent ||
-                _propertyKind == _CreatePropertyKind.lease) &&
-            _isResidential) ...[
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  _securityDeposit,
-                  'Security Deposit',
-                  'e.g., 50000',
-                  Icons.account_balance_wallet_outlined,
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => _scheduleSaveDraft(),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildTextField(
-                  _rentMaintenanceCharges,
-                  'Maintenance Charges',
-                  'e.g., 3500',
-                  Icons.receipt_long_outlined,
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => _scheduleSaveDraft(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildTextField(
-            _brokerage,
-            'Brokerage (Optional)',
-            'e.g., 1 month rent',
-            Icons.handshake_outlined,
-            keyboardType: TextInputType.number,
-            onChanged: (_) => _scheduleSaveDraft(),
-          ),
-          const SizedBox(height: 12),
-          _buildChoiceChipRow(
-            'Rent Negotiable',
-            const ['yes', 'no'],
-            _rentNegotiable == null ? '' : (_rentNegotiable! ? 'yes' : 'no'),
-            (v) {
-              setState(() => _rentNegotiable = v == 'yes');
-              _scheduleSaveDraft();
-            },
-          ),
-        ],
-        const SizedBox(height: 12),
-        if (!isLandPlot) ...[
-          // For Land/Plot, Plot Area is already collected in plot details, so
-          // avoid showing a duplicate "Area" here.
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Area',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextField(
-                      controller: _area,
-                      keyboardType: TextInputType.number,
-                      onChanged: (_) => _validateField('area'),
-                      decoration: InputDecoration(
-                        hintText: isCommercial ? 'Built-up area' : 'Size',
-                        errorText: ref.watch(propertyFormProvider).errorFor('area'),
-                        suffixIcon: Container(
-                          margin: const EdgeInsets.only(right: 6),
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: _areaUnit,
-                              isDense: true,
-                              dropdownColor: Colors.white,
-                              iconEnabledColor: Colors.black,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                              ),
-                              items: _PropertyCreateScreenState._areaUnits
-                                  .map(
-                                    (u) => DropdownMenuItem<String>(
-                                      value: u,
-                                      child: Text(
-                                        toTitleCase(u),
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (v) {
-                                setState(() => _areaUnit = v ?? _areaUnit);
-                                _scheduleSaveDraft();
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ],
+    return PricingAndAreaSection(
+      isLandPlot: _isLandPlotContext,
+      isCommercial: _isCommercialContext,
+      isPgCoLiving: _propertyKind == _CreatePropertyKind.pg || _propertyKind == _CreatePropertyKind.coLiving,
+      type: _type,
+      propertyKind: _propertyKind,
+      isSellResidentialVillaHouse: _isSellResidentialVillaHouse,
+      isResidential: !_isLandPlotContext && !_isCommercialContext,
+      commercialType: _commercialType ?? '',
+      landType: _landType ?? '',
+      areaUnits: _PropertyCreateScreenState._areaUnits,
+      priceController: _price,
+      plotAreaController: _plotArea,
+      plotAreaUnit: _plotAreaUnit,
+      maintenanceChargesController: _maintenanceCharges,
+      bookingAmountController: _bookingAmount,
+      villaMaintenanceChargesController: _villaMaintenanceCharges,
+      villaBookingAmountController: _villaBookingAmount,
+      priceNegotiable: _priceNegotiable,
+      securityDepositController: _securityDeposit,
+      rentMaintenanceChargesController: _rentMaintenanceCharges,
+      brokerageController: _brokerage,
+      rentNegotiable: _rentNegotiable,
+      areaController: _area,
+      areaUnit: _areaUnit,
+      onPlotAreaUnitChanged: (v) {
+        setState(() => _plotAreaUnit = v);
+        _scheduleSaveDraft();
+      },
+      onPriceNegotiableChanged: (v) {
+        setState(() => _priceNegotiable = v);
+        _scheduleSaveDraft();
+      },
+      onRentNegotiableChanged: (v) {
+        setState(() => _rentNegotiable = v);
+        _scheduleSaveDraft();
+      },
+      onAreaUnitChanged: (v) {
+        setState(() => _areaUnit = v);
+        _scheduleSaveDraft();
+      },
+      onValidateField: _validateField,
+      onScheduleSaveDraft: _scheduleSaveDraft,
+      buildTextField: _buildTextField,
+      buildChoiceChipRow: _buildChoiceChipRow,
+      toTitleCase: toTitleCase,
     );
   }
 

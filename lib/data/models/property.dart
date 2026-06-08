@@ -1686,7 +1686,7 @@ class Property extends Equatable {
           return list1
               .map((e) {
                 if (e is Map) {
-                  final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
+                  final idVal = e['feature_id'] ?? (e['pivot'] as Map?)?['feature_id'] ?? e['id'];
                   return idVal is num
                       ? idVal.toInt()
                       : int.tryParse(idVal?.toString() ?? '');
@@ -1721,7 +1721,7 @@ class Property extends Equatable {
         return list
             .map((e) {
               if (e is Map) {
-                final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
+                final idVal = e['feature_id'] ?? (e['pivot'] as Map?)?['feature_id'] ?? e['id'];
                 final id = idVal is num
                     ? idVal.toInt()
                     : int.tryParse(idVal?.toString() ?? '');

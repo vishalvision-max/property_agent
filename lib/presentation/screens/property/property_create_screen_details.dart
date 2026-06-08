@@ -8,11 +8,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
     final isResidential = !isLandPlot && !isCommercial;
     final isVilla = _selectedCategorySlug == 'villa';
     final isSale = _propertyKind == _CreatePropertyKind.sale;
-    final isRentLease =
-        _propertyKind == _CreatePropertyKind.rent ||
+    final isRentLease = _propertyKind == _CreatePropertyKind.rent ||
         _propertyKind == _CreatePropertyKind.lease;
-    final isPgCoLiving =
-        _propertyKind == _CreatePropertyKind.pg ||
+    final isPgCoLiving = _propertyKind == _CreatePropertyKind.pg ||
         _propertyKind == _CreatePropertyKind.coLiving;
 
     if (isPgCoLiving) {
@@ -52,7 +50,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 6),
           Align(
             alignment: Alignment.centerLeft,
-
             child: Wrap(
               alignment: WrapAlignment.start,
               runAlignment: WrapAlignment.start,
@@ -217,7 +214,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
-
             child: Wrap(
               alignment: WrapAlignment.start,
               runAlignment: WrapAlignment.start,
@@ -291,22 +287,21 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                       color: AppColors.textPrimary,
                       fontSize: 13,
                     ),
-                    items:
-                        (_landType == 'agricultural'
-                                ? _PropertyCreateScreenState._areaUnits
-                                : _PropertyCreateScreenState._areaUnits.where(
-                                    (u) => u != 'acre',
-                                  ))
-                            .map(
-                              (u) => DropdownMenuItem<String>(
-                                value: u,
-                                child: Text(
-                                  toTitleCase(u),
-                                  style: const TextStyle(color: AppColors.dark),
-                                ),
-                              ),
-                            )
-                            .toList(),
+                    items: (_landType == 'agricultural'
+                            ? _PropertyCreateScreenState._areaUnits
+                            : _PropertyCreateScreenState._areaUnits.where(
+                                (u) => u != 'acre',
+                              ))
+                        .map(
+                          (u) => DropdownMenuItem<String>(
+                            value: u,
+                            child: Text(
+                              toTitleCase(u),
+                              style: const TextStyle(color: AppColors.dark),
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (v) {
                       setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
                       _scheduleSaveDraft();
@@ -382,7 +377,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 12),
           _buildChoiceChipRow(
             'Bed Type',
-            const ['single', 'bunk','double'],
+            const ['single', 'double'],
             _pgBedType,
             (v) {
               setState(() => _pgBedType = v);
@@ -392,7 +387,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerLeft,
-
             child: Wrap(
               alignment: WrapAlignment.start,
               runAlignment: WrapAlignment.start,
@@ -470,7 +464,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerLeft,
-
             child: Wrap(
               alignment: WrapAlignment.start,
               runAlignment: WrapAlignment.start,
@@ -643,8 +636,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _landType == 'commercial'
                   ? 'Commercial Plot Details'
                   : (_landType == 'agricultural'
-                        ? 'Agriculture Plot Details'
-                        : 'Residential Plot Details'),
+                      ? 'Agriculture Plot Details'
+                      : 'Residential Plot Details'),
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -674,22 +667,21 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                       color: AppColors.textPrimary,
                       fontSize: 13,
                     ),
-                    items:
-                        (_landType == 'agricultural'
-                                ? _PropertyCreateScreenState._areaUnits
-                                : _PropertyCreateScreenState._areaUnits.where(
-                                    (u) => u != 'acre',
-                                  ))
-                            .map(
-                              (u) => DropdownMenuItem<String>(
-                                value: u,
-                                child: Text(
-                                  toTitleCase(u),
-                                  style: const TextStyle(color: AppColors.dark),
-                                ),
-                              ),
-                            )
-                            .toList(),
+                    items: (_landType == 'agricultural'
+                            ? _PropertyCreateScreenState._areaUnits
+                            : _PropertyCreateScreenState._areaUnits.where(
+                                (u) => u != 'acre',
+                              ))
+                        .map(
+                          (u) => DropdownMenuItem<String>(
+                            value: u,
+                            child: Text(
+                              toTitleCase(u),
+                              style: const TextStyle(color: AppColors.dark),
+                            ),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (v) {
                       setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
                       _scheduleSaveDraft();
@@ -848,12 +840,12 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _commercialType == 'shop'
                   ? 'Shop Details'
                   : (_commercialType == 'showroom'
-                        ? 'Showroom Details'
-                        : (_commercialType == 'warehouse'
-                              ? 'Warehouse Details'
-                              : (_commercialType == 'industrial_shed'
-                                    ? 'Industrial Shed Details'
-                                    : 'Office Space Details'))),
+                      ? 'Showroom Details'
+                      : (_commercialType == 'warehouse'
+                          ? 'Warehouse Details'
+                          : (_commercialType == 'industrial_shed'
+                              ? 'Industrial Shed Details'
+                              : 'Office Space Details'))),
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -1099,31 +1091,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildTextField(
-                    _showroomOwnerName,
-                    'Owner Name (Optional)',
-                    'Name',
-                    Icons.person_outline,
-                    onChanged: (_) => _scheduleSaveDraft(),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildTextField(
-                    _showroomOwnerMobile,
-                    'Owner Mobile (Optional)',
-                    'Mobile number',
-                    Icons.phone_outlined,
-                    keyboardType: TextInputType.phone,
-                    onChanged: (_) => _scheduleSaveDraft(),
-                  ),
-                ),
-              ],
-            ),
           ],
           if (_commercialType == 'warehouse') ...[
             _buildChoiceChipRow(
@@ -1346,13 +1313,15 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                     value: u,
                                     child: Text(
                                       toTitleCase(u),
-                                      style: const TextStyle(color: AppColors.dark),
+                                      style: const TextStyle(
+                                          color: AppColors.dark),
                                     ),
                                   ),
                                 )
                                 .toList(),
                             onChanged: (v) {
-                              setState(() => _shedAreaUnit = v ?? _shedAreaUnit);
+                              setState(
+                                  () => _shedAreaUnit = v ?? _shedAreaUnit);
                               _scheduleSaveDraft();
                             },
                           ),
@@ -1368,7 +1337,12 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             const SizedBox(height: 12),
             _buildChoiceChipRow(
               'Ownership Type',
-              const ['freehold', 'leasehold', 'co-operative_society', 'power_of_attorney'],
+              const [
+                'freehold',
+                'leasehold',
+                'co-operative_society',
+                'power_of_attorney'
+              ],
               _shedOwnership,
               (v) {
                 setState(() => _shedOwnership = v);
@@ -1461,7 +1435,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Three Phase Electricity',
               const ['yes', 'no'],
-              _shedThreePhaseElectricity == null ? '' : (_shedThreePhaseElectricity! ? 'yes' : 'no'),
+              _shedThreePhaseElectricity == null
+                  ? ''
+                  : (_shedThreePhaseElectricity! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedThreePhaseElectricity = v == 'yes');
                 _scheduleSaveDraft();
@@ -1471,7 +1447,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Water Connection',
               const ['yes', 'no'],
-              _shedWaterConnection == null ? '' : (_shedWaterConnection! ? 'yes' : 'no'),
+              _shedWaterConnection == null
+                  ? ''
+                  : (_shedWaterConnection! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedWaterConnection = v == 'yes');
                 _scheduleSaveDraft();
@@ -1481,7 +1459,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Borewell Available',
               const ['yes', 'no'],
-              _shedBorewellAvailable == null ? '' : (_shedBorewellAvailable! ? 'yes' : 'no'),
+              _shedBorewellAvailable == null
+                  ? ''
+                  : (_shedBorewellAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedBorewellAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1503,7 +1483,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Dock Leveler',
               const ['yes', 'no'],
-              _shedDockLeveler == null ? '' : (_shedDockLeveler! ? 'yes' : 'no'),
+              _shedDockLeveler == null
+                  ? ''
+                  : (_shedDockLeveler! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedDockLeveler = v == 'yes');
                 _scheduleSaveDraft();
@@ -1535,7 +1517,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Container Access',
               const ['yes', 'no'],
-              _shedContainerAccess == null ? '' : (_shedContainerAccess! ? 'yes' : 'no'),
+              _shedContainerAccess == null
+                  ? ''
+                  : (_shedContainerAccess! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedContainerAccess = v == 'yes');
                 _scheduleSaveDraft();
@@ -1547,7 +1531,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Parking Available',
               const ['yes', 'no'],
-              _shedParkingAvailable == null ? '' : (_shedParkingAvailable! ? 'yes' : 'no'),
+              _shedParkingAvailable == null
+                  ? ''
+                  : (_shedParkingAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedParkingAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1557,7 +1543,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Visitor Parking',
               const ['yes', 'no'],
-              _shedVisitorParking == null ? '' : (_shedVisitorParking! ? 'yes' : 'no'),
+              _shedVisitorParking == null
+                  ? ''
+                  : (_shedVisitorParking! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedVisitorParking = v == 'yes');
                 _scheduleSaveDraft();
@@ -1567,7 +1555,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Security Cabin',
               const ['yes', 'no'],
-              _shedSecurityCabin == null ? '' : (_shedSecurityCabin! ? 'yes' : 'no'),
+              _shedSecurityCabin == null
+                  ? ''
+                  : (_shedSecurityCabin! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedSecurityCabin = v == 'yes');
                 _scheduleSaveDraft();
@@ -1577,7 +1567,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Boundary Wall',
               const ['yes', 'no'],
-              _shedBoundaryWall == null ? '' : (_shedBoundaryWall! ? 'yes' : 'no'),
+              _shedBoundaryWall == null
+                  ? ''
+                  : (_shedBoundaryWall! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedBoundaryWall = v == 'yes');
                 _scheduleSaveDraft();
@@ -1587,7 +1579,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'CCTV Surveillance',
               const ['yes', 'no'],
-              _shedCctvSurveillance == null ? '' : (_shedCctvSurveillance! ? 'yes' : 'no'),
+              _shedCctvSurveillance == null
+                  ? ''
+                  : (_shedCctvSurveillance! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedCctvSurveillance = v == 'yes');
                 _scheduleSaveDraft();
@@ -1597,7 +1591,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Office Space Available',
               const ['yes', 'no'],
-              _shedOfficeSpaceAvailable == null ? '' : (_shedOfficeSpaceAvailable! ? 'yes' : 'no'),
+              _shedOfficeSpaceAvailable == null
+                  ? ''
+                  : (_shedOfficeSpaceAvailable! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedOfficeSpaceAvailable = v == 'yes');
                 _scheduleSaveDraft();
@@ -1627,7 +1623,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Labour Accommodation',
               const ['yes', 'no'],
-              _shedLabourAccommodation == null ? '' : (_shedLabourAccommodation! ? 'yes' : 'no'),
+              _shedLabourAccommodation == null
+                  ? ''
+                  : (_shedLabourAccommodation! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedLabourAccommodation = v == 'yes');
                 _scheduleSaveDraft();
@@ -1639,7 +1637,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Main Road Facing',
               const ['yes', 'no'],
-              _shedMainRoadFacing == null ? '' : (_shedMainRoadFacing! ? 'yes' : 'no'),
+              _shedMainRoadFacing == null
+                  ? ''
+                  : (_shedMainRoadFacing! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedMainRoadFacing = v == 'yes');
                 _scheduleSaveDraft();
@@ -1649,7 +1649,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Corner Property',
               const ['yes', 'no'],
-              _shedCornerProperty == null ? '' : (_shedCornerProperty! ? 'yes' : 'no'),
+              _shedCornerProperty == null
+                  ? ''
+                  : (_shedCornerProperty! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedCornerProperty = v == 'yes');
                 _scheduleSaveDraft();
@@ -1659,7 +1661,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Gated Industrial Estate',
               const ['yes', 'no'],
-              _shedGatedIndustrialEstate == null ? '' : (_shedGatedIndustrialEstate! ? 'yes' : 'no'),
+              _shedGatedIndustrialEstate == null
+                  ? ''
+                  : (_shedGatedIndustrialEstate! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedGatedIndustrialEstate = v == 'yes');
                 _scheduleSaveDraft();
@@ -1671,7 +1675,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Industrial License',
               const ['yes', 'no'],
-              _shedIndustrialLicense == null ? '' : (_shedIndustrialLicense! ? 'yes' : 'no'),
+              _shedIndustrialLicense == null
+                  ? ''
+                  : (_shedIndustrialLicense! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedIndustrialLicense = v == 'yes');
                 _scheduleSaveDraft();
@@ -1681,7 +1687,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Factory License',
               const ['yes', 'no'],
-              _shedFactoryLicense == null ? '' : (_shedFactoryLicense! ? 'yes' : 'no'),
+              _shedFactoryLicense == null
+                  ? ''
+                  : (_shedFactoryLicense! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedFactoryLicense = v == 'yes');
                 _scheduleSaveDraft();
@@ -1701,7 +1709,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             _buildChoiceChipRow(
               'Pollution Clearance',
               const ['yes', 'no'],
-              _shedPollutionClearance == null ? '' : (_shedPollutionClearance! ? 'yes' : 'no'),
+              _shedPollutionClearance == null
+                  ? ''
+                  : (_shedPollutionClearance! ? 'yes' : 'no'),
               (v) {
                 setState(() => _shedPollutionClearance = v == 'yes');
                 _scheduleSaveDraft();
@@ -1730,7 +1740,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               _buildChoiceChipRow(
                 'Price Negotiable',
                 const ['yes', 'no'],
-                _shedPriceNegotiable == null ? '' : (_shedPriceNegotiable! ? 'yes' : 'no'),
+                _shedPriceNegotiable == null
+                    ? ''
+                    : (_shedPriceNegotiable! ? 'yes' : 'no'),
                 (v) {
                   setState(() => _shedPriceNegotiable = v == 'yes');
                   _scheduleSaveDraft();
@@ -1819,7 +1831,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Rent Negotiable',
                   const ['yes', 'no'],
-                  _shedRentNegotiable == null ? '' : (_shedRentNegotiable! ? 'yes' : 'no'),
+                  _shedRentNegotiable == null
+                      ? ''
+                      : (_shedRentNegotiable! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedRentNegotiable = v == 'yes');
                     _scheduleSaveDraft();
@@ -1838,7 +1852,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Escalation Clause',
                   const ['yes', 'no'],
-                  _shedEscalationClause == null ? '' : (_shedEscalationClause! ? 'yes' : 'no'),
+                  _shedEscalationClause == null
+                      ? ''
+                      : (_shedEscalationClause! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedEscalationClause = v == 'yes');
                     _scheduleSaveDraft();
@@ -1848,7 +1864,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _buildChoiceChipRow(
                   'Renewal Option',
                   const ['yes', 'no'],
-                  _shedRenewalOption == null ? '' : (_shedRenewalOption! ? 'yes' : 'no'),
+                  _shedRenewalOption == null
+                      ? ''
+                      : (_shedRenewalOption! ? 'yes' : 'no'),
                   (v) {
                     setState(() => _shedRenewalOption = v == 'yes');
                     _scheduleSaveDraft();
@@ -2212,8 +2230,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _duplexElectricityConnection == null
                     ? ''
                     : (_duplexElectricityConnection!
-                          ? 'available'
-                          : 'not_available'),
+                        ? 'available'
+                        : 'not_available'),
                 (v) {
                   setState(
                     () => _duplexElectricityConnection = v == 'available',
@@ -2256,42 +2274,40 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   runSpacing: 8,
                   children: _PropertyCreateScreenState._nearbyFacilitiesOptions
                       .map((f) {
-                        final selected = _duplexNearbyFacilities.contains(f);
-                        final label = switch (f) {
-                          'metro' => 'Metro',
-                          'bus_stop' => 'Bus Stop',
-                          'market' => 'Market',
-                          'school' => 'School',
-                          'hospital' => 'Hospital',
-                          'park' => 'Park',
-                          'mall' => 'Mall',
-                          _ => 'Highway',
-                        };
-                        return FilterChip(
-                          selected: selected,
-                          showCheckmark: false,
-                          selectedColor: AppTheme.gold,
-                          label: Text(label),
-                          labelStyle: TextStyle(
-                            color: AppColors.dark,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          onSelected: (v) {
-                            setState(() {
-                              v
-                                  ? _duplexNearbyFacilities.add(f)
-                                  : _duplexNearbyFacilities.remove(f);
-                            });
-                            _scheduleSaveDraft();
-                          },
-                        );
-                      })
-                      .toList(),
+                    final selected = _duplexNearbyFacilities.contains(f);
+                    final label = switch (f) {
+                      'metro' => 'Metro',
+                      'bus_stop' => 'Bus Stop',
+                      'market' => 'Market',
+                      'school' => 'School',
+                      'hospital' => 'Hospital',
+                      'park' => 'Park',
+                      'mall' => 'Mall',
+                      _ => 'Highway',
+                    };
+                    return FilterChip(
+                      selected: selected,
+                      showCheckmark: false,
+                      selectedColor: AppTheme.gold,
+                      label: Text(label),
+                      labelStyle: TextStyle(
+                        color: AppColors.dark,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      onSelected: (v) {
+                        setState(() {
+                          v
+                              ? _duplexNearbyFacilities.add(f)
+                              : _duplexNearbyFacilities.remove(f);
+                        });
+                        _scheduleSaveDraft();
+                      },
+                    );
+                  }).toList(),
                 ),
               ),
               const SizedBox(height: 12),
             ],
-
             if (!_isSellResidentialDuplex) ...[
               if (_isRentLeaseResidentialStudioApartment) ...[
                 const Align(
@@ -2492,33 +2508,32 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     children: _PropertyCreateScreenState
                         ._apartmentAdditionalRooms
                         .map((r) {
-                          final selected = _additionalRooms.contains(r);
-                          final label = toTitleCase(r);
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            label: Text(
-                              label,
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            selectedColor: AppTheme.gold,
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                v
-                                    ? _additionalRooms.add(r)
-                                    : _additionalRooms.remove(r);
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                      final selected = _additionalRooms.contains(r);
+                      final label = toTitleCase(r);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        selectedColor: AppTheme.gold,
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _additionalRooms.add(r)
+                                : _additionalRooms.remove(r);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -2533,34 +2548,51 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     runSpacing: 8,
                     children: _PropertyCreateScreenState._apartmentHighlights
                         .map((h) {
-                          final selected = _propertyHighlights.contains(h);
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            label: Text(
-                              toTitleCase(h),
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            selectedColor: AppTheme.gold,
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                v
-                                    ? _propertyHighlights.add(h)
-                                    : _propertyHighlights.remove(h);
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                      final selected = _propertyHighlights.contains(h);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        label: Text(
+                          toTitleCase(h),
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        selectedColor: AppTheme.gold,
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            if (v) {
+                              _propertyHighlights.add(h);
+                              _nearbyDetailsControllers.putIfAbsent(
+                                  h, () => TextEditingController());
+                            } else {
+                              _propertyHighlights.remove(h);
+                              // Optional: keep text but hide it, or remove it. We'll just keep the controller alive.
+                            }
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
+                const SizedBox(height: 12),
+                ..._propertyHighlights.map((h) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildTextField(
+                      _nearbyDetailsControllers[h] ??= TextEditingController(),
+                      'Details for ${toTitleCase(h)}',
+                      'e.g. Rajiv Chowk, 2km',
+                      Icons.place_outlined,
+                      onChanged: (_) => _scheduleSaveDraft(),
+                    ),
+                  );
+                }).toList(),
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
                   'Corner Property',
@@ -2574,30 +2606,6 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   },
                 ),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        _ownerName,
-                        'Owner Name (Optional)',
-                        'Owner name',
-                        Icons.person_outline,
-                        onChanged: (_) => _scheduleSaveDraft(),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildTextField(
-                        _ownerPhone,
-                        'Owner Phone (Optional)',
-                        'Owner phone',
-                        Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        onChanged: (_) => _scheduleSaveDraft(),
-                      ),
-                    ),
-                  ],
-                ),
               ],
 
               if (_isRentLeaseResidentialApartment) ...[
@@ -2630,38 +2638,41 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._roomOptions.map((r) {
-                    final selected = _rentAdditionalRooms.contains(r);
-                    final label = toTitleCase(r);
-                    return FilterChip(
-                      selected: selected,
-                      showCheckmark: false,
-                      selectedColor: AppTheme.gold,
-                      label: Text(
-                        label,
-                        style: TextStyle(color: AppColors.dark),
-                      ),
-                      labelStyle: TextStyle(
-                        color: selected
-                            ? const Color(0xFF070B14)
-                            : AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      onSelected: (v) {
-                        setState(() {
-                          v
-                              ? _rentAdditionalRooms.add(r)
-                              : _rentAdditionalRooms.remove(r);
-                        });
-                        _scheduleSaveDraft();
-                      },
-                    );
-                  }).toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._roomOptions.map((r) {
+                      final selected = _rentAdditionalRooms.contains(r);
+                      final label = toTitleCase(r);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _rentAdditionalRooms.add(r)
+                                : _rentAdditionalRooms.remove(r);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
@@ -2738,6 +2749,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                               setState(() {
                                 if (s) {
                                   _propertyHighlights.add(h);
+                                  _nearbyDetailsControllers.putIfAbsent(
+                                      h, () => TextEditingController());
                                 } else {
                                   _propertyHighlights.remove(h);
                                 }
@@ -2750,15 +2763,26 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _availableFrom,
+                ..._propertyHighlights.map((h) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildTextField(
+                      _nearbyDetailsControllers[h] ??= TextEditingController(),
+                      'Details for ${toTitleCase(h)}',
+                      'e.g. Rajiv Chowk, 2km',
+                      Icons.place_outlined,
+                      onChanged: (_) => _scheduleSaveDraft(),
+                    ),
+                  );
+                }).toList(),
+                const SizedBox(height: 12),
+                _buildTextField(
+                  _availableFrom,
+                  'Available From',
+                  'Select date',
+                  Icons.calendar_month_outlined,
                   readOnly: true,
                   onTap: _pickAvailableFrom,
-                  decoration: const InputDecoration(
-                    labelText: 'Available From',
-                    hintText: 'Select date',
-                    prefixIcon: Icon(Icons.calendar_month_outlined, size: 18),
-                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -2817,8 +2841,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                           ),
                           const SizedBox(height: 6),
                           DropdownButtonFormField<String>(
-                            value:
-                                _PropertyCreateScreenState._noticeUnits
+                            value: _PropertyCreateScreenState._noticeUnits
                                     .contains(_noticePeriodUnit)
                                 ? _noticePeriodUnit
                                 : _PropertyCreateScreenState._noticeUnits.first,
@@ -2891,40 +2914,42 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._rentPromotionOptions
-                      .map((p) {
-                        final selected = _rentPromotionTypes.contains(p);
-                        final label = toTitleCase(p);
-                        return FilterChip(
-                          selected: selected,
-                          showCheckmark: false,
-                          selectedColor: AppTheme.gold,
-                          label: Text(
-                            label,
-                            style: TextStyle(color: AppColors.dark),
-                          ),
-                          labelStyle: TextStyle(
-                            color: selected
-                                ? const Color(0xFF070B14)
-                                : AppColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          onSelected: (v) {
-                            setState(() {
-                              v
-                                  ? _rentPromotionTypes.add(p)
-                                  : _rentPromotionTypes.remove(p);
-                            });
-                            _scheduleSaveDraft();
-                          },
-                        );
-                      })
-                      .toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._rentPromotionOptions
+                        .map((p) {
+                      final selected = _rentPromotionTypes.contains(p);
+                      final label = toTitleCase(p);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _rentPromotionTypes.add(p)
+                                : _rentPromotionTypes.remove(p);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
 
@@ -2972,40 +2997,42 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._villaOutdoorsOptions
-                      .map((o) {
-                        final selected = _rentVillaOutdoors.contains(o);
-                        final label = toTitleCase(o);
-                        return FilterChip(
-                          selected: selected,
-                          showCheckmark: false,
-                          selectedColor: AppTheme.gold,
-                          label: Text(
-                            label,
-                            style: TextStyle(color: AppColors.dark),
-                          ),
-                          labelStyle: TextStyle(
-                            color: selected
-                                ? const Color(0xFF070B14)
-                                : AppColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                          onSelected: (v) {
-                            setState(() {
-                              v
-                                  ? _rentVillaOutdoors.add(o)
-                                  : _rentVillaOutdoors.remove(o);
-                            });
-                            _scheduleSaveDraft();
-                          },
-                        );
-                      })
-                      .toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _PropertyCreateScreenState._villaOutdoorsOptions
+                        .map((o) {
+                      final selected = _rentVillaOutdoors.contains(o);
+                      final label = toTitleCase(o);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _rentVillaOutdoors.add(o)
+                                : _rentVillaOutdoors.remove(o);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
@@ -3099,40 +3126,44 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._tenantTypeOptions.map((
-                    t,
-                  ) {
-                    final selected = _rentTenantTypes.contains(t);
-                    final label = toTitleCase(t);
-                    return FilterChip(
-                      selected: selected,
-                      showCheckmark: false,
-                      selectedColor: AppTheme.gold,
-                      label: Text(
-                        label,
-                        style: TextStyle(color: AppColors.dark),
-                      ),
-                      labelStyle: TextStyle(
-                        color: selected
-                            ? const Color(0xFF070B14)
-                            : AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      onSelected: (v) {
-                        setState(() {
-                          v
-                              ? _rentTenantTypes.add(t)
-                              : _rentTenantTypes.remove(t);
-                        });
-                        _scheduleSaveDraft();
-                      },
-                    );
-                  }).toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        _PropertyCreateScreenState._tenantTypeOptions.map((
+                      t,
+                    ) {
+                      final selected = _rentTenantTypes.contains(t);
+                      final label = toTitleCase(t);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _rentTenantTypes.add(t)
+                                : _rentTenantTypes.remove(t);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
 
@@ -3186,40 +3217,44 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._studioTenantOptions.map(
-                    (t) {
-                      final selected = _studioTenantPrefs.contains(t);
-                      final label = toTitleCase(t);
-                      return FilterChip(
-                        selected: selected,
-                        showCheckmark: false,
-                        selectedColor: AppTheme.gold,
-                        label: Text(
-                          label,
-                          style: TextStyle(color: AppColors.dark),
-                        ),
-                        labelStyle: TextStyle(
-                          color: selected
-                              ? const Color(0xFF070B14)
-                              : AppColors.textPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        onSelected: (v) {
-                          setState(() {
-                            v
-                                ? _studioTenantPrefs.add(t)
-                                : _studioTenantPrefs.remove(t);
-                          });
-                          _scheduleSaveDraft();
-                        },
-                      );
-                    },
-                  ).toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        _PropertyCreateScreenState._studioTenantOptions.map(
+                      (t) {
+                        final selected = _studioTenantPrefs.contains(t);
+                        final label = toTitleCase(t);
+                        return FilterChip(
+                          selected: selected,
+                          showCheckmark: false,
+                          selectedColor: AppTheme.gold,
+                          label: Text(
+                            label,
+                            style: TextStyle(color: AppColors.dark),
+                          ),
+                          labelStyle: TextStyle(
+                            color: selected
+                                ? const Color(0xFF070B14)
+                                : AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          onSelected: (v) {
+                            setState(() {
+                              v
+                                  ? _studioTenantPrefs.add(t)
+                                  : _studioTenantPrefs.remove(t);
+                            });
+                            _scheduleSaveDraft();
+                          },
+                        );
+                      },
+                    ).toList(),
+                  ),
                 ),
               ],
 
@@ -3299,40 +3334,44 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
-                  alignment: WrapAlignment.start,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _PropertyCreateScreenState._farmUseCaseOptions.map((
-                    u,
-                  ) {
-                    final selected = _rentFarmUseCases.contains(u);
-                    final label = toTitleCase(u);
-                    return FilterChip(
-                      selected: selected,
-                      showCheckmark: false,
-                      selectedColor: AppTheme.gold,
-                      label: Text(
-                        label,
-                        style: TextStyle(color: AppColors.dark),
-                      ),
-                      labelStyle: TextStyle(
-                        color: selected
-                            ? const Color(0xFF070B14)
-                            : AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      onSelected: (v) {
-                        setState(() {
-                          v
-                              ? _rentFarmUseCases.add(u)
-                              : _rentFarmUseCases.remove(u);
-                        });
-                        _scheduleSaveDraft();
-                      },
-                    );
-                  }).toList(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    spacing: 8,
+                    runSpacing: 8,
+                    children:
+                        _PropertyCreateScreenState._farmUseCaseOptions.map((
+                      u,
+                    ) {
+                      final selected = _rentFarmUseCases.contains(u);
+                      final label = toTitleCase(u);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _rentFarmUseCases.add(u)
+                                : _rentFarmUseCases.remove(u);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -3477,33 +3516,32 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     children: _PropertyCreateScreenState
                         ._apartmentAdditionalRooms
                         .map((r) {
-                          final selected = _villaAdditionalRooms.contains(r);
-                          final label = toTitleCase(r);
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            selectedColor: AppTheme.gold,
-                            label: Text(
-                              label,
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                v
-                                    ? _villaAdditionalRooms.add(r)
-                                    : _villaAdditionalRooms.remove(r);
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                      final selected = _villaAdditionalRooms.contains(r);
+                      final label = toTitleCase(r);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _villaAdditionalRooms.add(r)
+                                : _villaAdditionalRooms.remove(r);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -3540,39 +3578,37 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     runSpacing: 8,
                     children: _PropertyCreateScreenState._villaParkingOptions
                         .map((p) {
-                          final selected = _villaParking.contains(p);
-                          final label = p == 'open'
-                              ? 'Open Parking'
-                              : 'Covered Parking';
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            selectedColor: AppTheme.gold,
-                            label: Text(
-                              label,
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                if (v) {
-                                  _villaParking
-                                    ..clear()
-                                    ..add(p);
-                                } else {
-                                  _villaParking.remove(p);
-                                }
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                      final selected = _villaParking.contains(p);
+                      final label =
+                          p == 'open' ? 'Open Parking' : 'Covered Parking';
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            if (v) {
+                              _villaParking
+                                ..clear()
+                                ..add(p);
+                            } else {
+                              _villaParking.remove(p);
+                            }
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -3755,35 +3791,38 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     runAlignment: WrapAlignment.start,
                     spacing: 8,
                     runSpacing: 8,
-                    children: const ['servent_room', 'pooja_room', 'study_room', 'store_room']
-                        .map((r) {
-                          final selected = _villaAdditionalRooms.contains(r);
-                          final label = toTitleCase(r);
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            selectedColor: AppTheme.gold,
-                            label: Text(
-                              label,
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                v
-                                    ? _villaAdditionalRooms.add(r)
-                                    : _villaAdditionalRooms.remove(r);
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                    children: const [
+                      'servent_room',
+                      'pooja_room',
+                      'study_room',
+                      'store_room'
+                    ].map((r) {
+                      final selected = _villaAdditionalRooms.contains(r);
+                      final label = toTitleCase(r);
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _villaAdditionalRooms.add(r)
+                                : _villaAdditionalRooms.remove(r);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -3877,38 +3916,37 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     children: _PropertyCreateScreenState
                         ._builderUtilitiesOptions
                         .map((u) {
-                          final selected = _builderUtilities.contains(u);
-                          final label = switch (u) {
-                            'water' => 'Water',
-                            'electricity' => 'Electricity',
-                            'sewerage' => 'Sewerage',
-                            _ => 'Road Access',
-                          };
-                          return FilterChip(
-                            selected: selected,
-                            showCheckmark: false,
-                            selectedColor: AppTheme.gold,
-                            label: Text(
-                              label,
-                              style: TextStyle(color: AppColors.dark),
-                            ),
-                            labelStyle: TextStyle(
-                              color: selected
-                                  ? const Color(0xFF070B14)
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            onSelected: (v) {
-                              setState(() {
-                                v
-                                    ? _builderUtilities.add(u)
-                                    : _builderUtilities.remove(u);
-                              });
-                              _scheduleSaveDraft();
-                            },
-                          );
-                        })
-                        .toList(),
+                      final selected = _builderUtilities.contains(u);
+                      final label = switch (u) {
+                        'water' => 'Water',
+                        'electricity' => 'Electricity',
+                        'sewerage' => 'Sewerage',
+                        _ => 'Road Access',
+                      };
+                      return FilterChip(
+                        selected: selected,
+                        showCheckmark: false,
+                        selectedColor: AppTheme.gold,
+                        label: Text(
+                          label,
+                          style: TextStyle(color: AppColors.dark),
+                        ),
+                        labelStyle: TextStyle(
+                          color: selected
+                              ? const Color(0xFF070B14)
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        onSelected: (v) {
+                          setState(() {
+                            v
+                                ? _builderUtilities.add(u)
+                                : _builderUtilities.remove(u);
+                          });
+                          _scheduleSaveDraft();
+                        },
+                      );
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -4338,8 +4376,8 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 _landType == 'commercial'
                     ? 'Commercial Plot Details'
                     : (_landType == 'agricultural'
-                          ? 'Agriculture Plot Details'
-                          : 'Residential Plot Details'),
+                        ? 'Agriculture Plot Details'
+                        : 'Residential Plot Details'),
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -4369,24 +4407,23 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         color: AppColors.textPrimary,
                         fontSize: 13,
                       ),
-                      items:
-                          (_landType == 'agricultural'
-                                  ? _PropertyCreateScreenState._areaUnits
-                                  : _PropertyCreateScreenState._areaUnits.where(
-                                      (u) => u != 'acre',
-                                    ))
-                              .map(
-                                (u) => DropdownMenuItem<String>(
-                                  value: u,
-                                  child: Text(
-                                    toTitleCase(u),
-                                    style: const TextStyle(
-                                      color: AppColors.dark,
-                                    ),
-                                  ),
+                      items: (_landType == 'agricultural'
+                              ? _PropertyCreateScreenState._areaUnits
+                              : _PropertyCreateScreenState._areaUnits.where(
+                                  (u) => u != 'acre',
+                                ))
+                          .map(
+                            (u) => DropdownMenuItem<String>(
+                              value: u,
+                              child: Text(
+                                toTitleCase(u),
+                                style: const TextStyle(
+                                  color: AppColors.dark,
                                 ),
-                              )
-                              .toList(),
+                              ),
+                            ),
+                          )
+                          .toList(),
                       onChanged: (v) {
                         setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
                         _scheduleSaveDraft();
@@ -4438,6 +4475,10 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         'Owner phone',
                         Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
+                        maxLength: 10,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         onChanged: (_) => _scheduleSaveDraft(),
                       ),
                     ),

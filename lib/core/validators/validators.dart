@@ -44,5 +44,12 @@ class Validators {
     if (n < 0) return '$label must be >= 0';
     return null;
   }
-}
 
+  static String? phoneOptional(String? v, {String label = 'Phone'}) {
+    final value = (v ?? '').trim();
+    if (value.isEmpty) return null;
+    final re = RegExp(r'^\d{10}$');
+    if (!re.hasMatch(value)) return 'Enter 10 digit number';
+    return null;
+  }
+}

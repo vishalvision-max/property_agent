@@ -313,171 +313,27 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
   }
 
   Widget buildLocation() {
-    return Column(
-      children: [
-        Stack(
-          children: [
-            _buildTextField(
-              _address,
-              'Address',
-              'Street address',
-              Icons.location_on,
-              onChanged: _onAddressChanged,
-              errorText: ref.watch(propertyFormProvider).errorFor('address'),
-            ),
-            if (ref.watch(addressSuggestionsProvider).isLoading || ref.watch(formSubmitStateProvider))
-              const Positioned(
-                right: 12,
-                top: 12,
-                child: SizedBox(
-                  height: 18,
-                  width: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            if (_addressFocus.hasFocus && (ref.watch(addressSuggestionsProvider).valueOrNull ?? []).isNotEmpty)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 72,
-                child: Material(
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color(0xFF0B1220),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 220),
-                    child: ListView.separated(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: (ref.watch(addressSuggestionsProvider).valueOrNull ?? []).length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, i) {
-                        final pred = (ref.watch(addressSuggestionsProvider).valueOrNull ?? [])[i];
-                        return ListTile(
-                          dense: true,
-                          title: Text(
-                            pred.description,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 13,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: Icon(
-                            Icons.north_west_rounded,
-                            size: 16,
-                            color: AppTheme.gold.withOpacity(0.9),
-                          ),
-                          onTap: () => _selectAddressPrediction(pred),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        if (_isSellResidentialFarmhouse) ...[
-          _buildTextField(
-            _village,
-            'Village',
-            'Village name',
-            Icons.location_city_outlined,
-            onChanged: (_) => _scheduleSaveDraft(),
-          ),
-          const SizedBox(height: 12),
-          _buildTextField(
-            _landmark,
-            'Landmark (Optional)',
-            'Near ...',
-            Icons.place_outlined,
-            onChanged: (_) => _scheduleSaveDraft(),
-          ),
-          const SizedBox(height: 12),
-        ],
-
-        Row(
-          children: [
-            Expanded(
-              child: _buildTextField(
-                _city,
-                'City',
-                'City name',
-                Icons.location_city,
-                onChanged: (_) => _validateField('city'),
-                errorText: ref.watch(propertyFormProvider).errorFor('city'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildTextField(
-                _state,
-                'State',
-                'State name',
-                Icons.map,
-                onChanged: (_) => _validateField('state'),
-                errorText: ref.watch(propertyFormProvider).errorFor('state'),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildTextField(
-          _pincode,
-          'Pincode',
-          '6-digit code',
-          Icons.mail,
-          keyboardType: TextInputType.number,
-          onChanged: (_) => _validateField('pincode'),
-          errorText: ref.watch(propertyFormProvider).errorFor('pincode'),
-        ),
-        const SizedBox(height: 12),
-        _buildTextField(
-          _ownerName,
-          'Owner Name (Optional)',
-          'Owner full name',
-          Icons.person_outline,
-          onChanged: (_) => _scheduleSaveDraft(),
-        ),
-        const SizedBox(height: 12),
-        _buildTextField(
-          _ownerPhone,
-          'Phone Number (Optional)',
-          '10-digit phone',
-          Icons.call_outlined,
-          keyboardType: TextInputType.phone,
-          onChanged: (_) => _scheduleSaveDraft(),
-        ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton.icon(
-            onPressed: _forceAutoFillLocation,
-            icon: const Icon(Icons.my_location, size: 16),
-            label: const Text('Use current location'),
-            style: TextButton.styleFrom(
-              foregroundColor: AppTheme.gold,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        // Lat/Lng are auto-filled and sent to API, but hidden from UI by design.
-        if (_isSellResidentialApartment) ...[
-          const SizedBox(height: 6),
-          _buildChoiceChipRow(
-            'WhatsApp Updates',
-            const ['yes', 'no'],
-            _whatsappUpdates ? 'yes' : 'no',
-            (v) {
-              setState(() => _whatsappUpdates = v == 'yes');
-              _scheduleSaveDraft();
-            },
-          ),
-        ],
-      ],
+    return LocationSection(
+      addressController: _address,
+      villageController: _village,
+      landmarkController: _landmark,
+      cityController: _city,
+      stateController: _state,
+      pincodeController: _pincode,
+      ownerNameController: _ownerName,
+      ownerPhoneController: _ownerPhone,
+      addressFocusNode: _addressFocus,
+      isSellResidentialFarmhouse: _isSellResidentialFarmhouse,
+      isSellResidentialApartment: _isSellResidentialApartment,
+      whatsappUpdates: _whatsappUpdates,
+      onWhatsappUpdatesChanged: (v) => setState(() => _whatsappUpdates = v),
+      onAddressChanged: _onAddressChanged,
+      onSelectAddressPrediction: _selectAddressPrediction,
+      onScheduleSaveDraft: _scheduleSaveDraft,
+      onValidateField: _validateField,
+      onForceAutoFillLocation: _forceAutoFillLocation,
+      buildTextField: _buildTextField,
+      buildChoiceChipRow: _buildChoiceChipRow,
     );
   }
 

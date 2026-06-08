@@ -5,12 +5,10 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
   Map<String, dynamic> buildApiFields() {
     final isLandPlot = _isLandPlotContext;
     final isCommercial = _isCommercialContext;
-    final isPgCoLiving =
-        _propertyKind == _CreatePropertyKind.pg ||
+    final isPgCoLiving = _propertyKind == _CreatePropertyKind.pg ||
         _propertyKind == _CreatePropertyKind.coLiving;
     final isSale = _propertyKind == _CreatePropertyKind.sale;
-    final isRentLease =
-        _propertyKind == _CreatePropertyKind.rent ||
+    final isRentLease = _propertyKind == _CreatePropertyKind.rent ||
         _propertyKind == _CreatePropertyKind.lease;
     final seatsValue = int.tryParse(_seats.text.trim());
     final maxSeatsValue = int.tryParse(_maxSeats.text.trim());
@@ -62,41 +60,36 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'property_kind': isPgCoLiving
           ? 'pg'
           : (isLandPlot
-                ? 'plot'
-                : (isCommercial ? 'commercial' : 'residential')),
+              ? 'plot'
+              : (isCommercial ? 'commercial' : 'residential')),
       'pg_food_availability': isPgCoLiving
           ? _normalizePgFoodAvailabilityForApi(_pgFoodAvailability.join(','))
           : null,
       'pg_sharing': isPgCoLiving ? _pgSharing : null,
-      'pg_gender_based': isPgCoLiving
-          ? _normalizePgGenderForApi(_pgGenderBased)
-          : null,
-      'pg_occupancy_type': isPgCoLiving
-          ? _normalizePgOccupancyForApi(_pgOccupancyType)
-          : null,
+      'pg_gender_based':
+          isPgCoLiving ? _normalizePgGenderForApi(_pgGenderBased) : null,
+      'pg_occupancy_type':
+          isPgCoLiving ? _normalizePgOccupancyForApi(_pgOccupancyType) : null,
       'pg_tenant_types': isPgCoLiving ? _pgTenantTypes.toList() : null,
-      'pg_property_type': isPgCoLiving
-          ? _normalizePgPropertyTypeForApi(_pgPropertyType)
-          : null,
-      'pg_furnishing_type': isPgCoLiving
-          ? _normalizePgFurnishingTypeForApi(_furnishing)
-          : null,
+      'pg_property_type':
+          isPgCoLiving ? _normalizePgPropertyTypeForApi(_pgPropertyType) : null,
+      'pg_furnishing_type':
+          isPgCoLiving ? _normalizePgFurnishingTypeForApi(_furnishing) : null,
       'pg_bathroom_type': isPgCoLiving ? _pgBathroomType : null,
       'pg_suitable_for': isPgCoLiving ? _pgSuitableFor : null,
       'pg_building_name': isPgCoLiving && _pgBuildingName.text.trim().isNotEmpty
           ? _pgBuildingName.text.trim()
           : null,
-      'pg_total_beds': isPgCoLiving
-          ? int.tryParse(_pgTotalBeds.text.trim())
-          : null,
-      'pg_available_beds': isPgCoLiving
-          ? int.tryParse(_pgAvailableBeds.text.trim())
-          : null,
+      'pg_total_beds':
+          isPgCoLiving ? int.tryParse(_pgTotalBeds.text.trim()) : null,
+      'pg_available_beds':
+          isPgCoLiving ? int.tryParse(_pgAvailableBeds.text.trim()) : null,
       'pg_total_rooms': isPgCoLiving ? int.tryParse(_rooms.text.trim()) : null,
       'pg_room_type': isPgCoLiving ? _pgRoomType : null,
       'pg_attached_bathroom': isPgCoLiving ? _pgAttachedBathroom : null,
       'attached_bathroom': isPgCoLiving ? _pgAttachedBathroom : null,
-      'attached_washroom': isPgCoLiving ? (_pgAttachedBathroom == true ? 1 : 0) : null,
+      'attached_washroom':
+          isPgCoLiving ? (_pgAttachedBathroom == true ? 1 : 0) : null,
       'pg_balcony': isPgCoLiving ? _pgBalcony : null,
       'balcony': isPgCoLiving ? _pgBalcony : null,
       'pg_room_size': isPgCoLiving && _pgRoomSize.text.trim().isNotEmpty
@@ -107,43 +100,41 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'pg_room_size_unit': isPgCoLiving ? _areaUnit : null,
       'room_size_unit': isPgCoLiving ? _areaUnit : null,
-      'pg_bed_type': isPgCoLiving
-          ? _normalizePgBedTypeForApi(_pgBedType)
-          : null,
+      'pg_bed_type':
+          isPgCoLiving ? _normalizePgBedTypeForApi(_pgBedType) : null,
       'bed_type': isPgCoLiving ? _normalizePgBedTypeForApi(_pgBedType) : null,
       'pg_cupboard_available': isPgCoLiving ? _pgCupboardAvailable : null,
       'cupboard_available': isPgCoLiving ? _pgCupboardAvailable : null,
       'pg_study_table_available': isPgCoLiving ? _pgStudyTableAvailable : null,
       'study_table_available': isPgCoLiving ? _pgStudyTableAvailable : null,
-      'pg_security_deposit': isPgCoLiving
-          ? double.tryParse(_pgSecurityDeposit.text.trim())
-          : null,
+      'pg_security_deposit':
+          isPgCoLiving ? double.tryParse(_pgSecurityDeposit.text.trim()) : null,
       'security_deposit': isPgCoLiving
           ? double.tryParse(_pgSecurityDeposit.text.trim())
           : (((_propertyKind == _CreatePropertyKind.rent ||
-                        _propertyKind == _CreatePropertyKind.lease) &&
-                    _isResidential)
-                ? double.tryParse(_securityDeposit.text.trim())
-                : null),
+                      _propertyKind == _CreatePropertyKind.lease) &&
+                  _isResidential)
+              ? double.tryParse(_securityDeposit.text.trim())
+              : null),
       'pg_maintenance_charges': isPgCoLiving
           ? double.tryParse(_pgMaintenanceCharges.text.trim())
           : null,
       'maintenance_charges': isPgCoLiving
           ? double.tryParse(_pgMaintenanceCharges.text.trim())
           : (isCommercial && _commercialType == 'office')
-          ? double.tryParse(_officeMaintenanceCharges.text.trim())
-          : _isResidential
-          ? double.tryParse(
-              ((_propertyKind == _CreatePropertyKind.rent ||
-                          _propertyKind == _CreatePropertyKind.lease)
-                      ? _rentMaintenanceCharges
-                      : _isSellResidentialVillaHouse
-                      ? _villaMaintenanceCharges
-                      : _maintenanceCharges)
-                  .text
-                  .trim(),
-            )
-          : double.tryParse(_maintenanceCharges.text.trim()),
+              ? double.tryParse(_officeMaintenanceCharges.text.trim())
+              : _isResidential
+                  ? double.tryParse(
+                      ((_propertyKind == _CreatePropertyKind.rent ||
+                                  _propertyKind == _CreatePropertyKind.lease)
+                              ? _rentMaintenanceCharges
+                              : _isSellResidentialVillaHouse
+                                  ? _villaMaintenanceCharges
+                                  : _maintenanceCharges)
+                          .text
+                          .trim(),
+                    )
+                  : double.tryParse(_maintenanceCharges.text.trim()),
       'pg_electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'electricity_included': isPgCoLiving ? _pgElectricityIncluded : null,
       'pg_water_included': isPgCoLiving ? _pgWaterIncluded : null,
@@ -157,24 +148,20 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'pg_couple_friendly': isPgCoLiving ? _pgCoupleFriendly : null,
       'pg_id_proof_required': isPgCoLiving ? _pgIdProofRequired : null,
       'pg_available_from': isPgCoLiving ? _pgAvailableFrom.text.trim() : null,
-      'pg_min_stay_days': isPgCoLiving
-          ? int.tryParse(_pgMinStayDays.text.trim())
-          : null,
-      'pg_notice_period_days': isPgCoLiving
-          ? int.tryParse(_pgNoticePeriodDays.text.trim())
-          : null,
-      'pg_preferred_tenant_age': isPgCoLiving
-          ? int.tryParse(_pgPreferredTenantAge.text.trim())
-          : null,
+      'pg_min_stay_days':
+          isPgCoLiving ? int.tryParse(_pgMinStayDays.text.trim()) : null,
+      'pg_notice_period_days':
+          isPgCoLiving ? int.tryParse(_pgNoticePeriodDays.text.trim()) : null,
+      'pg_preferred_tenant_age':
+          isPgCoLiving ? int.tryParse(_pgPreferredTenantAge.text.trim()) : null,
       'pg_smoking_allowed': isPgCoLiving ? _pgSmokingAllowed : null,
       'pg_drinking_allowed': isPgCoLiving ? _pgDrinkingAllowed : null,
       'pg_pets_allowed': isPgCoLiving ? _pgPetsAllowed : null,
       'pg_visitors_allowed': isPgCoLiving ? _pgVisitorsAllowed : null,
       'pg_curfew_time': isPgCoLiving ? _pgCurfewTime.text.trim() : null,
       'pg_gate_locked_at_night': isPgCoLiving ? _pgGateLockedAtNight : null,
-      'pg_nearby_preferences': isPgCoLiving
-          ? _pgNearbyPreferences.toList()
-          : null,
+      'pg_nearby_preferences':
+          isPgCoLiving ? _pgNearbyPreferences.toList() : null,
       'pg_availability': isPgCoLiving ? _pgAvailability : null,
       'pg_security': isPgCoLiving ? _pgSecurity : null,
       'carpet_area': double.tryParse(_carpetArea.text.trim()),
@@ -216,32 +203,26 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
             return null;
         }
       }(),
-      'possession_by': _possessionBy.text.trim().isEmpty
-          ? null
-          : _possessionBy.text.trim(),
+      'possession_by':
+          _possessionBy.text.trim().isEmpty ? null : _possessionBy.text.trim(),
       'ownership': _ownership.isEmpty ? null : _ownership,
       'balconies': _isResidential ? (_balconies >= 0 ? _balconies : 0) : null,
       'commercial_type': isCommercial ? _commercialType : null,
-      'floor_plate_area': isCommercial
-          ? double.tryParse(_floorPlateArea.text.trim())
-          : null,
+      'floor_plate_area':
+          isCommercial ? double.tryParse(_floorPlateArea.text.trim()) : null,
       'cabins': isCommercial ? int.tryParse(_cabins.text.trim()) : null,
-      'meeting_rooms': isCommercial
-          ? int.tryParse(_meetingRooms.text.trim())
-          : null,
+      'meeting_rooms':
+          isCommercial ? int.tryParse(_meetingRooms.text.trim()) : null,
       'seats': isCommercial ? seatsValue : null,
       'max_seats': isCommercial ? normalizedMaxSeats : null,
-      'conference_rooms': isCommercial
-          ? int.tryParse(_conferenceRooms.text.trim())
-          : null,
-      'conference_seats': isCommercial
-          ? int.tryParse(_conferenceRooms.text.trim())
-          : null,
+      'conference_rooms':
+          isCommercial ? int.tryParse(_conferenceRooms.text.trim()) : null,
+      'conference_seats':
+          isCommercial ? int.tryParse(_conferenceRooms.text.trim()) : null,
       'lift_available': isCommercial ? _liftAvailable : null,
       'goods_lift': isCommercial ? _liftAvailable : null,
-      'loading_dock': (isCommercial && _commercialType == 'office')
-          ? _liftAvailable
-          : null,
+      'loading_dock':
+          (isCommercial && _commercialType == 'office') ? _liftAvailable : null,
       'commercial_parking': (isCommercial && _commercialType == 'office')
           ? _visitorParking
           : null,
@@ -249,49 +230,44 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'office_type': (isCommercial && _commercialType == 'office')
           ? _normalizeOfficeTypeForApi(_officeType)
           : null,
-      'reception_area': (isCommercial && _commercialType == 'office')
-          ? _receptionArea
-          : null,
+      'reception_area':
+          (isCommercial && _commercialType == 'office') ? _receptionArea : null,
       'pantry': (isCommercial && _commercialType == 'office') ? _pantry : null,
-      'cafeteria': (isCommercial && _commercialType == 'office')
-          ? _cafeteria
-          : null,
-      'server_room': (isCommercial && _commercialType == 'office')
-          ? _serverRoom
-          : null,
+      'cafeteria':
+          (isCommercial && _commercialType == 'office') ? _cafeteria : null,
+      'server_room':
+          (isCommercial && _commercialType == 'office') ? _serverRoom : null,
       'fire_safety_installed': (isCommercial && _commercialType == 'office')
           ? _fireSafetyInstalled
           : null,
-      'central_ac': (isCommercial && _commercialType == 'office')
-          ? _centralAC
-          : null,
+      'central_ac':
+          (isCommercial && _commercialType == 'office') ? _centralAC : null,
       'visitor_parking': (isCommercial && _commercialType == 'office')
           ? _visitorParking
           : null,
       'number_of_lifts': (isCommercial && _commercialType == 'office')
           ? int.tryParse(_numberOfLifts.text.trim())
           : null,
-      'tax_included': (isCommercial && _commercialType == 'office')
-          ? _taxIncluded
-          : null,
+      'tax_included':
+          (isCommercial && _commercialType == 'office') ? _taxIncluded : null,
       'price_negotiable_office': (isCommercial && _commercialType == 'office')
           ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 1 : 0))
           : null,
       'negotiable': (isCommercial && _commercialType == 'office')
           ? (_officeNegotiable == null ? null : (_officeNegotiable! ? 1 : 0))
           : (_isSellResidentialBuilderFloor
-                ? (_builderNegotiable == null
-                      ? null
-                      : (_builderNegotiable! ? 1 : 0))
-                : null),
+              ? (_builderNegotiable == null
+                  ? null
+                  : (_builderNegotiable! ? 1 : 0))
+              : null),
       'office_maintenance_charges':
           (isCommercial && _commercialType == 'office')
-          ? double.tryParse(_officeMaintenanceCharges.text.trim())
-          : null,
+              ? double.tryParse(_officeMaintenanceCharges.text.trim())
+              : null,
       'maintenance_charges_office':
           (isCommercial && _commercialType == 'office')
-          ? double.tryParse(_officeMaintenanceCharges.text.trim())
-          : null,
+              ? double.tryParse(_officeMaintenanceCharges.text.trim())
+              : null,
       'office_booking_amount': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
           : null,
@@ -301,42 +277,38 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'booking_amount': (isCommercial && _commercialType == 'office')
           ? double.tryParse(_officeBookingAmount.text.trim())
           : (isCommercial && _commercialType == 'shop')
-          ? double.tryParse(_bookingAmount.text.trim())
-          : _isResidential
-          ? double.tryParse(
-              (_isSellResidentialVillaHouse
-                      ? _villaBookingAmount
-                      : _bookingAmount)
-                  .text
-                  .trim(),
-            )
-          : null,
-      'floor_plate_area_unit': (isCommercial && _commercialType == 'office')
-          ? _areaUnit
-          : null,
-      'shop_type': (isCommercial && _commercialType == 'shop')
-          ? _shopType
-          : null,
-      'shop_area':
-          (isCommercial &&
+              ? double.tryParse(_bookingAmount.text.trim())
+              : _isResidential
+                  ? double.tryParse(
+                      (_isSellResidentialVillaHouse
+                              ? _villaBookingAmount
+                              : _bookingAmount)
+                          .text
+                          .trim(),
+                    )
+                  : null,
+      'floor_plate_area_unit':
+          (isCommercial && _commercialType == 'office') ? _areaUnit : null,
+      'shop_type':
+          (isCommercial && _commercialType == 'shop') ? _shopType : null,
+      'shop_area': (isCommercial &&
               (_commercialType == 'shop' || _commercialType == 'showroom'))
           ? resolvedShopArea
           : null,
-      'shop_area_unit':
-          (isCommercial &&
+      'shop_area_unit': (isCommercial &&
               (_commercialType == 'shop' || _commercialType == 'showroom'))
           ? resolvedShopAreaUnit
           : null,
       'showroom_area': (isCommercial && _commercialType == 'shop')
           ? double.tryParse(_shopArea.text.trim())
           : ((isCommercial && _commercialType == 'showroom')
-                ? double.tryParse(_showroomArea.text.trim())
-                : null),
+              ? double.tryParse(_showroomArea.text.trim())
+              : null),
       'showroom_area_unit': (isCommercial && _commercialType == 'shop')
           ? _shopAreaUnit
           : ((isCommercial && _commercialType == 'showroom')
-                ? _showroomAreaUnit
-                : null),
+              ? _showroomAreaUnit
+              : null),
       'frontage_width_ft': (isCommercial && _commercialType == 'shop')
           ? double.tryParse(_frontageWidth.text.trim())
           : null,
@@ -348,53 +320,52 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'ceiling_height': (isCommercial && _commercialType == 'shop')
           ? (_ceilingHeight.text.trim().isEmpty
-                ? null
-                : _ceilingHeight.text.trim())
+              ? null
+              : _ceilingHeight.text.trim())
           : null,
       'celling_height': (isCommercial && _commercialType == 'shop')
           ? (_ceilingHeight.text.trim().isEmpty
-                ? null
-                : _ceilingHeight.text.trim())
+              ? null
+              : _ceilingHeight.text.trim())
           : null,
       'main_road_facing':
           (isCommercial && _commercialType == 'shop' && _mainRoadFacing != null)
-          ? (_mainRoadFacing! ? 1 : 0)
-          : null,
+              ? (_mainRoadFacing! ? 1 : 0)
+              : null,
       'corner_shop':
           (isCommercial && _commercialType == 'shop' && _cornerShop != null)
-          ? (_cornerShop! ? 1 : 0)
-          : null,
-      'washroom_available':
-          (isCommercial &&
+              ? (_cornerShop! ? 1 : 0)
+              : null,
+      'washroom_available': (isCommercial &&
               _commercialType == 'shop' &&
               _washroomAvailable != null)
           ? (_washroomAvailable! ? 1 : 0)
           : null,
-      'washroom_avialable':
-          (isCommercial &&
+      'washroom_avialable': (isCommercial &&
               _commercialType == 'shop' &&
               _washroomAvailable != null)
           ? (_washroomAvailable! ? 1 : 0)
           : null,
-      'floor_type':
-          (isCommercial &&
+      'floor_type': (isCommercial &&
               _commercialType == 'shop' &&
               _floorType.trim().isNotEmpty)
           ? _floorType.trim()
           : (isCommercial &&
-                _commercialType == 'showroom' &&
-                _showroomFloorType.trim().isNotEmpty)
-          ? _showroomFloorType.trim()
-          : null,
-      'parking_slots': (isCommercial && _commercialType == 'shop')
-          ? _parking
-          : null,
-      'price_negotiable': (isCommercial && _commercialType == 'shop' && _priceNegotiable != null)
+                  _commercialType == 'showroom' &&
+                  _showroomFloorType.trim().isNotEmpty)
+              ? _showroomFloorType.trim()
+              : null,
+      'parking_slots':
+          (isCommercial && _commercialType == 'shop') ? _parking : null,
+      'price_negotiable': (isCommercial &&
+              _commercialType == 'shop' &&
+              _priceNegotiable != null)
           ? (_priceNegotiable! ? 1 : 0)
           : null,
-      'corner_property': (isCommercial && _commercialType == 'shop' && _cornerShop != null)
-          ? (_cornerShop! ? 1 : 0)
-          : null,
+      'corner_property':
+          (isCommercial && _commercialType == 'shop' && _cornerShop != null)
+              ? (_cornerShop! ? 1 : 0)
+              : null,
       'market_name': (isCommercial && _commercialType == 'shop')
           ? (_marketName.text.trim().isEmpty ? null : _marketName.text.trim())
           : null,
@@ -448,26 +419,23 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       }(),
       'showroom_frontage_width_ft':
           (isCommercial && _commercialType == 'showroom')
-          ? double.tryParse(_showroomFrontageWidth.text.trim())
-          : null,
+              ? double.tryParse(_showroomFrontageWidth.text.trim())
+              : null,
       'showroom_ceiling_height_ft':
           (isCommercial && _commercialType == 'showroom')
-          ? double.tryParse(_showroomCeilingHeight.text.trim())
-          : null,
-      'showroom_main_road_facing':
-          (isCommercial &&
+              ? double.tryParse(_showroomCeilingHeight.text.trim())
+              : null,
+      'showroom_main_road_facing': (isCommercial &&
               _commercialType == 'showroom' &&
               _showroomMainRoadFacing != null)
           ? (_showroomMainRoadFacing! ? 1 : 0)
           : null,
-      'corner_showroom':
-          (isCommercial &&
+      'corner_showroom': (isCommercial &&
               _commercialType == 'showroom' &&
               _showroomCorner != null)
           ? (_showroomCorner! ? 1 : 0)
           : null,
-      'showroom_washroom_available':
-          (isCommercial &&
+      'showroom_washroom_available': (isCommercial &&
               _commercialType == 'showroom' &&
               _showroomWashroom != null)
           ? (_showroomWashroom! ? 1 : 0)
@@ -477,33 +445,32 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'showroom_furnishing_status':
           (isCommercial && _commercialType == 'showroom')
-          ? _showroomFurnishing
-          : null,
-      'showroom_floor_type':
-          (isCommercial &&
+              ? _showroomFurnishing
+              : null,
+      'showroom_floor_type': (isCommercial &&
               _commercialType == 'showroom' &&
               _showroomFloorType.trim().isNotEmpty)
           ? _showroomFloorType.trim()
           : null,
       'showroom_market_name': (isCommercial && _commercialType == 'showroom')
           ? (_showroomMarketName.text.trim().isEmpty
-                ? null
-                : _showroomMarketName.text.trim())
+              ? null
+              : _showroomMarketName.text.trim())
           : null,
       'showroom_locality': (isCommercial && _commercialType == 'showroom')
           ? (_showroomLocality.text.trim().isEmpty
-                ? null
-                : _showroomLocality.text.trim())
+              ? null
+              : _showroomLocality.text.trim())
           : null,
       'showroom_owner_name': (isCommercial && _commercialType == 'showroom')
           ? (_showroomOwnerName.text.trim().isEmpty
-                ? null
-                : _showroomOwnerName.text.trim())
+              ? null
+              : _showroomOwnerName.text.trim())
           : null,
       'showroom_owner_mobile': (isCommercial && _commercialType == 'showroom')
           ? (_showroomOwnerMobile.text.trim().isEmpty
-                ? null
-                : _showroomOwnerMobile.text.trim())
+              ? null
+              : _showroomOwnerMobile.text.trim())
           : null,
       'warehouse_type': (isCommercial && _commercialType == 'warehouse')
           ? _warehouseType
@@ -513,12 +480,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'warehouse_plot_area_unit':
           (isCommercial && _commercialType == 'warehouse')
-          ? _warehousePlotAreaUnit
-          : null,
+              ? _warehousePlotAreaUnit
+              : null,
       'warehouse_ceiling_height_ft':
           (isCommercial && _commercialType == 'warehouse')
-          ? double.tryParse(_warehouseCeilingHeight.text.trim())
-          : null,
+              ? double.tryParse(_warehouseCeilingHeight.text.trim())
+              : null,
       'loading_bays': (isCommercial && _commercialType == 'warehouse')
           ? int.tryParse(_warehouseLoadingBays.text.trim())
           : null,
@@ -527,8 +494,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'power_supply': (isCommercial && _commercialType == 'warehouse')
           ? (_warehousePowerSupply.text.trim().isEmpty
-                ? null
-                : _warehousePowerSupply.text.trim())
+              ? null
+              : _warehousePowerSupply.text.trim())
           : null,
       'industrial_license': (isCommercial && _commercialType == 'warehouse')
           ? _warehouseIndustrialLicense
@@ -538,153 +505,199 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'industrial_area_name': (isCommercial && _commercialType == 'warehouse')
           ? (_warehouseAreaName.text.trim().isEmpty
-                ? null
-                : _warehouseAreaName.text.trim())
+              ? null
+              : _warehouseAreaName.text.trim())
           : null,
       'industrial_area_city': (isCommercial && _commercialType == 'warehouse')
           ? (_warehouseCity.text.trim().isEmpty
-                ? null
-                : _warehouseCity.text.trim())
+              ? null
+              : _warehouseCity.text.trim())
           : null,
       'shed_carpet_area': (isCommercial && _commercialType == 'industrial_shed')
           ? double.tryParse(_shedCarpetArea.text.trim())
           : null,
-      'shed_built_up_area': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedBuiltUpArea.text.trim())
-          : null,
-      'shed_super_built_up_area': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedSuperBuiltUpArea.text.trim())
-          : null,
+      'shed_built_up_area':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedBuiltUpArea.text.trim())
+              : null,
+      'shed_super_built_up_area':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedSuperBuiltUpArea.text.trim())
+              : null,
       'shed_plot_area': (isCommercial && _commercialType == 'industrial_shed')
           ? double.tryParse(_shedPlotArea.text.trim())
           : null,
-      'shed_plot_area_unit': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedAreaUnit
-          : null,
-      'shed_ownership_type': (isCommercial && _commercialType == 'industrial_shed')
-          ? (_shedOwnership.trim().isEmpty ? null : _shedOwnership)
-          : null,
-      'shed_property_age': (isCommercial && _commercialType == 'industrial_shed')
-          ? (_shedPropertyAge.trim().isEmpty ? null : _shedPropertyAge)
-          : null,
+      'shed_plot_area_unit':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedAreaUnit
+              : null,
+      'shed_ownership_type':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? (_shedOwnership.trim().isEmpty ? null : _shedOwnership)
+              : null,
+      'shed_property_age':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? (_shedPropertyAge.trim().isEmpty ? null : _shedPropertyAge)
+              : null,
       'shed_facing': (isCommercial && _commercialType == 'industrial_shed')
           ? (_shedFacing.trim().isEmpty ? null : _shedFacing)
           : null,
-      'shed_ceiling_height_ft': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedCeilingHeight.text.trim())
-          : null,
-      'shed_floor_load_capacity': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedFloorLoadCapacity.text.trim())
-          : null,
-      'shed_power_load_kw': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedPowerLoad.text.trim())
-          : null,
-      'shed_three_phase_electricity': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedThreePhaseElectricity
-          : null,
-      'shed_water_connection': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedWaterConnection
-          : null,
-      'shed_borewell_available': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedBorewellAvailable
-          : null,
+      'shed_ceiling_height_ft':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedCeilingHeight.text.trim())
+              : null,
+      'shed_floor_load_capacity':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedFloorLoadCapacity.text.trim())
+              : null,
+      'shed_power_load_kw':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedPowerLoad.text.trim())
+              : null,
+      'shed_three_phase_electricity':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedThreePhaseElectricity
+              : null,
+      'shed_water_connection':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedWaterConnection
+              : null,
+      'shed_borewell_available':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedBorewellAvailable
+              : null,
       'shed_loading_bay': (isCommercial && _commercialType == 'industrial_shed')
           ? _shedLoadingBay
           : null,
-      'shed_dock_leveler': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedDockLeveler
-          : null,
-      'shed_truck_access': (isCommercial && _commercialType == 'industrial_shed')
-          ? (_shedTruckAccess.trim().isEmpty ? null : _shedTruckAccess)
-          : null,
-      'shed_container_access': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedContainerAccess
-          : null,
-      'shed_parking_available': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedParkingAvailable
-          : null,
-      'shed_visitor_parking': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedVisitorParking
-          : null,
-      'shed_security_cabin': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedSecurityCabin
-          : null,
-      'shed_boundary_wall': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedBoundaryWall
-          : null,
-      'shed_cctv_surveillance': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedCctvSurveillance
-          : null,
-      'shed_office_space_available': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedOfficeSpaceAvailable
-          : null,
+      'shed_dock_leveler':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedDockLeveler
+              : null,
+      'shed_truck_access':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? (_shedTruckAccess.trim().isEmpty ? null : _shedTruckAccess)
+              : null,
+      'shed_container_access':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedContainerAccess
+              : null,
+      'shed_parking_available':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedParkingAvailable
+              : null,
+      'shed_visitor_parking':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedVisitorParking
+              : null,
+      'shed_security_cabin':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedSecurityCabin
+              : null,
+      'shed_boundary_wall':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedBoundaryWall
+              : null,
+      'shed_cctv_surveillance':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedCctvSurveillance
+              : null,
+      'shed_office_space_available':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedOfficeSpaceAvailable
+              : null,
       'shed_pantry': (isCommercial && _commercialType == 'industrial_shed')
           ? _shedPantry
           : null,
       'shed_washrooms': (isCommercial && _commercialType == 'industrial_shed')
           ? _shedWashrooms
           : null,
-      'shed_labour_accommodation': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedLabourAccommodation
-          : null,
-      'shed_main_road_facing': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedMainRoadFacing
-          : null,
-      'shed_corner_property': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedCornerProperty
-          : null,
-      'shed_gated_industrial_estate': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedGatedIndustrialEstate
-          : null,
-      'shed_industrial_license': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedIndustrialLicense
-          : null,
-      'shed_factory_license': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedFactoryLicense
-          : null,
+      'shed_labour_accommodation':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedLabourAccommodation
+              : null,
+      'shed_main_road_facing':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedMainRoadFacing
+              : null,
+      'shed_corner_property':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedCornerProperty
+              : null,
+      'shed_gated_industrial_estate':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedGatedIndustrialEstate
+              : null,
+      'shed_industrial_license':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedIndustrialLicense
+              : null,
+      'shed_factory_license':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedFactoryLicense
+              : null,
       'shed_fire_noc': (isCommercial && _commercialType == 'industrial_shed')
           ? _shedFireNoc
           : null,
-      'shed_pollution_clearance': (isCommercial && _commercialType == 'industrial_shed')
-          ? _shedPollutionClearance
-          : null,
-      'shed_booking_amount': (isCommercial && _commercialType == 'industrial_shed' && isSale)
-          ? double.tryParse(_shedBookingAmount.text.trim())
-          : null,
-      'shed_maintenance_charges': (isCommercial && _commercialType == 'industrial_shed')
-          ? double.tryParse(_shedMaintenanceCharges.text.trim())
-          : null,
-      'shed_price_negotiable': (isCommercial && _commercialType == 'industrial_shed' && isSale)
-          ? _shedPriceNegotiable
-          : null,
-      'shed_possession_status': (isCommercial && _commercialType == 'industrial_shed' && isSale)
-          ? _shedPossessionStatus
-          : null,
-      'shed_security_deposit': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
-          ? double.tryParse(_shedSecurityDeposit.text.trim())
-          : null,
-      'shed_brokerage': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
-          ? double.tryParse(_shedBrokerage.text.trim())
-          : null,
-      'shed_available_from': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
-          ? (_shedAvailableFrom.text.trim().isEmpty ? null : _shedAvailableFrom.text.trim())
-          : null,
-      'shed_lock_in_period_months': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
-          ? int.tryParse(_shedLockInMonths.text.trim())
-          : null,
-      'shed_notice_period_months': (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
-          ? int.tryParse(_shedNoticePeriodValue.text.trim())
-          : null,
-      'shed_rent_negotiable': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.rent)
+      'shed_pollution_clearance':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? _shedPollutionClearance
+              : null,
+      'shed_booking_amount':
+          (isCommercial && _commercialType == 'industrial_shed' && isSale)
+              ? double.tryParse(_shedBookingAmount.text.trim())
+              : null,
+      'shed_maintenance_charges':
+          (isCommercial && _commercialType == 'industrial_shed')
+              ? double.tryParse(_shedMaintenanceCharges.text.trim())
+              : null,
+      'shed_price_negotiable':
+          (isCommercial && _commercialType == 'industrial_shed' && isSale)
+              ? _shedPriceNegotiable
+              : null,
+      'shed_possession_status':
+          (isCommercial && _commercialType == 'industrial_shed' && isSale)
+              ? _shedPossessionStatus
+              : null,
+      'shed_security_deposit':
+          (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+              ? double.tryParse(_shedSecurityDeposit.text.trim())
+              : null,
+      'shed_brokerage':
+          (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+              ? double.tryParse(_shedBrokerage.text.trim())
+              : null,
+      'shed_available_from':
+          (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+              ? (_shedAvailableFrom.text.trim().isEmpty
+                  ? null
+                  : _shedAvailableFrom.text.trim())
+              : null,
+      'shed_lock_in_period_months':
+          (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+              ? int.tryParse(_shedLockInMonths.text.trim())
+              : null,
+      'shed_notice_period_months':
+          (isCommercial && _commercialType == 'industrial_shed' && isRentLease)
+              ? int.tryParse(_shedNoticePeriodValue.text.trim())
+              : null,
+      'shed_rent_negotiable': (isCommercial &&
+              _commercialType == 'industrial_shed' &&
+              _propertyKind == _CreatePropertyKind.rent)
           ? _shedRentNegotiable
           : null,
-      'shed_lease_duration_years': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+      'shed_lease_duration_years': (isCommercial &&
+              _commercialType == 'industrial_shed' &&
+              _propertyKind == _CreatePropertyKind.lease)
           ? int.tryParse(_shedLeaseDuration.text.trim())
           : null,
-      'shed_escalation_clause': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+      'shed_escalation_clause': (isCommercial &&
+              _commercialType == 'industrial_shed' &&
+              _propertyKind == _CreatePropertyKind.lease)
           ? _shedEscalationClause
           : null,
-      'shed_renewal_option': (isCommercial && _commercialType == 'industrial_shed' && _propertyKind == _CreatePropertyKind.lease)
+      'shed_renewal_option': (isCommercial &&
+              _commercialType == 'industrial_shed' &&
+              _propertyKind == _CreatePropertyKind.lease)
           ? _shedRenewalOption
           : null,
       'shop_facade': isCommercial
@@ -698,53 +711,47 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'rooms': (isCommercial || isPgCoLiving)
           ? int.tryParse(_rooms.text.trim())
           : null,
-      'quality_rating': isCommercial
-          ? double.tryParse(_qualityRating.text.trim())
-          : null,
+      'quality_rating':
+          isCommercial ? double.tryParse(_qualityRating.text.trim()) : null,
       'land_type': isLandPlot ? _landType : null,
       'road_width_ft': isLandPlot
           ? safePositiveDouble(_roadWidth.text.trim(), max: 1000)
           : null,
       'plot_area_unit': isLandPlot ? _plotAreaUnit : null,
       'road_access': isLandPlot ? _plotRoadAccess : null,
-      'plot_length_ft': isLandPlot
-          ? safePositiveDouble(_length.text.trim())
-          : null,
-      'plot_breadth_ft': isLandPlot
-          ? safePositiveDouble(_breadth.text.trim())
-          : null,
+      'plot_length_ft':
+          isLandPlot ? safePositiveDouble(_length.text.trim()) : null,
+      'plot_breadth_ft':
+          isLandPlot ? safePositiveDouble(_breadth.text.trim()) : null,
       'open_slides': isLandPlot ? _openSides : null,
       'corner_plot': isLandPlot ? (_plotCorner == true ? 1 : 0) : null,
       'construction_done': isLandPlot
           ? (_constructionDone == null ? null : (_constructionDone! ? 1 : 0))
           : null,
-      'fencing': (isLandPlot && _landType == 'agricultural')
-          ? _agriFencing
-          : null,
-      'agri_fencing': (isLandPlot && _landType == 'agricultural')
-          ? _agriFencing
-          : null,
+      'fencing':
+          (isLandPlot && _landType == 'agricultural') ? _agriFencing : null,
+      'agri_fencing':
+          (isLandPlot && _landType == 'agricultural') ? _agriFencing : null,
       'water_source': (isLandPlot && _landType == 'agricultural')
           ? _agriWaterSource
           : (_isSellResidentialVillaHouse ? _waterSource : null),
-      'agri_water_source': (isLandPlot && _landType == 'agricultural')
-          ? _agriWaterSource
-          : null,
+      'agri_water_source':
+          (isLandPlot && _landType == 'agricultural') ? _agriWaterSource : null,
       'farm_land_area': isLandPlot
           ? double.tryParse(_plotArea.text.trim())
           : (_isSellResidentialFarmhouse
-                ? double.tryParse(_farmLandArea.text.trim())
-                : null),
+              ? double.tryParse(_farmLandArea.text.trim())
+              : null),
       'farm_built_up_area': isLandPlot
           ? double.tryParse(_builtUpArea.text.trim())
           : (_isSellResidentialFarmhouse
-                ? double.tryParse(_farmBuiltUpArea.text.trim())
-                : null),
+              ? double.tryParse(_farmBuiltUpArea.text.trim())
+              : null),
       'farm_rooms': isLandPlot
           ? int.tryParse(_rooms.text.trim())
           : (_isSellResidentialFarmhouse
-                ? int.tryParse(_farmRooms.text.trim())
-                : null),
+              ? int.tryParse(_farmRooms.text.trim())
+              : null),
       'number_of_rooms': _isSellResidentialFarmhouse
           ? int.tryParse(_farmRooms.text.trim())
           : null,
@@ -760,15 +767,15 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'farm_utilities': isLandPlot
           ? <String>[]
           : (_isSellResidentialFarmhouse
-                ? _farmUtilities.toList(growable: false)
-                : null),
+              ? _farmUtilities.toList(growable: false)
+              : null),
       'farm_monthly_charges': isLandPlot
           ? double.tryParse(_maintenanceCharges.text.trim())
           : (_isSellResidentialFarmhouse
-                ? double.tryParse(_farmMonthlyCharges.text.trim())
-                : (_isRentLeaseResidentialFarmhouse
-                      ? double.tryParse(_farmMonthlyCharges.text.trim())
-                      : null)),
+              ? double.tryParse(_farmMonthlyCharges.text.trim())
+              : (_isRentLeaseResidentialFarmhouse
+                  ? double.tryParse(_farmMonthlyCharges.text.trim())
+                  : null)),
       'farm_daily_charges': _isRentLeaseResidentialFarmhouse
           ? double.tryParse(_farmDailyCharges.text.trim())
           : null,
@@ -778,12 +785,11 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'min_stay_days': isLandPlot
           ? int.tryParse(_pgMinStayDays.text.trim())
           : (_isRentLeaseResidentialFarmhouse
-                ? int.tryParse(_minStayDays.text.trim())
-                : null),
+              ? int.tryParse(_minStayDays.text.trim())
+              : null),
 
       // Sell -> Residential -> Flat/Apartment extra fields
-      'corner_property':
-          ((_cornerProperty ?? false) ||
+      'corner_property': ((_cornerProperty ?? false) ||
               (_rentCornerProperty ?? false) ||
               (_villaCornerProperty ?? false) ||
               (_builderCornerProperty ?? false) ||
@@ -795,31 +801,30 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : 0,
       'price_negotiable': (_propertyKind == _CreatePropertyKind.sale)
           ? (_isSellResidentialVillaHouse
-                ? (_villaPriceNegotiable == null
-                      ? null
-                      : (_villaPriceNegotiable! ? 1 : 0))
-                : (_priceNegotiable == null
-                      ? null
-                      : (_priceNegotiable! ? 1 : 0)))
+              ? (_villaPriceNegotiable == null
+                  ? null
+                  : (_villaPriceNegotiable! ? 1 : 0))
+              : (_priceNegotiable == null ? null : (_priceNegotiable! ? 1 : 0)))
           : null,
       'additional_rooms': () {
         if (!_isResidential) return null;
-        final rooms =
-            (_isSellResidentialApartment
-                    ? _additionalRooms
-                    : _isSellResidentialVillaHouse
+        final rooms = (_isSellResidentialApartment
+                ? _additionalRooms
+                : _isSellResidentialVillaHouse
                     ? _villaAdditionalRooms
                     : _isRentLeaseResidentialApartment
-                    ? _rentAdditionalRooms
-                    : <String>{})
-                .toList(growable: false);
+                        ? _rentAdditionalRooms
+                        : <String>{})
+            .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),
       'nearby': _isSellResidentialApartment
           ? _propertyHighlights
-              .map(
-                (v) => v.trim().toLowerCase().replaceAll(' ', '_'),
-              )
+              .map((v) {
+                final key = v.trim().toLowerCase().replaceAll(' ', '_');
+                final details = _nearbyDetailsControllers[v]?.text.trim() ?? '';
+                return details.isNotEmpty ? '$key: $details' : key;
+              })
               .where((v) => v.isNotEmpty)
               .toList(growable: false)
           : null,
@@ -828,31 +833,26 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'property_highlights': null,
       'promotion': null,
       'pet_friendly': _isRentLeaseResidentialApartment ? _petFriendly : null,
-      'wheelchair_friendly': _isRentLeaseResidentialApartment
-          ? _wheelchairFriendly
-          : null,
-      'gated_society_rent': _isRentLeaseResidentialApartment
-          ? _rentGatedSociety
-          : null,
-      'brokerage':
-          ((_propertyKind == _CreatePropertyKind.rent ||
+      'wheelchair_friendly':
+          _isRentLeaseResidentialApartment ? _wheelchairFriendly : null,
+      'gated_society_rent':
+          _isRentLeaseResidentialApartment ? _rentGatedSociety : null,
+      'brokerage': ((_propertyKind == _CreatePropertyKind.rent ||
                   _propertyKind == _CreatePropertyKind.lease) &&
               _isResidential)
           ? double.tryParse(_brokerage.text.trim())
           : null,
-      'rent_negotiable':
-          ((_propertyKind == _CreatePropertyKind.rent ||
+      'rent_negotiable': ((_propertyKind == _CreatePropertyKind.rent ||
                   _propertyKind == _CreatePropertyKind.lease) &&
               _isResidential)
           ? _rentNegotiable
           : null,
-      'available_from':
-          ((_propertyKind == _CreatePropertyKind.rent ||
+      'available_from': ((_propertyKind == _CreatePropertyKind.rent ||
                   _propertyKind == _CreatePropertyKind.lease) &&
               _isResidential)
           ? (_availableFrom.text.trim().isEmpty
-                ? null
-                : _availableFrom.text.trim())
+              ? null
+              : _availableFrom.text.trim())
           : null,
       'lease_duration_months': _isRentLeaseResidentialApartment
           ? int.tryParse(_leaseDurationMonths.text.trim())
@@ -863,40 +863,33 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'notice_period_value': _isRentLeaseResidentialApartment
           ? int.tryParse(_noticePeriodValue.text.trim())
           : null,
-      'notice_period_unit': _isRentLeaseResidentialApartment
-          ? _noticePeriodUnit
-          : null,
-      'preferred_tenant': _isRentLeaseResidentialApartment
-          ? _preferredTenant
-          : null,
+      'notice_period_unit':
+          _isRentLeaseResidentialApartment ? _noticePeriodUnit : null,
+      'preferred_tenant':
+          _isRentLeaseResidentialApartment ? _preferredTenant : null,
       'rent_promotion': _isRentLeaseResidentialApartment
           ? _rentPromotionTypes.toList(growable: false)
           : null,
       'rent_villa_outdoors': _isRentLeaseResidentialVillaHouse
           ? _rentVillaOutdoors.toList(growable: false)
           : null,
-      'rent_villa_water_source': _isRentLeaseResidentialVillaHouse
-          ? _rentVillaWaterSource
-          : null,
+      'rent_villa_water_source':
+          _isRentLeaseResidentialVillaHouse ? _rentVillaWaterSource : null,
       'solar_power': _isRentLeaseResidentialVillaHouse ? _rentSolarPower : null,
-      'independent_entry': _isRentLeaseResidentialVillaHouse
-          ? _rentIndependentEntry
-          : null,
-      'lift_available_rent': _isRentLeaseResidentialBuilderFloor
-          ? _rentLiftAvailable
-          : null,
+      'independent_entry':
+          _isRentLeaseResidentialVillaHouse ? _rentIndependentEntry : null,
+      'lift_available_rent':
+          _isRentLeaseResidentialBuilderFloor ? _rentLiftAvailable : null,
       'society_name': _isRentLeaseResidentialBuilderFloor
           ? (_societyName.text.trim().isEmpty ? null : _societyName.text.trim())
           : null,
       'tenant_types': _isRentLeaseResidentialBuilderFloor
           ? _rentTenantTypes.toList(growable: false)
           : null,
-      'studio_config': _isRentLeaseResidentialStudioApartment
-          ? _studioConfig
-          : null,
-      'kitchen_type': _isRentLeaseResidentialStudioApartment
-          ? _kitchenType
-          : null,
+      'studio_config':
+          _isRentLeaseResidentialStudioApartment ? _studioConfig : null,
+      'kitchen_type':
+          _isRentLeaseResidentialStudioApartment ? _kitchenType : null,
       'studio_tenant_preferences': _isRentLeaseResidentialStudioApartment
           ? _studioTenantPrefs.toList(growable: false)
           : null,
@@ -907,9 +900,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           ? int.tryParse(_rentFarmRooms.text.trim())
           : null,
       'farm_pool_rent': _isRentLeaseResidentialFarmhouse ? _rentFarmPool : null,
-      'farm_fencing_rent': _isRentLeaseResidentialFarmhouse
-          ? _rentFarmFencing
-          : null,
+      'farm_fencing_rent':
+          _isRentLeaseResidentialFarmhouse ? _rentFarmFencing : null,
       'farm_use_cases': _isRentLeaseResidentialFarmhouse
           ? _rentFarmUseCases.toList(growable: false)
           : null,
@@ -926,12 +918,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'parking': _isSellResidentialVillaHouse
           ? (_villaParking.isEmpty
-                ? null
-                : (_villaParking.contains('open')
-                      ? 'open_parking'
-                      : (_villaParking.contains('covered')
-                            ? 'covered_parking'
-                            : null)))
+              ? null
+              : (_villaParking.contains('open')
+                  ? 'open_parking'
+                  : (_villaParking.contains('covered')
+                      ? 'covered_parking'
+                      : null)))
           : null,
       'outdoors': _isSellResidentialVillaHouse
           ? _outdoors.toList(growable: false)
@@ -944,9 +936,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
 
       // Sell -> Residential -> Builder Floor extra fields
-      'construction_allowed': _isSellResidentialBuilderFloor
-          ? _constructionAllowed
-          : null,
+      'construction_allowed':
+          _isSellResidentialBuilderFloor ? _constructionAllowed : null,
       'utilities': _isSellResidentialBuilderFloor
           ? _builderUtilities.toList(growable: false)
           : null,
@@ -969,22 +960,20 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'plot_area': isLandPlot
           ? double.tryParse(resolvedLandPlotArea)
           : (_isSellResidentialBuilderFloor || _isSellResidentialDuplex
-                ? double.tryParse(_plotArea.text.trim())
-                : (_isResidential ? double.tryParse(_plotArea.text.trim()) : null)),
+              ? double.tryParse(_plotArea.text.trim())
+              : (_isResidential
+                  ? double.tryParse(_plotArea.text.trim())
+                  : null)),
 
       // Sell -> Residential -> Duplex extra fields
-      'duplex_gated_community': _isSellResidentialDuplex
-          ? _duplexGatedCommunity
-          : null,
-      'construction_allowed': _isSellResidentialDuplex
-          ? _duplexConstructionAllowed
-          : null,
-      'water_connection': _isSellResidentialDuplex
-          ? _duplexWaterConnection
-          : null,
-      'electricity_connection': _isSellResidentialDuplex
-          ? _duplexElectricityConnection
-          : null,
+      'duplex_gated_community':
+          _isSellResidentialDuplex ? _duplexGatedCommunity : null,
+      'construction_allowed':
+          _isSellResidentialDuplex ? _duplexConstructionAllowed : null,
+      'water_connection':
+          _isSellResidentialDuplex ? _duplexWaterConnection : null,
+      'electricity_connection':
+          _isSellResidentialDuplex ? _duplexElectricityConnection : null,
       'price_negotiable': _isSellResidentialDuplex
           ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 1 : 0))
           : null,
@@ -992,15 +981,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
       'nearby_facilities': _isSellResidentialDuplex
           ? _duplexNearbyFacilities.toList(growable: false)
           : null,
-      'duplex_construction_allowed': _isSellResidentialDuplex
-          ? _duplexConstructionAllowed
-          : null,
-      'duplex_water_connection': _isSellResidentialDuplex
-          ? _duplexWaterConnection
-          : null,
-      'duplex_electricity_connection': _isSellResidentialDuplex
-          ? _duplexElectricityConnection
-          : null,
+      'duplex_construction_allowed':
+          _isSellResidentialDuplex ? _duplexConstructionAllowed : null,
+      'duplex_water_connection':
+          _isSellResidentialDuplex ? _duplexWaterConnection : null,
+      'duplex_electricity_connection':
+          _isSellResidentialDuplex ? _duplexElectricityConnection : null,
       'duplex_negotiable': _isSellResidentialDuplex
           ? (_duplexNegotiable == null ? null : (_duplexNegotiable! ? 1 : 0))
           : null,
@@ -1018,9 +1004,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
           : null,
       'owner_details': {
         'name': _ownerName.text.trim().isEmpty ? null : _ownerName.text.trim(),
-        'phone': _ownerPhone.text.trim().isEmpty
-            ? null
-            : _ownerPhone.text.trim(),
+        'phone':
+            _ownerPhone.text.trim().isEmpty ? null : _ownerPhone.text.trim(),
       },
     };
   }
@@ -1084,11 +1069,8 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
   }
 
   String _normalizeOfficeTypeForApi(String value) {
-    final norm = value
-        .trim()
-        .toLowerCase()
-        .replaceAll('-', '_')
-        .replaceAll(' ', '_');
+    final norm =
+        value.trim().toLowerCase().replaceAll('-', '_').replaceAll(' ', '_');
     const validTypes = {
       'bare_shell',
       'warm_shell',
@@ -1150,11 +1132,12 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
 
   String _normalizePgBedTypeForApi(String value) {
     switch (value.trim().toLowerCase()) {
-      case 'bunk':
-        return 'double';
       case 'single':
+        return 'single_bed';
+      case 'bunk':
+        return 'bunk_bed';
       case 'double':
-        return value.trim().toLowerCase();
+        return 'double_bed';
       default:
         return value.trim().toLowerCase();
     }

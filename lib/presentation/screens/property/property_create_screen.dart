@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, compute;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:property_agent/providers/property_form/address_suggestions_provider.dart';
@@ -26,6 +27,8 @@ import '../../../providers/property_provider.dart';
 import '../../widgets/glass_container.dart';
 import '../../widgets/app_dropdown.dart';
 import '../../../data/services/google_places_service.dart';
+import 'widgets/location_section.dart';
+import 'widgets/pricing_and_area_section.dart';
 
 part 'property_create_screen_payload.dart';
 
@@ -57,6 +60,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
   // ==================== BASIC INFO ====================
   final _title = TextEditingController();
+  final Map<String, TextEditingController> _nearbyDetailsControllers = {};
+
   final _description = TextEditingController();
   final _price = TextEditingController();
   final _area = TextEditingController();
@@ -730,9 +735,6 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   static const _apartmentHighlights = <String>[
     'near_metro',
     'prime_location',
-    'gated_society',
-    'park_facing',
-    'clubhouse',
     'near_market',
     'near_school',
     'near_hospital',
@@ -1003,10 +1005,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       _propertyKind == _CreatePropertyKind.pg ||
       _propertyKind == _CreatePropertyKind.coLiving;
 
-  void _syncDetailsFromSelectedCategorySlugs() {
+  void _syncDetailsFromSelectedCategorySlugs({bool clearExisting = true}) {
     // Clear case-specific selections so a fresh category never inherits
     // stale chip states from a previous case.
-    _commercialType = '';
+    if (clearExisting) {
+      _commercialType = '';
     _landType = '';
     _ownership = '';
     _availability = '';
@@ -1112,7 +1115,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _duplexWaterConnection = null;
     _duplexElectricityConnection = null;
     _duplexNegotiable = null;
-    _duplexRoadAccess = null;
+      _duplexRoadAccess = null;
+    }
 
     final parentSlug = _parentKind;
     final childSlug = (_selectedCategorySlug ?? '').trim().toLowerCase();
@@ -1243,7 +1247,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           } else {
             _selectedCategorySlug = parent.slug;
           }
-          _syncDetailsFromSelectedCategorySlugs();
+          _syncDetailsFromSelectedCategorySlugs(clearExisting: false);
         });
         return;
       }
@@ -1265,7 +1269,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             } else {
               _selectedCategorySlug = child.slug;
             }
-            _syncDetailsFromSelectedCategorySlugs();
+            _syncDetailsFromSelectedCategorySlugs(clearExisting: false);
           });
           return;
         }
@@ -1288,7 +1292,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
               } else {
                 _selectedCategorySlug = grandchild.slug;
               }
-              _syncDetailsFromSelectedCategorySlugs();
+              _syncDetailsFromSelectedCategorySlugs(clearExisting: false);
             });
             return;
           }
@@ -1471,6 +1475,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       }
     }
     return null;
+  }
+
+  String _formatDateText(String? rawDate) {
+    if (rawDate == null || rawDate.trim().isEmpty) return '';
+    try {
+      return "${DateTime.parse(rawDate).toLocal()}".split(' ')[0];
+    } catch (_) {
+      return rawDate.split('T')[0].split(' ')[0];
+    }
   }
 
   int? _fi(Map<String, dynamic> f, List<String> keys) {
@@ -1665,7 +1678,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
 
     _pgRoomType = _f(f, ['pg_room_type']) ?? _f(pg, ['room_type']) ?? '';
 
-    _pgBedType = _f(f, ['pg_bed_type']) ?? _f(pg, ['bed_type']) ?? '';
+    _pgBedType = (_f(f, ['pg_bed_type']) ?? _f(pg, ['bed_type']) ?? '').replaceAll('_bed', '');
 
     _pgAvailability =
         _f(f, ['pg_availability']) ?? _f(pg, ['availability_status']) ?? '';
@@ -1695,8 +1708,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             _fd(pg, ['maintenance_charges'])?.toString() ??
             '';
 
-    _pgAvailableFrom.text =
-        _f(f, ['pg_available_from']) ?? _f(pg, ['available_from']) ?? '';
+    _pgAvailableFrom.text = _formatDateText(
+      p.pgAvailableFrom ??
+          _f(f, ['pg_available_from']) ??
+          _f(pg, ['available_from']),
+    );
 
     _pgMinStayDays.text = _fi(f, ['pg_min_stay_days'])?.toString() ??
         _fi(pg, ['min_stay_days'])?.toString() ??
@@ -1843,11 +1859,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       );
 
     // ── 5. Common detail fields from apiFields ──────────────────────────────
-    _carpetArea.text = p.carpetArea?.toString() ?? _fd(f, ['carpet_area'])?.toString() ?? '';
+    _carpetArea.text =
+        p.carpetArea?.toString() ?? _fd(f, ['carpet_area'])?.toString() ?? '';
     _builtUpArea.text = p.builtUpArea?.toString() ??
         _fd(f, ['built_up_area'])?.toString() ??
         '';
-    _superBuiltUpArea.text = p.superBuiltUpArea?.toString() ?? _fd(f, ['super_built_up_area'])?.toString() ?? '';
+    _superBuiltUpArea.text = p.superBuiltUpArea?.toString() ??
+        _fd(f, ['super_built_up_area'])?.toString() ??
+        '';
     final _plot = Map<String, dynamic>.from((f['plot_details'] as Map?) ?? {});
     _plotArea.text = p.plotArea?.toString() ??
         _fd(f, ['plot_area'])?.toString() ??
@@ -1910,8 +1929,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       _ownership = rawOwner.trim().toLowerCase().replaceAll('-', '_');
     }
     _balconies = p.balconies ?? _fi(f, ['balconies']) ?? _balconies;
-    _ownerName.text = _f(f, ['owner_name']) ?? '';
-    _ownerPhone.text = _f(f, ['owner_mobile', 'owner_phone']) ?? '';
+    _ownerName.text = p.ownerName;
+    _ownerPhone.text =
+        p.ownerPhone ?? _f(f, ['owner_mobile', 'owner_phone']) ?? '';
 
     // ── 6. Commercial fields ────────────────────────────────────────────────
     _commercialType = _f(f, ['commercial_type']) ?? _commercialType;
@@ -2267,7 +2287,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _brokerage.text = _fd(f, ['brokerage'])?.toString() ?? '';
     _rentNegotiable = p.rentNegotiable ??
         _fbNullable(f, ['rent_negotiable', 'price_negotiable']);
-    _availableFrom.text = _f(f, ['available_from']) ?? '';
+    _availableFrom.text =
+        _formatDateText(p.availableFrom ?? _f(f, ['available_from']));
     _leaseDurationMonths.text = _fi(f, ['lease_duration_months'])?.toString() ??
         _leaseDurationMonths.text;
     _lockInMonths.text =
@@ -2354,10 +2375,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _builderCornerProperty = p.builderCornerProperty ??
         (p.cornerProperty ??
             _fbNullable(f, ['builder_corner_property', 'corner_property']));
-    _builderGatedSociety = p.gatedCommunity ?? _fbNullable(f, [
-      'builder_gated_society',
-      'gated_society',
-    ]);
+    _builderGatedSociety = p.gatedCommunity ??
+        _fbNullable(f, [
+          'builder_gated_society',
+          'gated_society',
+        ]);
     _constructionAllowed =
         p.constructionAllowed ?? _fbNullable(f, ['construction_allowed']);
     _builderUtilities
@@ -2576,10 +2598,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         _f(f, ['pg_room_size', 'room_size']) ??
         _f(pg, ['room_size']) ??
         '';
-    _pgBedType = p.pgDetails?.bedType ??
+    _pgBedType = (p.pgDetails?.bedType ??
         _f(f, ['pg_bed_type', 'bed_type']) ??
         _f(pg, ['bed_type']) ??
-        _pgBedType;
+        _pgBedType).replaceAll('_bed', '');
     _pgCupboardAvailable = p.pgDetails?.cupboardAvailable ??
         _fb(f, ['pg_cupboard_available', 'cupboard_available']) ??
         _fbNullable(pg, ['cupboard_available']);
@@ -2614,10 +2636,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _pgIdProofRequired = p.pgDetails?.idProofRequired ??
         _fb(f, ['pg_id_proof_required']) ??
         _fbNullable(pg, ['id_proof_required']);
-    _pgAvailableFrom.text = p.pgDetails?.availableFrom ??
-        _f(f, ['pg_available_from']) ??
-        _f(pg, ['available_from']) ??
-        '';
+    _pgAvailableFrom.text = _formatDateText(
+      p.pgDetails?.availableFrom ??
+          _f(f, ['pg_available_from']) ??
+          _f(pg, ['available_from']),
+    );
     _pgMinStayDays.text = (p.pgDetails?.minStayDays ??
                 _fi(f, ['pg_min_stay_days']) ??
                 _fi(pg, ['min_stay_days']))
@@ -4031,6 +4054,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       case 'pincode':
         err = Validators.requiredText(_pincode.text, label: 'Pincode');
         break;
+      case 'ownerPhone':
+        err = Validators.phoneOptional(_ownerPhone.text, label: 'Phone');
+        break;
     }
 
     // Instead of setState, send the error to Riverpod
@@ -4863,131 +4889,128 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           ],
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: Column(
-                  children: [
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  buildSection(
+                    'Basic Info',
+                    'basic',
+                    Icons.info_outline,
+                    buildBasicInfo(),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_propertyKind != null)
                     buildSection(
-                      'Basic Info',
-                      'basic',
-                      Icons.info_outline,
-                      buildBasicInfo(),
+                      'Property Details',
+                      'details',
+                      Icons.apartment_outlined,
+                      buildPropertyDetails(),
                     ),
-                    const SizedBox(height: 12),
-                    if (_propertyKind != null)
-                      buildSection(
-                        'Property Details',
-                        'details',
-                        Icons.apartment_outlined,
-                        buildPropertyDetails(),
-                      ),
-                    const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                  buildSection(
+                    'Pricing & Area',
+                    'pricing',
+                    Icons.payments_outlined,
+                    buildPricingAndArea(),
+                  ),
+                  const SizedBox(height: 12),
+                  if (!isLandPlot)
                     buildSection(
-                      'Pricing & Area',
-                      'pricing',
-                      Icons.payments_outlined,
-                      buildPricingAndArea(),
+                      'Amenities',
+                      'amenities',
+                      Icons.checklist,
+                      buildAmenities(),
                     ),
-                    const SizedBox(height: 12),
-                    if (!isLandPlot)
-                      buildSection(
-                        'Amenities',
-                        'amenities',
-                        Icons.checklist,
-                        buildAmenities(),
-                      ),
-                    const SizedBox(height: 12),
-                    if (!isLandPlot)
-                      buildSection(
-                        'Furnishings',
-                        'furnishings',
-                        Icons.chair_alt_outlined,
-                        buildFurnishings(),
-                      ),
-                    const SizedBox(height: 12),
-                    // if (_isSellResidentialApartment)
-                    //   buildSection(
-                    //     'Promotion',
-                    //     'promotion',
-                    //     Icons.campaign_outlined,
-                    //     _buildPromotion(),
-                    //   ),
-                    if (_isSellResidentialApartment) const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                  if (!isLandPlot)
                     buildSection(
-                      'Photos',
-                      'media',
-                      Icons.photo_library_outlined,
-                      buildMediaSection(),
+                      'Furnishings',
+                      'furnishings',
+                      Icons.chair_alt_outlined,
+                      buildFurnishings(),
                     ),
-                    if (_videos.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      buildSection(
-                        'Videos',
-                        'videos',
-                        Icons.video_library_outlined,
-                        buildVideoSection(),
-                      ),
-                    ],
+                  const SizedBox(height: 12),
+                  // if (_isSellResidentialApartment)
+                  //   buildSection(
+                  //     'Promotion',
+                  //     'promotion',
+                  //     Icons.campaign_outlined,
+                  //     _buildPromotion(),
+                  //   ),
+                  if (_isSellResidentialApartment) const SizedBox(height: 12),
+                  buildSection(
+                    'Photos',
+                    'media',
+                    Icons.photo_library_outlined,
+                    buildMediaSection(),
+                  ),
+                  if (_videos.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     buildSection(
-                      'Location',
-                      'location',
-                      Icons.location_on_outlined,
-                      buildLocation(),
-                    ),
-                    const SizedBox(height: 12),
-                    buildSection(
-                      'About Your Property',
-                      'description',
-                      Icons.description_outlined,
-                      buildDescriptionField(),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton.icon(
-                        onPressed: _create,
-                        icon: saving
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Icon(
-                                isEdit
-                                    ? Icons.save_outlined
-                                    : Icons.publish_outlined,
-                                size: 18,
-                              ),
-                        label: Text(
-                          saving
-                              ? (isEdit ? 'Saving…' : 'Publishing…')
-                              : (isEdit ? 'Save Property' : 'Publish Property'),
-                        ),
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          shape: const StadiumBorder(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    Text(
-                      'Tip: You can collapse sections to focus.',
-                      style: formTheme.textTheme.bodySmall?.copyWith(
-                        color: const Color(0xFFCBD5E1),
-                      ),
+                      'Videos',
+                      'videos',
+                      Icons.video_library_outlined,
+                      buildVideoSection(),
                     ),
                   ],
-                ),
+                  const SizedBox(height: 12),
+                  buildSection(
+                    'Location',
+                    'location',
+                    Icons.location_on_outlined,
+                    buildLocation(),
+                  ),
+                  const SizedBox(height: 12),
+                  buildSection(
+                    'About Your Property',
+                    'description',
+                    Icons.description_outlined,
+                    buildDescriptionField(),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: _create,
+                      icon: saving
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Icon(
+                              isEdit
+                                  ? Icons.save_outlined
+                                  : Icons.publish_outlined,
+                              size: 18,
+                            ),
+                      label: Text(
+                        saving
+                            ? (isEdit ? 'Saving…' : 'Publishing…')
+                            : (isEdit ? 'Save Property' : 'Publish Property'),
+                      ),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        shape: const StadiumBorder(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Text(
+                    'Tip: You can collapse sections to focus.',
+                    style: formTheme.textTheme.bodySmall?.copyWith(
+                      color: const Color(0xFFCBD5E1),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -5541,6 +5564,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     bool readOnly = false,
     VoidCallback? onTap,
     void Function(String)? onChanged,
+    int? maxLength,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5561,6 +5586,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           onTap: onTap,
           keyboardType: keyboardType,
           maxLines: maxLines,
+          maxLength: maxLength,
+          inputFormatters: inputFormatters,
           onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hint,
