@@ -442,7 +442,6 @@ class StaffPropertyService implements PropertyService {
         continue;
       }
       primaryImagePath ??= path;
-      out.add(MapEntry('images[]', path));
     }
 
     final sectionImages = property.sectionImagePaths ?? const {};
@@ -588,7 +587,6 @@ class StaffPropertyService implements PropertyService {
   }
 
   Future<FormData> _toCreateForm(Property property) async {
-    final images = <MultipartFile>[];
     MultipartFile? primaryImageFile;
     final primaryIndex = property.primaryImageIndex ?? 0;
     final ordered = <String>[
@@ -615,21 +613,15 @@ class StaffPropertyService implements PropertyService {
       orderedPathsToCompress.add(path);
     }
 
-    // Compress in parallel
-    final compressedOrderedFiles = await Future.wait(
-      orderedPathsToCompress.map((path) => compressImage(File(path))),
-    );
-
-    for (var i = 0; i < orderedPathsToCompress.length; i++) {
-      final originalPath = orderedPathsToCompress[i];
+    // We only need to compress the first valid image for primary_image_index
+    if (orderedPathsToCompress.isNotEmpty) {
+      final originalPath = orderedPathsToCompress.first;
       final filename = originalPath.split(Platform.pathSeparator).last;
-      final compressedFile = compressedOrderedFiles[i];
-      final file = await MultipartFile.fromFile(
+      final compressedFile = await compressImage(File(originalPath));
+      primaryImageFile = await MultipartFile.fromFile(
         compressedFile.path,
         filename: filename,
       );
-      primaryImageFile ??= file;
-      images.add(file);
     }
 
     final sectionImageFiles = <MapEntry<String, MultipartFile>>[];
@@ -748,8 +740,6 @@ class StaffPropertyService implements PropertyService {
         'is_featured': property.isFeatured! ? '1' : '0',
       if (property.featuredExpiry != null)
         'featured_expiry': property.featuredExpiry!.toIso8601String(),
-      if (images.isNotEmpty)
-        'images_general[]': images.map((f) => f.clone()).toList(),
       if (documentFiles.isNotEmpty) 'documents[]': documentFiles,
       if (videoFiles.isNotEmpty) 'videos[]': videoFiles,
       if (videoFiles.isNotEmpty)
@@ -1004,10 +994,7 @@ class StaffPropertyService implements PropertyService {
     debugPrint('[StaffPropertyService] updateProperty path=$path');
     debugPrint(
       '[StaffPropertyService] updateProperty fields=' +
-          form.fields
-              .map((e) => '${e.key}: ${e.value}')
-              .toList()
-              .toString(),
+          form.fields.map((e) => '${e.key}: ${e.value}').toList().toString(),
     );
 
     _debugLogMultipart(
