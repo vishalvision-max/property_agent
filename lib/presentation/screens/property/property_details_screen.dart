@@ -37,6 +37,12 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
   bool _showAllAmenities = false;
   bool _showAllFurnishings = false;
 
+  Future<void> _refreshProperty() async {
+    final propertyId = widget.propertyId;
+    ref.invalidate(propertyByIdProvider(propertyId));
+    await ref.read(propertyByIdProvider(propertyId).future);
+  }
+
   @override
   Widget build(BuildContext context) {
     final propertyId = widget.propertyId;
@@ -124,8 +130,11 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
               });
             }
 
-            return CustomScrollView(
-              slivers: [
+            return RefreshIndicator(
+              onRefresh: _refreshProperty,
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
                 SliverAppBar(
                   pinned: true,
                   expandedHeight: 310,
@@ -307,6 +316,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                           ],
                         ),
                       ),
+                      ..._buildCaseSpecificSections(context, p),
                       if (selectedVideo != null) ...[
                         AppSpacing.vLg,
                         Text(
@@ -701,6 +711,7 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
                   ),
                 ),
               ],
+              ),
             );
           },
         ),
@@ -726,6 +737,314 @@ class _PropertyDetailsScreenState extends ConsumerState<PropertyDetailsScreen> {
       DefaultCacheManager().downloadFile(firstVideoUrl);
     }
   }
+
+  List<Widget> _buildCaseSpecificSections(BuildContext context, Property p) {
+    final widgets = <Widget>[];
+    final api = p.apiFields ?? const <String, dynamic>{};
+    final residential = api['residential_details'] as Map?;
+    final plot = api['plot_details'] as Map?;
+    final office = api['office_details'] as Map?;
+    final shop = api['shop_details'] as Map?;
+    final showroom = api['showroom_details'] as Map?;
+    final warehouse = api['warehouse_details'] as Map?;
+    final pg = api['pg_details'] as Map?;
+
+    String? pick(Map<String, dynamic>? source, List<String> keys) {
+      if (source == null) return null;
+      for (final key in keys) {
+        final value = source[key];
+        if (value == null) continue;
+        final text = value.toString().trim();
+        if (text.isNotEmpty && text.toLowerCase() != 'null') return text;
+      }
+      return null;
+    }
+
+    bool? pickBool(Map<String, dynamic>? source, List<String> keys) {
+      if (source == null) return null;
+      for (final key in keys) {
+        final value = source[key];
+        if (value == null) continue;
+        if (value is bool) return value;
+        if (value is num) return value != 0;
+        final text = value.toString().trim().toLowerCase();
+        if (text.isEmpty) continue;
+        if (text == 'true' || text == '1' || text == 'yes') return true;
+        if (text == 'false' || text == '0' || text == 'no') return false;
+      }
+      return null;
+    }
+
+    String? yesNo(bool? value) => value == null ? null : (value ? 'Yes' : 'No');
+
+    List<String> listFrom(dynamic value) {
+      if (value is List) {
+        return value
+            .where((e) => e != null)
+            .map((e) => e.toString().trim())
+            .where((e) => e.isNotEmpty)
+            .toList(growable: false);
+      }
+      if (value is String && value.trim().isNotEmpty) {
+        return value
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(growable: false);
+      }
+      return const <String>[];
+    }
+
+    void addSection({
+      required String title,
+      required List<_DetailItem> items,
+    }) {
+      final visibleItems = items.where((i) => i.hasValue).toList(growable: false);
+      if (visibleItems.isEmpty) return;
+      widgets.addAll([
+        AppSpacing.vLg,
+        GlassContainer(
+          blur: false,
+          padding: EdgeInsets.zero,
+          child: ExpansionTile(
+            initiallyExpanded: false,
+            collapsedIconColor: AppTheme.gold,
+            iconColor: AppTheme.gold,
+            tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+            title: Text(
+              title,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w900,
+                color: AppTheme.gold,
+              ),
+            ),
+            children: [
+              Column(
+                children: visibleItems
+                    .map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _InfoRow(
+                          icon: item.icon,
+                          label: '${item.label}: ${item.value}',
+                          iconColor: AppTheme.gold,
+                          textColor: Colors.white,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      ]);
+    }
+
+    addSection(
+      title: 'Top Level Details',
+      items: [
+        _DetailItem('Booking Amount', p.bookingAmount?.toString(), Icons.payments_outlined),
+        _DetailItem('Maintenance Charges', p.maintenanceCharges?.toString(), Icons.receipt_long_outlined),
+        _DetailItem('Security Deposit', p.securityDeposit?.toString(), Icons.account_balance_wallet_outlined),
+        _DetailItem('Price Negotiable', yesNo(p.priceNegotiable), Icons.sell_outlined),
+        _DetailItem('Available From', p.availableFrom, Icons.event_available_outlined),
+        _DetailItem('Possession By', p.possessionBy, Icons.event_note_outlined),
+        _DetailItem('Ownership', p.ownership, Icons.badge_outlined),
+        _DetailItem('Commercial Type', p.commercialType, Icons.business_outlined),
+        _DetailItem('Property Kind', p.propertyKind, Icons.category_outlined),
+        _DetailItem('Listing Type', p.listingType, Icons.manage_accounts_outlined),
+        _DetailItem('Village', p.village, Icons.location_city_outlined),
+        _DetailItem('Landmark', p.landmark, Icons.place_outlined),
+        _DetailItem('Whatsapp Updates', yesNo(p.whatsappUpdates), Icons.chat_outlined),
+        _DetailItem('Electricity Included', yesNo(api['electricity_included'] == 1 || api['electricity_included'] == true), Icons.bolt_outlined),
+        _DetailItem('Gas Included', yesNo(api['gas_included'] == 1 || api['gas_included'] == true), Icons.local_fire_department_outlined),
+        _DetailItem('Water Included', yesNo(api['water_included'] == 1 || api['water_included'] == true), Icons.water_drop_outlined),
+        _DetailItem('Wifi Included', yesNo(api['wifi_included'] == 1 || api['wifi_included'] == true), Icons.wifi_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Residential Details',
+      items: [
+        _DetailItem('BHK', residential?['bhk']?.toString(), Icons.numbers_outlined),
+        _DetailItem('Bedrooms', p.bedrooms?.toString(), Icons.bed_outlined),
+        _DetailItem('Bathrooms', p.bathrooms?.toString(), Icons.bathtub_outlined),
+        _DetailItem('Balconies', p.balconies?.toString(), Icons.balcony_outlined),
+        _DetailItem('Furnishing', p.furnishing, Icons.chair_outlined),
+        _DetailItem('Floor', p.floor?.toString(), Icons.stairs_outlined),
+        _DetailItem('Total Floors', p.totalFloors?.toString(), Icons.apartment_outlined),
+        _DetailItem('Maintenance', residential?['maintenance_charges']?.toString() ?? p.maintenanceCharges?.toString(), Icons.currency_rupee),
+        _DetailItem('Ownership', residential?['ownership']?.toString() ?? p.ownership, Icons.badge_outlined),
+        _DetailItem('Corner Property', yesNo(pickBool(residential?.cast<String, dynamic>(), ['corner_property'])), Icons.crop_square_outlined),
+        _DetailItem('Parking', pick(residential?.cast<String, dynamic>(), ['parking']), Icons.local_parking_outlined),
+        _DetailItem('Additional Rooms', listFrom(residential?['additional_rooms']).join(', '), Icons.room_preferences_outlined),
+        _DetailItem('Nearby', listFrom(residential?['nearby']).join(', '), Icons.near_me_outlined),
+        _DetailItem('Facing', pick(residential?.cast<String, dynamic>(), ['facing']), Icons.explore_outlined),
+        _DetailItem('Gated Society', yesNo(pickBool(residential?.cast<String, dynamic>(), ['gated_society'])), Icons.emoji_transportation_outlined),
+        _DetailItem('Pet Friendly', yesNo(pickBool(residential?.cast<String, dynamic>(), ['pet_friendly'])), Icons.pets_outlined),
+        _DetailItem('Wheelchair Friendly', yesNo(pickBool(residential?.cast<String, dynamic>(), ['wheelchair_friendly'])), Icons.accessible_outlined),
+        _DetailItem('Possession Status', pick(residential?.cast<String, dynamic>(), ['possession_status']), Icons.assignment_turned_in_outlined),
+        _DetailItem('Possession By', pick(residential?.cast<String, dynamic>(), ['possession_by']), Icons.event_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Plot Details',
+      items: [
+        _DetailItem('Plot Area', pick(plot?.cast<String, dynamic>(), ['plot_area']), Icons.terrain_outlined),
+        _DetailItem('Plot Area Unit', pick(plot?.cast<String, dynamic>(), ['plot_area_unit']), Icons.square_foot_outlined),
+        _DetailItem('Plot Length (ft)', pick(plot?.cast<String, dynamic>(), ['plot_length_ft']), Icons.straighten),
+        _DetailItem('Plot Breadth (ft)', pick(plot?.cast<String, dynamic>(), ['plot_breadth_ft']), Icons.straighten),
+        _DetailItem('Floors Allowed', pick(plot?.cast<String, dynamic>(), ['floors_allowed']), Icons.layers_outlined),
+        _DetailItem('Open Sides', pick(plot?.cast<String, dynamic>(), ['open_sides']), Icons.open_in_full_outlined),
+        _DetailItem('Boundary Wall', yesNo(pickBool(plot?.cast<String, dynamic>(), ['boundary_wall'])), Icons.fence_outlined),
+        _DetailItem('Construction Done', yesNo(pickBool(plot?.cast<String, dynamic>(), ['construction_done'])), Icons.verified_outlined),
+        _DetailItem('Land Type', pick(plot?.cast<String, dynamic>(), ['land_type']), Icons.landscape_outlined),
+        _DetailItem('Ownership', pick(plot?.cast<String, dynamic>(), ['ownership']), Icons.badge_outlined),
+        _DetailItem('Road Width (ft)', pick(plot?.cast<String, dynamic>(), ['road_width_ft']), Icons.route_outlined),
+        _DetailItem('Construction Allowed', yesNo(pickBool(plot?.cast<String, dynamic>(), ['construction_allowed'])), Icons.construction_outlined),
+        _DetailItem('Water Connection', yesNo(pickBool(plot?.cast<String, dynamic>(), ['water_connection'])), Icons.water_drop_outlined),
+        _DetailItem('Electricity Connection', yesNo(pickBool(plot?.cast<String, dynamic>(), ['electricity_connection'])), Icons.bolt_outlined),
+        _DetailItem('Road Access', yesNo(pickBool(plot?.cast<String, dynamic>(), ['road_access'])), Icons.traffic_outlined),
+        _DetailItem('Corner Plot', yesNo(pickBool(plot?.cast<String, dynamic>(), ['corner_plot', 'plot_corner'])), Icons.crop_square_outlined),
+        _DetailItem('Nearby Facilities', listFrom(plot?['nearby_facilities']).join(', '), Icons.near_me_outlined),
+        _DetailItem('Agri Fencing', yesNo(pickBool(plot?.cast<String, dynamic>(), ['agri_fencing'])), Icons.park_outlined),
+        _DetailItem('Agri Water Source', pick(plot?.cast<String, dynamic>(), ['agri_water_source']), Icons.water_outlined),
+        _DetailItem('Farm Land Area', pick(plot?.cast<String, dynamic>(), ['farm_land_area']), Icons.terrain_outlined),
+        _DetailItem('Farm Built Up Area', pick(plot?.cast<String, dynamic>(), ['farm_built_up_area']), Icons.home_work_outlined),
+        _DetailItem('Farm Rooms', pick(plot?.cast<String, dynamic>(), ['farm_rooms']), Icons.meeting_room_outlined),
+        _DetailItem('Farm Garden', yesNo(pickBool(plot?.cast<String, dynamic>(), ['farm_garden'])), Icons.park_outlined),
+        _DetailItem('Farm Swimming Pool', yesNo(pickBool(plot?.cast<String, dynamic>(), ['farm_swimming_pool'])), Icons.pool_outlined),
+        _DetailItem('Farm Utilities', listFrom(plot?['farm_utilities']).join(', '), Icons.handyman_outlined),
+        _DetailItem('Farm Monthly Charges', pick(plot?.cast<String, dynamic>(), ['farm_monthly_charges']), Icons.payments_outlined),
+        _DetailItem('Farm Daily Charges', pick(plot?.cast<String, dynamic>(), ['farm_daily_charges']), Icons.payments_outlined),
+        _DetailItem('Farm Event Charges', pick(plot?.cast<String, dynamic>(), ['farm_event_charges']), Icons.payments_outlined),
+        _DetailItem('Min Stay Days', pick(plot?.cast<String, dynamic>(), ['min_stay_days']), Icons.calendar_today_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Commercial Details',
+      items: [
+        _DetailItem('Commercial Type', p.commercialType, Icons.business_outlined),
+        _DetailItem('Parking Type', p.parkingType, Icons.local_parking_outlined),
+        _DetailItem('Washrooms', p.washrooms?.toString(), Icons.wc_outlined),
+        _DetailItem('Seats', p.seats?.toString(), Icons.event_seat_outlined),
+        _DetailItem('Max Seats', p.maxSeats?.toString(), Icons.chair_alt_outlined),
+        _DetailItem('Quality Rating', p.qualityRating?.toString(), Icons.star_outline),
+        _DetailItem('Pre Leased', yesNo(p.preLeased), Icons.verified_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'PG Details',
+      items: [
+        _DetailItem('Occupancy Type', p.pgOccupancyType, Icons.bed_outlined),
+        _DetailItem('Property Type', p.pgPropertyType, Icons.home_work_outlined),
+        _DetailItem('Bathroom Type', p.pgBathroomType, Icons.bathtub_outlined),
+        _DetailItem('Suitable For', p.pgSuitableFor, Icons.groups_outlined),
+        _DetailItem('Total Beds', p.pgTotalBeds?.toString(), Icons.bed_outlined),
+        _DetailItem('Available Beds', p.pgAvailableBeds?.toString(), Icons.bed_outlined),
+        _DetailItem('PG Security Deposit', p.pgSecurityDeposit?.toString(), Icons.account_balance_wallet_outlined),
+        _DetailItem('PG Maintenance Charges', p.pgMaintenanceCharges?.toString(), Icons.receipt_long_outlined),
+        _DetailItem('PG Availability', p.pgAvailability, Icons.event_available_outlined),
+        _DetailItem('PG Smoking Allowed', yesNo(p.pgSmokingAllowed), Icons.smoking_rooms_outlined),
+        _DetailItem('PG Drinking Allowed', yesNo(p.pgDrinkingAllowed), Icons.local_bar_outlined),
+        _DetailItem('PG Pets Allowed', yesNo(p.pgPetsAllowed), Icons.pets_outlined),
+        _DetailItem('PG Visitors Allowed', yesNo(p.pgVisitorsAllowed), Icons.groups_outlined),
+        _DetailItem('PG Gate Locked At Night', yesNo(p.pgGateLockedAtNight), Icons.lock_outlined),
+        _DetailItem('PG Security', yesNo(p.pgSecurity), Icons.security_outlined),
+        _DetailItem('PG Near By', listFrom(p.pgNearbyPreferences).join(', '), Icons.near_me_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Office Details',
+      items: [
+        _DetailItem('Office Type', p.officeType, Icons.business_center_outlined),
+        _DetailItem('Floor Plate Area', p.floorPlateArea?.toString(), Icons.square_foot_outlined),
+        _DetailItem('Meeting Rooms', p.meetingRooms?.toString(), Icons.meeting_room_outlined),
+        _DetailItem('Cabins', p.cabins?.toString(), Icons.workspaces_outline),
+        _DetailItem('Reception Area', yesNo(p.receptionArea), Icons.meeting_room_outlined),
+        _DetailItem('Pantry', yesNo(p.pantry), Icons.restaurant_outlined),
+        _DetailItem('Cafeteria', yesNo(p.cafeteria), Icons.local_cafe_outlined),
+        _DetailItem('Server Room', yesNo(p.serverRoom), Icons.dns_outlined),
+        _DetailItem('Fire Safety', yesNo(p.fireSafetyInstalled), Icons.fire_extinguisher_outlined),
+        _DetailItem('Central AC', yesNo(p.centralAC), Icons.ac_unit_outlined),
+        _DetailItem('Visitor Parking', yesNo(p.visitorParking), Icons.local_parking_outlined),
+        _DetailItem('Pre Leased', yesNo(p.preLeased), Icons.verified_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Shop Details',
+      items: [
+        _DetailItem('Shop Type', p.shopType, Icons.store_outlined),
+        _DetailItem('Shop Area', p.shopArea?.toString(), Icons.square_foot_outlined),
+        _DetailItem('Frontage Width', p.frontageWidth?.toString(), Icons.straighten),
+        _DetailItem('Floor Type', p.floorType, Icons.layers_outlined),
+        _DetailItem('Shop Facade', p.shopFacade, Icons.storefront_outlined),
+        _DetailItem('Washrooms', p.washrooms?.toString(), Icons.wc_outlined),
+        _DetailItem('Main Road Facing', yesNo(p.mainRoadFacing), Icons.route_outlined),
+        _DetailItem('Corner Shop', yesNo(p.cornerShop), Icons.crop_square_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Showroom Details',
+      items: [
+        _DetailItem('Showroom Area', p.showroomArea?.toString(), Icons.square_foot_outlined),
+        _DetailItem('Frontage Width', p.showroomFrontageWidth?.toString(), Icons.straighten),
+        _DetailItem('Floor Type', p.showroomFloorType, Icons.layers_outlined),
+        _DetailItem('Parking Slots', p.showroomParkingSlots?.toString(), Icons.local_parking_outlined),
+        _DetailItem('Main Road Facing', yesNo(p.showroomMainRoadFacing), Icons.route_outlined),
+        _DetailItem('Corner', yesNo(p.showroomCorner), Icons.crop_square_outlined),
+        _DetailItem('Washroom', yesNo(p.showroomWashroom), Icons.wc_outlined),
+      ],
+    );
+
+    addSection(
+      title: 'Warehouse Details',
+      items: [
+        _DetailItem('Warehouse Type', p.warehouseType, Icons.warehouse_outlined),
+        _DetailItem('Plot Area', p.warehousePlotArea?.toString(), Icons.square_foot_outlined),
+        _DetailItem('Ceiling Height', p.warehouseCeilingHeight?.toString(), Icons.height_outlined),
+        _DetailItem('Loading Bays', p.warehouseLoadingBays?.toString(), Icons.local_shipping_outlined),
+        _DetailItem('Dock Levelers', p.warehouseDockLevelers?.toString(), Icons.elevator_outlined),
+        _DetailItem('Power Supply', p.warehousePowerSupply, Icons.bolt_outlined),
+        _DetailItem('Industrial License', yesNo(p.warehouseIndustrialLicense), Icons.assignment_turned_in_outlined),
+        _DetailItem('Truck Access', p.warehouseTruckAccess, Icons.local_shipping_outlined),
+      ],
+    );
+
+    if ((residential != null || plot != null || office != null || shop != null || showroom != null || warehouse != null || pg != null) && widgets.isEmpty) {
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Text(
+            'Additional data is available in the response.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.gold,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return widgets;
+  }
+}
+
+class _DetailItem {
+  const _DetailItem(this.label, this.value, this.icon);
+
+  final String label;
+  final String? value;
+  final IconData icon;
+
+  bool get hasValue => (value ?? '').trim().isNotEmpty;
 }
 
 class _InfoRow extends StatelessWidget {

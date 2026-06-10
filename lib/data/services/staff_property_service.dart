@@ -579,6 +579,37 @@ class StaffPropertyService implements PropertyService {
     debugPrint(
       _yellow('[StaffPropertyService] $path multipart fieldsData=$fields'),
     );
+    final interesting = <String, dynamic>{
+      for (final key in [
+        'carpet_area',
+        'built_up_area',
+        'super_built_up_area',
+        'owner_name',
+        'owner_phone',
+        'price',
+        'area',
+        'area_unit',
+        'type',
+        'listing_type',
+        'category_id',
+        'availability',
+        'property_age',
+        'ownership',
+        'balconies',
+        'floor',
+        'total_floors',
+        'furnishing',
+        'facing',
+        'booking_amount',
+        'maintenance_charges',
+        'corner_property',
+        'price_negotiable',
+      ])
+        if (fields.containsKey(key)) key: fields[key],
+    };
+    debugPrint(
+      _yellow('[StaffPropertyService] $path keyFields=$interesting'),
+    );
     debugPrint(_yellow('[StaffPropertyService] $path multipart files=$files'));
     debugPrint(
       _yellow(
@@ -696,10 +727,19 @@ class StaffPropertyService implements PropertyService {
       if (property.slug != null && property.slug!.trim().isNotEmpty)
         'slug': property.slug!.trim(),
       'type': property.apiFields?['type']?.toString() ?? property.type.name,
+      if (property.propertyKind != null &&
+          property.propertyKind!.trim().isNotEmpty)
+        'property_kind': property.propertyKind!.trim(),
       if (_normalizeListingType(property.listingType) != null)
         'listing_type': _normalizeListingType(property.listingType),
       'price': property.price.toStringAsFixed(0),
       if (property.area != null) 'area': property.area,
+      if (property.carpetArea != null)
+        'carpet_area': property.carpetArea!.toStringAsFixed(0),
+      if (property.builtUpArea != null)
+        'built_up_area': property.builtUpArea!.toStringAsFixed(0),
+      if (property.superBuiltUpArea != null)
+        'super_built_up_area': property.superBuiltUpArea!.toStringAsFixed(0),
       if (property.areaUnit != null && property.areaUnit!.trim().isNotEmpty)
         'area_unit': property.areaUnit!.trim(),
       if (property.propertyAge != null) 'property_age': property.propertyAge,
@@ -708,7 +748,6 @@ class StaffPropertyService implements PropertyService {
       'balconies': property.balconies?.toString() ?? '',
       'floor': property.floor?.toString() ?? '',
       'total_floors': property.totalFloors?.toString() ?? '',
-      'built_up_area': property.builtUpArea?.toString() ?? '',
       if (property.availability != null &&
           property.availability!.trim().isNotEmpty)
         'availability': property.availability!.trim(),
@@ -717,6 +756,10 @@ class StaffPropertyService implements PropertyService {
         'possession_by': property.possessionBy!.trim(),
       if (property.ownership != null && property.ownership!.trim().isNotEmpty)
         'ownership': property.ownership!.trim(),
+      if (property.ownerName.trim().isNotEmpty)
+        'owner_name': property.ownerName.trim(),
+      if (property.ownerPhone != null && property.ownerPhone!.trim().isNotEmpty)
+        'owner_phone': property.ownerPhone!.trim(),
       // additional_rooms[] is added below as individual array entries
       if (property.bookingAmount != null)
         'booking_amount': property.bookingAmount!.toStringAsFixed(0),
@@ -731,6 +774,10 @@ class StaffPropertyService implements PropertyService {
       if (property.furnishing != null && property.furnishing!.trim().isNotEmpty)
         'furnishing': property.furnishing!.trim(),
       if (property.parking != null) 'parking': property.parking,
+      if (property.cornerProperty != null)
+        'corner_property': property.cornerProperty! ? '1' : '0',
+      if (property.priceNegotiable != null)
+        'price_negotiable': property.priceNegotiable! ? '1' : '0',
       if (property.address != null && property.address!.trim().isNotEmpty)
         'address': property.address!.trim(),
       'city': (property.city != null && property.city!.trim().isNotEmpty)
@@ -743,7 +790,8 @@ class StaffPropertyService implements PropertyService {
       if (property.latitude != null) 'latitude': property.latitude,
       if (property.longitude != null) 'longitude': property.longitude,
       // If backend uses category, keep it stable for now.
-      'category_id': property.categoryId ?? '2',
+      'category_id': property.categoryId ??
+          (property.apiFields?['category_id']?.toString() ?? '2'),
       if (property.isFeatured != null)
         'is_featured': property.isFeatured! ? '1' : '0',
       if (property.featuredExpiry != null)
@@ -773,6 +821,21 @@ class StaffPropertyService implements PropertyService {
 
     final extraRaw = property.apiFields ?? const <String, dynamic>{};
     final extra = Map<String, dynamic>.from(extraRaw);
+
+    // Residential nearby chips are stored in `property_highlights` on the app
+    // side, but the backend expects them as `nearby[]`.
+    final nearbyValues = extra['nearby'] ??
+        extra['property_highlights'] ??
+        property.propertyHighlights ??
+        const <String>[];
+    if (nearbyValues is Iterable) {
+      for (final item in nearbyValues) {
+        final v = item?.toString().trim();
+        if (v != null && v.isNotEmpty) {
+          form.fields.add(MapEntry('nearby[]', v));
+        }
+      }
+    }
 
     // 1. Water Source alignment: map villa_water_source / rent_villa_water_source to water_source
     final wSource =
@@ -848,12 +911,19 @@ class StaffPropertyService implements PropertyService {
       'latitude', 'longitude', 'category_id',
       'balconies',
       'built_up_area',
+      'carpet_area',
+      'super_built_up_area',
       'availability',
       'possession_by',
       'ownership',
+      'owner_name',
+      'owner_phone',
+      'property_kind',
       'additional_rooms',
       'booking_amount',
       'maintenance_charges',
+      'corner_property',
+      'price_negotiable',
       'villa_water_source', 'rent_villa_water_source',
       'parking_types', 'villa_parking', 'rent_villa_parking',
       'rent_villa_outdoors',
@@ -923,29 +993,7 @@ class StaffPropertyService implements PropertyService {
   }
 
   Future<FormData> _toUpdateForm(Property property) async {
-    final form = await _toCreateForm(property);
-
-    // Remove the array syntax for amenities and furnishings generated by _toCreateForm
-    form.fields.removeWhere((e) =>
-        e.key == 'amenity_ids[]' ||
-        e.key == 'amenities[]' ||
-        e.key.startsWith('furnishings['));
-
-    // Re-add them in comma-separated format as expected by the PUT API
-    final amenityIds = property.amenityIds ?? const <int>[];
-    if (amenityIds.isNotEmpty) {
-      form.fields.add(MapEntry('amenities', amenityIds.join(',')));
-    }
-
-    final furnishingSelections = property.furnishingSelections ?? const [];
-    if (furnishingSelections.isNotEmpty) {
-      final ids = furnishingSelections.map((e) => e.id).join(',');
-      final quantities = furnishingSelections.map((e) => e.quantity).join(',');
-      form.fields.add(MapEntry('furnishings[id]', ids));
-      form.fields.add(MapEntry('furnishings[quantity]', quantities));
-    }
-
-    return form;
+    return _toCreateForm(property);
   }
 
   @override
@@ -1028,16 +1076,12 @@ class StaffPropertyService implements PropertyService {
   @override
   Future<Property> getPropertyById(String id) async {
     final dio = await _dioFuture;
-    // Use the staff endpoint so all custom category-specific fields are
-    // returned (corner_property, maintenance_charges, availability, etc.).
-    // The public /properties/{id} endpoint only returns base fields.
-    Response<Map<String, dynamic>> res;
-    try {
-      res = await dio.get<Map<String, dynamic>>('/staff/property/$id');
-    } on DioException catch (_) {
-      // Fallback to public endpoint if staff endpoint is unavailable.
-      res = await dio.get<Map<String, dynamic>>('/properties/$id');
-    }
+    final res = await dio.get<Map<String, dynamic>>(
+      '/property/$id',
+      options: Options(
+        headers: const {'Accept': 'application/json'},
+      ),
+    );
     final body = res.data ?? const <String, dynamic>{};
     final data = body['data'];
     final rawData = data is Map<String, dynamic> ? data : body;

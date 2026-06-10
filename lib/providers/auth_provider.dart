@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/agent.dart';
 import 'app_providers.dart';
+import 'dashboard_provider.dart';
+import 'property_provider.dart';
 
 class AuthState {
   const AuthState({required this.agent, required this.isBootstrapping});
@@ -45,6 +47,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
     try {
       final agent = await _ref.read(authRepositoryProvider).login(email: email, password: password);
       state = AsyncValue.data(AuthState(agent: agent, isBootstrapping: false));
+      _ref.invalidate(dashboardProvider);
+      _ref.invalidate(propertiesProvider);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       state = AsyncValue.data(AuthState(agent: null, isBootstrapping: false));
