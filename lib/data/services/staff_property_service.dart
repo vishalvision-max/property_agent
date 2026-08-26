@@ -800,8 +800,6 @@ class StaffPropertyService implements PropertyService {
         'images_general[]': images.map((f) => f.clone()).toList(),
       if (documentFiles.isNotEmpty) 'documents[]': documentFiles,
       if (videoFiles.isNotEmpty) 'videos[]': videoFiles,
-      if (videoFiles.isNotEmpty)
-        'vide': videoFiles.map((f) => f.clone()).toList(),
     });
 
     // Backend validation expects `primary_image_index.*` to be an image.

@@ -22,6 +22,19 @@ class PropertyAgentApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.light,
       routerConfig: router,
+      builder: (context, child) {
+        // Dismiss the keyboard whenever the user taps outside a text field.
+        return GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            final currentFocus = FocusManager.instance.primaryFocus;
+            if (currentFocus != null && !currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+          },
+          child: child,
+        );
+      },
     );
   }
 }

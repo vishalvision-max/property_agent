@@ -812,6 +812,10 @@ extension PropertyCreateScreenPayload on _PropertyCreateScreenState {
                     : _isRentLeaseResidentialApartment
                     ? _rentAdditionalRooms
                     : <String>{})
+                // The API's allowed value is the misspelled 'servent_room';
+                // sending the corrected spelling fails validation. The read
+                // path maps it back to 'servant_room' for display.
+                .map((r) => r == 'servant_room' ? 'servent_room' : r)
                 .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),

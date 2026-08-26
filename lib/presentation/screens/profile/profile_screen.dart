@@ -15,8 +15,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(authProvider).valueOrNull;
-    final dash = ref.watch(dashboardProvider).valueOrNull;
+    final state = ref.watch(authProvider).value;
+    final dash = ref.watch(dashboardProvider).value;
     final counts = dash?.counts;
     final total = counts?.assigned ?? 0;
     final listed = counts?.listed ?? 0;

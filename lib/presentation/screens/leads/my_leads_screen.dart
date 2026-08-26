@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/price_format.dart';
 import '../../../data/models/lead.dart';
 import '../../../providers/lead_provider.dart';
 
@@ -52,7 +53,20 @@ class MyLeadsScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 8),
             child: InkWell(
-              onTap: () => ref.invalidate(myLeadsProvider),
+              onTap: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                ref.invalidate(myLeadsProvider);
+                try {
+                  await ref.read(myLeadsProvider.future);
+                  messenger
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      const SnackBar(content: Text('Leads refreshed')),
+                    );
+                } catch (_) {
+                  // Error is already surfaced by the list's error state.
+                }
+              },
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 width: 38,
@@ -737,8 +751,8 @@ Widget _buildSectionTitle(IconData icon, String title) {
 
 Widget _buildPropertyCard(LeadProperty prop) {
   final priceFormatted = prop.type.toLowerCase() == 'rent'
-      ? '₹${prop.price.toStringAsFixed(0)}/month'
-      : '₹${prop.price.toStringAsFixed(0)}';
+      ? '${formatIndianPrice(prop.price)}/month'
+      : formatIndianPrice(prop.price);
 
   return Container(
     padding: const EdgeInsets.all(16),

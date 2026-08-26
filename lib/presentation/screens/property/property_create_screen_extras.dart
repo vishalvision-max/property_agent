@@ -2,9 +2,59 @@
 part of 'property_create_screen.dart';
 
 extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
+  /// The subcategory id used to load category-specific features
+  /// (amenities/furnishings). Null when no valid subcategory is selected yet
+  /// (e.g. the farmhouse sentinel -9999), in which case the pickers prompt the
+  /// user to choose a category first.
+  int? get _featuresCategoryId {
+    final id = _selectedCategoryId;
+    if (id == null || id <= 0) return null;
+    return id;
+  }
+
+  /// Whether the Amenities section should render. Hidden only once the
+  /// category's features have loaded and contain no amenities (e.g. a farmhouse
+  /// with none configured); kept visible while loading or when no category is
+  /// selected so nothing flickers.
+  bool _showAmenitiesSection() {
+    final catId = _featuresCategoryId;
+    if (catId == null) return true;
+    final features = ref.watch(categoryFeaturesProvider(catId)).value;
+    if (features == null) return true;
+    return features.amenities.isNotEmpty;
+  }
+
+  /// Whether the Furnishings section should render. See [_showAmenitiesSection].
+  bool _showFurnishingsSection() {
+    final catId = _featuresCategoryId;
+    if (catId == null) return true;
+    final features = ref.watch(categoryFeaturesProvider(catId)).value;
+    if (features == null) return true;
+    return features.furnishings.isNotEmpty;
+  }
+
+  /// Corrects known misspellings in feature names coming from the API before
+  /// they are shown to the user (e.g. the API returns "Attached Balony").
+  String _featureDisplayName(String name) {
+    switch (name.trim().toLowerCase()) {
+      case 'attached balony':
+        return 'Attached Balcony';
+      default:
+        return name;
+    }
+  }
+
   Widget buildAmenities() {
+    final catId = _featuresCategoryId;
+    if (catId == null) {
+      return const Text(
+        'Select a property category to see amenities',
+        style: TextStyle(color: Color(0xFFCBD5E1)),
+      );
+    }
     return ref
-        .watch(amenitiesProvider)
+        .watch(categoryFeaturesProvider(catId))
+        .whenData((f) => f.amenities)
         .when(
           data: (items) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -12,14 +62,57 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _openAmenitiesPicker(items),
+                  onPressed: () => setState(() {
+                    _amenitiesExpanded = !_amenitiesExpanded;
+                  }),
                   icon: const Icon(Icons.tune, color: AppTheme.gold),
-                  label: const Text(
-                    'Select Amenities',
-                    style: TextStyle(color: AppTheme.gold),
+                  label: Text(
+                    _amenitiesExpanded ? 'Done Selecting' : 'Select Amenities',
+                    style: const TextStyle(color: AppTheme.gold),
                   ),
                 ),
               ),
+              // Inline picker container. Selections write straight to
+              // `_selectedAmenityIds` via setState, so scrolling never resets
+              // them (no temporary buffer as a bottom sheet would need).
+              if (_amenitiesExpanded) ...[
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(maxHeight: 260),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0B1220),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.gold.withValues(alpha: 0.35)),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: items
+                          .map(
+                            (a) => FilterChip(
+                              label: Text(
+                                _featureDisplayName(a.name),
+                                style: const TextStyle(fontSize: 13),
+                              ),
+                              selected: _selectedAmenityIds.contains(a.id),
+                              onSelected: (selected) => setState(() {
+                                if (selected) {
+                                  _selectedAmenityIds.add(a.id);
+                                } else {
+                                  _selectedAmenityIds.remove(a.id);
+                                }
+                                _scheduleSaveDraft();
+                              }),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 10),
               if (_selectedAmenityIds.isEmpty)
                 Text(
@@ -41,7 +134,9 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                                 ?.name
                             as String?;
                     return Chip(
-                      label: Text(name ?? 'Amenity $id'),
+                      label: Text(
+                        name == null ? 'Amenity $id' : _featureDisplayName(name),
+                      ),
                       onDeleted: () => setState(() {
                         _selectedAmenityIds.remove(id);
                         _scheduleSaveDraft();
@@ -56,95 +151,17 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
         );
   }
 
-  Future<void> _openAmenitiesPicker(List items) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF070B14),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        final tempSelected = Set<int>.of(_selectedAmenityIds);
-        return StatefulBuilder(
-          builder: (context, setSheetState) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Select Amenities',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: items
-                            .map(
-                              (a) => FilterChip(
-                                label: Text(
-                                  a.name,
-                                  style: const TextStyle(fontSize: 13),
-                                ),
-                                selected: tempSelected.contains(a.id),
-                                onSelected: (selected) => setSheetState(() {
-                                  if (selected)
-                                    tempSelected.add(a.id);
-                                  else
-                                    tempSelected.remove(a.id);
-                                }),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedAmenityIds
-                              ..clear()
-                              ..addAll(tempSelected);
-                          });
-                          _scheduleSaveDraft();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Done'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget buildFurnishings() {
+    final catId = _featuresCategoryId;
+    if (catId == null) {
+      return const Text(
+        'Select a property category to see furnishings',
+        style: TextStyle(color: Color(0xFFCBD5E1)),
+      );
+    }
     return ref
-        .watch(furnishingsProvider)
+        .watch(categoryFeaturesProvider(catId))
+        .whenData((f) => f.furnishings)
         .when(
           data: (items) {
             final sorted = List.of(items)
@@ -155,14 +172,88 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
-                    onPressed: () => _openFurnishingsPicker(sorted),
+                    onPressed: () => setState(() {
+                      _furnishingsExpanded = !_furnishingsExpanded;
+                    }),
                     icon: const Icon(Icons.tune, color: AppTheme.gold),
-                    label: const Text(
-                      'Select Furnishings',
-                      style: TextStyle(color: AppTheme.gold),
+                    label: Text(
+                      _furnishingsExpanded
+                          ? 'Done Selecting'
+                          : 'Select Furnishings',
+                      style: const TextStyle(color: AppTheme.gold),
                     ),
                   ),
                 ),
+                // Inline picker container. Selections write straight to state
+                // via setState, so scrolling never resets them (no temporary
+                // buffer as a bottom sheet would need).
+                if (_furnishingsExpanded) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxHeight: 300),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0B1220),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppTheme.gold.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: sorted.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, i) {
+                        final f = sorted[i];
+                        final selected = _selectedFurnishingIds.contains(f.id);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: selected,
+                                onChanged: (v) => setState(() {
+                                  if (v == true) {
+                                    _selectedFurnishingIds.add(f.id);
+                                    if (f.isCountable) {
+                                      _furnishingQuantities.putIfAbsent(
+                                        f.id,
+                                        () => 1,
+                                      );
+                                    }
+                                  } else {
+                                    _selectedFurnishingIds.remove(f.id);
+                                    _furnishingQuantities.remove(f.id);
+                                  }
+                                  _scheduleSaveDraft();
+                                }),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  f.name,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              if (f.isCountable)
+                                _QuantityStepper(
+                                  value: _furnishingQuantities[f.id] ?? 1,
+                                  enabled: selected,
+                                  onChanged: (next) => setState(() {
+                                    _furnishingQuantities[f.id] = next;
+                                    _scheduleSaveDraft();
+                                  }),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 10),
                 if (_selectedFurnishingIds.isEmpty)
                   Text(
@@ -198,120 +289,6 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
         );
   }
 
-  Future<void> _openFurnishingsPicker(List items) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: const Color(0xFF070B14),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        final tempSelected = Set<int>.of(_selectedFurnishingIds);
-        final tempQty = Map<int, int>.of(_furnishingQuantities);
-        return StatefulBuilder(
-          builder: (context, setSheetState) => SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Select Furnishings',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Flexible(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: items.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, i) {
-                        final f = items[i];
-                        final selected = tempSelected.contains(f.id);
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: selected,
-                                onChanged: (v) => setSheetState(() {
-                                  if (v == true) {
-                                    tempSelected.add(f.id);
-                                    if (f.isCountable) {
-                                      tempQty.putIfAbsent(f.id, () => 1);
-                                    }
-                                  } else {
-                                    tempSelected.remove(f.id);
-                                    tempQty.remove(f.id);
-                                  }
-                                }),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  f.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              if (f.isCountable)
-                                _QuantityStepper(
-                                  value: tempQty[f.id] ?? 1,
-                                  enabled: selected,
-                                  onChanged: (next) => setSheetState(() {
-                                    tempQty[f.id] = next;
-                                  }),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _selectedFurnishingIds
-                              ..clear()
-                              ..addAll(tempSelected);
-                            _furnishingQuantities
-                              ..clear()
-                              ..addAll(tempQty);
-                          });
-                          _scheduleSaveDraft();
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Done'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget buildLocation() {
     return Column(
       children: [
@@ -335,49 +312,53 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
-            if (_addressFocus.hasFocus && (ref.watch(addressSuggestionsProvider).valueOrNull ?? []).isNotEmpty)
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 72,
-                child: Material(
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(12),
-                  color: const Color(0xFF0B1220),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxHeight: 220),
-                    child: ListView.separated(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: (ref.watch(addressSuggestionsProvider).valueOrNull ?? []).length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, i) {
-                        final pred = (ref.watch(addressSuggestionsProvider).valueOrNull ?? [])[i];
-                        return ListTile(
-                          dense: true,
-                          title: Text(
-                            pred.description,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 13,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: Icon(
-                            Icons.north_west_rounded,
-                            size: 16,
-                            color: AppTheme.gold.withOpacity(0.9),
-                          ),
-                          onTap: () => _selectAddressPrediction(pred),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
+        // Address autocomplete list. Rendered inline (not as a Positioned
+        // overlay inside the Stack) so it isn't clipped by the Stack bounds and
+        // reliably opens below the field while typing.
+        if (_addressFocus.hasFocus &&
+            (ref.watch(addressSuggestionsProvider).value ?? []).isNotEmpty)
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(12),
+              color: const Color(0xFF0B1220),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: ListView.separated(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount:
+                      (ref.watch(addressSuggestionsProvider).value ?? []).length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (context, i) {
+                    final pred =
+                        (ref.watch(addressSuggestionsProvider).value ?? [])[i];
+                    return ListTile(
+                      dense: true,
+                      title: Text(
+                        pred.description,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 13,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: Icon(
+                        Icons.north_west_rounded,
+                        size: 16,
+                        color: AppTheme.gold.withOpacity(0.9),
+                      ),
+                      onTap: () => _selectAddressPrediction(pred),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
         const SizedBox(height: 8),
         if (_isSellResidentialFarmhouse) ...[
           _buildTextField(
@@ -399,6 +380,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
         ],
 
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _buildTextField(
@@ -448,15 +430,30 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
           '10-digit phone',
           Icons.call_outlined,
           keyboardType: TextInputType.phone,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(10),
+          ],
           onChanged: (_) => _scheduleSaveDraft(),
         ),
         const SizedBox(height: 12),
         Align(
           alignment: Alignment.centerRight,
           child: TextButton.icon(
-            onPressed: _forceAutoFillLocation,
-            icon: const Icon(Icons.my_location, size: 16),
-            label: const Text('Use current location'),
+            onPressed: _fetchingLocation ? null : _forceAutoFillLocation,
+            icon: _fetchingLocation
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.gold),
+                    ),
+                  )
+                : const Icon(Icons.my_location, size: 16),
+            label: Text(
+              _fetchingLocation ? 'Getting location…' : 'Use current location',
+            ),
             style: TextButton.styleFrom(
               foregroundColor: AppTheme.gold,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -529,7 +526,20 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
   //   );
   // }
 
+  /// Syncs the photo/video tag options for the selected subcategory from the
+  /// media-types API into state so the tag dropdowns render dynamic options.
+  /// Watched here (rather than setState) so a load simply triggers a rebuild.
+  void _syncMediaTypes() {
+    final catId = _selectedCategoryId;
+    if (catId == null || catId <= 0) return;
+    final media = ref.watch(mediaTypesProvider(catId)).value;
+    if (media == null) return;
+    _photoMediaTypes = media.photos;
+    _videoMediaTypes = media.videos;
+  }
+
   Widget buildMediaSection() {
+    _syncMediaTypes();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -698,7 +708,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0B1220).withOpacity(0.92),
+                      color: Colors.white.withOpacity(0.92),
                       border: Border.all(
                         color: AppTheme.gold.withOpacity(0.22),
                       ),
@@ -717,19 +727,24 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                         size: 14,
                         color: AppTheme.gold.withOpacity(0.95),
                       ),
+                      // Badge sits on a white container, so the closed-state
+                      // label must be dark to stay readable.
                       style: const TextStyle(
-                        color: AppColors.textPrimary,
+                        color: AppColors.dark,
                         fontSize: 9,
                       ),
                       onChanged: (newTag) => _updateImageTag(i, newTag!),
                       items: _getAvailableTags().map((tag) {
                         return DropdownMenuItem<String>(
                           value: tag,
+                          // Dropdown menu opens on a white background
+                          // (dropdownColor above), so item text must be dark
+                          // to stay visible.
                           child: Text(
                             tag,
                             style: const TextStyle(
                               fontSize: 9,
-                              color: AppColors.textPrimary,
+                              color: AppColors.dark,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -782,15 +797,46 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                             left: 0,
                             right: 0,
                             child: Container(
-                              padding: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               color: Colors.black54,
-                              child: Text(
-                                _videos[i].tag ?? 'Video',
+                              child: DropdownButton<String>(
+                                value:
+                                    _getAvailableVideoTags().contains(
+                                      _videos[i].tag,
+                                    )
+                                    ? _videos[i].tag
+                                    : 'general',
+                                dropdownColor: Colors.black87,
+                                underline: const SizedBox(),
+                                isExpanded: true,
+                                isDense: true,
+                                icon: const Icon(
+                                  Icons.arrow_drop_down,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
                                 ),
-                                textAlign: TextAlign.center,
+                                onChanged: (newTag) => setState(() {
+                                  _videos[i].tag = newTag;
+                                }),
+                                items: _getAvailableVideoTags().map((tag) {
+                                  return DropdownMenuItem<String>(
+                                    value: tag,
+                                    child: Text(
+                                      tag,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ),
@@ -799,26 +845,23 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
                     ),
                   ),
                 ),
+                // Delete control styled identically to the photo grid's
+                // delete button (20x20 red circle with a white close icon).
                 Positioned(
-                  top: 4,
-                  right: 4,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        size: 12,
-                        color: Colors.white,
+                  top: 3,
+                  right: 3,
+                  child: GestureDetector(
+                    onTap: () => _removeVideo(i),
+                    child: Container(
+                      width: 20,
+                      height: 20,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
                       ),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 20,
-                        minHeight: 20,
+                      child: const Center(
+                        child: Icon(Icons.close, size: 11, color: Colors.white),
                       ),
-                      onPressed: () => _removeVideo(i),
                     ),
                   ),
                 ),
@@ -850,6 +893,7 @@ extension PropertyCreateScreenExtras on _PropertyCreateScreenState {
       ),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       visualDensity: VisualDensity.compact,
+      labelPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
       onSelected: onSelected,
     );
   }

@@ -6,38 +6,98 @@ part of 'form_submit_state_provider.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(FormSubmitState)
+final formSubmitStateProvider = FormSubmitStateProvider._();
+
+final class FormSubmitStateProvider
+    extends $NotifierProvider<FormSubmitState, bool> {
+  FormSubmitStateProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'formSubmitStateProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$formSubmitStateHash();
+
+  @$internal
+  @override
+  FormSubmitState create() => FormSubmitState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
 String _$formSubmitStateHash() => r'99181ecc328225cf8df162265d7ebff34df0bbc3';
 
-/// See also [FormSubmitState].
-@ProviderFor(FormSubmitState)
-final formSubmitStateProvider =
-    AutoDisposeNotifierProvider<FormSubmitState, bool>.internal(
-  FormSubmitState.new,
-  name: r'formSubmitStateProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$formSubmitStateHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+abstract class _$FormSubmitState extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<bool, bool>, bool, Object?, Object?>;
+    element.handleCreate(ref, build);
+  }
+}
 
-typedef _$FormSubmitState = AutoDisposeNotifier<bool>;
+@ProviderFor(FormDraftSavingState)
+final formDraftSavingStateProvider = FormDraftSavingStateProvider._();
+
+final class FormDraftSavingStateProvider
+    extends $NotifierProvider<FormDraftSavingState, bool> {
+  FormDraftSavingStateProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'formDraftSavingStateProvider',
+          isAutoDispose: true,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$formDraftSavingStateHash();
+
+  @$internal
+  @override
+  FormDraftSavingState create() => FormDraftSavingState();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
 String _$formDraftSavingStateHash() =>
     r'535ddff68f66b3978aa6c27387df1d163a9b26e0';
 
-/// See also [FormDraftSavingState].
-@ProviderFor(FormDraftSavingState)
-final formDraftSavingStateProvider =
-    AutoDisposeNotifierProvider<FormDraftSavingState, bool>.internal(
-  FormDraftSavingState.new,
-  name: r'formDraftSavingStateProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$formDraftSavingStateHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef _$FormDraftSavingState = AutoDisposeNotifier<bool>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$FormDraftSavingState extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<bool, bool>, bool, Object?, Object?>;
+    element.handleCreate(ref, build);
+  }
+}

@@ -72,44 +72,64 @@ class _VideoPlayerDialogState extends State<_VideoPlayerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: const EdgeInsets.all(16),
-      child: AspectRatio(
-        aspectRatio: (_controller?.value.aspectRatio ?? 16 / 9),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            if (_error != null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(_error.toString(), textAlign: TextAlign.center),
-                ),
-              )
-            else if (_controller == null)
-              const Center(child: CircularProgressIndicator())
-            else
-              VideoPlayer(_controller!),
-            if (_controller != null)
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: IconButton.filled(
-                  onPressed: () {
-                    final c = _controller!;
-                    setState(() {
-                      c.value.isPlaying ? c.pause() : c.play();
-                    });
-                  },
-                  icon: Icon(
-                    _controller!.value.isPlaying
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
-                  ),
+    // Full-screen player: black backdrop with the video fitted to the screen,
+    // a close button, and a play/pause control.
+    return Dialog.fullscreen(
+      backgroundColor: Colors.black,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          if (_error != null)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Text(
+                  'Could not play this video.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-          ],
-        ),
+            )
+          else if (_controller == null)
+            const Center(child: CircularProgressIndicator())
+          else
+            Center(
+              child: AspectRatio(
+                aspectRatio: _controller!.value.aspectRatio == 0
+                    ? 16 / 9
+                    : _controller!.value.aspectRatio,
+                child: VideoPlayer(_controller!),
+              ),
+            ),
+          // Close button.
+          Positioned(
+            top: 8,
+            right: 8,
+            child: SafeArea(
+              child: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close_rounded, color: Colors.white),
+              ),
+            ),
+          ),
+          if (_controller != null)
+            Positioned(
+              bottom: 24,
+              child: IconButton.filled(
+                onPressed: () {
+                  final c = _controller!;
+                  setState(() {
+                    c.value.isPlaying ? c.pause() : c.play();
+                  });
+                },
+                icon: Icon(
+                  _controller!.value.isPlaying
+                      ? Icons.pause_rounded
+                      : Icons.play_arrow_rounded,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

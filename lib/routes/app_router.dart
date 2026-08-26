@@ -27,7 +27,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/dashboard',
     refreshListenable: GoRouterRefreshStream(authStream),
     redirect: (context, state) {
-      final auth = ref.read(authProvider).valueOrNull;
+      final auth = ref.read(authProvider).value;
       final bootstrapping = auth?.isBootstrapping ?? true;
       final isAuthed = auth?.isAuthed ?? false;
       final loc = state.matchedLocation;

@@ -16,7 +16,12 @@ class Category {
   final List<Category> children;
 
   factory Category.fromJson(Map<String, dynamic> json) {
-    final rawChildren = (json['children'] as List?) ?? const [];
+    // The /property-categories endpoint nests children under
+    // `recursive_children`; the older /categories endpoint used `children`.
+    final rawChildren =
+        (json['recursive_children'] as List?) ??
+        (json['children'] as List?) ??
+        const [];
     return Category(
       id: (json['id'] as num?)?.toInt() ?? 0,
       name: (json['name'] ?? '').toString(),

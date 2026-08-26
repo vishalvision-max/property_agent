@@ -56,7 +56,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final t = Theme.of(context).textTheme;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Forgot password')),
+        appBar: AppBar(titleSpacing: 0, title: const Text('Forgot password')),
         body: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           children: [

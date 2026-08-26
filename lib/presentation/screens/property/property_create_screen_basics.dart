@@ -105,7 +105,7 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
             _scheduleSaveDraft();
           },
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         if (_propertyKind != null) buildCategorySelector(),
       ],
     );
@@ -383,22 +383,32 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
   }
 
   Widget buildCategorySelector() {
+    debugPrint('[categories] buildCategorySelector reached, kind=$_propertyKind');
     return ref
         .watch(categoriesProvider)
         .when(
-          data: (cats) {
+          data: (allCats) {
+            debugPrint('[categories] .when data -> ${allCats.length} top-level');
+            // The API returns the full tree with the transaction kinds
+            // (Sale / Rent / Lease / PG / Co-living) at the top level. Scope to
+            // the node matching the selected kind so "Property Category" shows
+            // its children (Commercial / Residential / Land-Plot) and the case
+            // logic that keys off normalized parent slugs works.
+            final kindSlug = _propertyKind?.categorySlug ?? '';
+            final kindNode = allCats.cast<Category?>().firstWhere(
+              (c) => (c?.slug ?? '').toLowerCase() == kindSlug,
+              orElse: () => null,
+            );
+            final cats = kindNode?.children ?? const <Category>[];
+
             final isRent = _propertyKind == _CreatePropertyKind.rent;
             final filtered = cats.where((c) {
+              final norm = _normalizeParentSlug(rawSlug: c.slug, name: c.name);
               if (_segmentLockedToResidential) {
-                return c.slug != 'commercial' &&
-                       c.slug != 'land-plot' &&
-                       c.slug != 'agriculture' &&
-                       c.slug != 'agricultural';
+                return norm == 'residential';
               }
               if (isRent) {
-                return c.slug != 'land-plot' &&
-                       c.slug != 'agriculture' &&
-                       c.slug != 'agricultural';
+                return norm != 'land-plot';
               }
               return true;
             }).toList();
@@ -407,7 +417,11 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
             if (_segmentLockedToResidential &&
                 _selectedParentCategoryId == null) {
               final residential = filtered.cast<Category?>().firstWhere(
-                (c) => (c?.slug ?? '').toLowerCase() == 'residential',
+                (c) => _normalizeParentSlug(
+                      rawSlug: c?.slug ?? '',
+                      name: c?.name ?? '',
+                    ) ==
+                    'residential',
                 orElse: () => null,
               );
               if (residential != null) {
@@ -435,8 +449,24 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
               );
             }
 
-            final children = selectedParent?.children ?? [];
-            final parentSlug = (selectedParent?.slug ?? '').toLowerCase();
+            // Sub-categories come from the dedicated
+            // /property-categories/{id}/sub-categories endpoint. Fall back to
+            // the children embedded in the tree while that request is in
+            // flight or if it fails.
+            final subCatsAsync = _selectedParentCategoryId != null
+                ? ref.watch(subCategoriesProvider(_selectedParentCategoryId!))
+                : const AsyncValue<List<Category>>.data(<Category>[]);
+            final children = subCatsAsync.asData?.value ??
+                selectedParent?.children ??
+                const <Category>[];
+            // Normalize to the canonical parent kind (commercial / residential /
+            // land-plot) since the API slug is like "commercial-sale".
+            final parentSlug = selectedParent == null
+                ? ''
+                : _normalizeParentSlug(
+                    rawSlug: selectedParent.slug,
+                    name: selectedParent.name,
+                  );
             final isPgCoLiving =
                 _propertyKind == _CreatePropertyKind.pg ||
                 _propertyKind == _CreatePropertyKind.coLiving;
@@ -563,7 +593,10 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                       _scheduleSaveDraft();
                     },
                   ),
-                ] else if (parentSlug == 'commercial' && !isPgCoLiving) ...[
+                ] else if (parentSlug == 'commercial' &&
+                    !isPgCoLiving &&
+                    effectiveChildren.isEmpty) ...[
+                  // Fallback only when the API returned no children.
                   const SizedBox(height: 12),
                   _buildChoiceGrid<String>(
                     label: 'Sub Category',
@@ -589,7 +622,10 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
                       _scheduleSaveDraft();
                     },
                   ),
-                ] else if (parentSlug == 'land-plot' && !isPgCoLiving) ...[
+                ] else if (parentSlug == 'land-plot' &&
+                    !isPgCoLiving &&
+                    effectiveChildren.isEmpty) ...[
+                  // Fallback only when the API returned no children.
                   const SizedBox(height: 12),
                   _buildChoiceGrid<String>(
                     label: 'Sub Category',
@@ -650,8 +686,14 @@ extension PropertyCreateScreenBasics on _PropertyCreateScreenState {
               ],
             );
           },
-          loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text('Error: $e'),
+          loading: () {
+            debugPrint('[categories] .when loading');
+            return const LinearProgressIndicator();
+          },
+          error: (e, _) {
+            debugPrint('[categories] .when error: $e');
+            return Text('Error: $e');
+          },
         );
   }
 }

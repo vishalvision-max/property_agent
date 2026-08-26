@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/price_format.dart';
 import '../../data/models/property.dart';
 import '../../data/models/property_enums.dart';
 import 'glass_container.dart';
@@ -14,13 +15,11 @@ class PropertyCard extends StatelessWidget {
     required this.property,
     required this.onTap,
     this.onEdit,
-    this.onPublish,
   });
 
   final Property property;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
-  final VoidCallback? onPublish;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +110,7 @@ class PropertyCard extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                '₹${property.price.toStringAsFixed(0)}',
+                                formatIndianPrice(property.price),
                                 style: t.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w900,
                                   color: textPrimary,
@@ -164,16 +163,6 @@ class PropertyCard extends StatelessWidget {
                         onPressed: onEdit,
                         icon: const Icon(
                           Icons.edit_outlined,
-                          size: 18,
-                          color: textPrimary,
-                        ),
-                      ),
-                    if (onPublish != null)
-                      IconButton(
-                        tooltip: 'Publish',
-                        onPressed: onPublish,
-                        icon: const Icon(
-                          Icons.public_outlined,
                           size: 18,
                           color: textPrimary,
                         ),

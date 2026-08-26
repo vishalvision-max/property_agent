@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/app_snackbar.dart';
 import '../../../data/models/property.dart';
 import '../../../data/models/property_enums.dart';
 import '../../../providers/property_provider.dart';
@@ -76,7 +75,11 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 16, top: 8),
             child: InkWell(
-              onTap: () => ref.invalidate(propertiesProvider),
+              // Disable while a refresh is already in flight so we don't stack
+              // requests; the spinner gives the user feedback that it's working.
+              onTap: props.isLoading
+                  ? null
+                  : () => ref.invalidate(propertiesProvider),
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 width: 38,
@@ -86,11 +89,20 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.border),
                 ),
-                child: const Icon(
-                  Icons.refresh_rounded,
-                  color: AppColors.gold,
-                  size: 20,
-                ),
+                child: props.isLoading
+                    ? const Padding(
+                        padding: EdgeInsets.all(9),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.gold),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.refresh_rounded,
+                        color: AppColors.gold,
+                        size: 20,
+                      ),
               ),
             ),
           ),
@@ -106,7 +118,7 @@ class _PropertyListScreenState extends ConsumerState<PropertyListScreen> {
               selectedIndex: _selectedFilter,
               onSelect: (i) => setState(() => _selectedFilter = i),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Expanded(
               child: props.when(
                 loading: () => const Padding(
@@ -161,6 +173,7 @@ class _FilterChips extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
+              alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
                 color: active ? AppColors.gold : Colors.transparent,
@@ -231,18 +244,6 @@ class _PropertyListBody extends ConsumerWidget {
                 RouteNames.propertyEdit,
                 pathParameters: {'id': p.id},
               ),
-              onPublish: p.status == PropertyStatus.approved
-                  ? () async {
-                      try {
-                        await ref
-                            .read(propertyActionsProvider.notifier)
-                            .publish(p.id);
-                        if (context.mounted) AppSnackbar.show(context, 'Published');
-                      } catch (e) {
-                        if (context.mounted) AppSnackbar.show(context, e.toString());
-                      }
-                    }
-                  : null,
             ),
           );
         },

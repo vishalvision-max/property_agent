@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../data/models/agent.dart';
 import 'app_providers.dart';
@@ -41,7 +42,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
   }
 
   Future<void> login({required String email, required String password}) async {
-    final prev = state.valueOrNull ?? const AuthState(agent: null, isBootstrapping: false);
+    final prev = state.value ?? const AuthState(agent: null, isBootstrapping: false);
     state = AsyncValue.data(prev.copyWith(isBootstrapping: false));
     state = const AsyncValue.loading();
     try {
@@ -62,7 +63,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
   }
 
   Future<void> _refreshProfile() async {
-    final current = state.valueOrNull?.agent;
+    final current = state.value?.agent;
     if (current == null) return;
     try {
       final fromApi = await _ref.read(accountRepositoryProvider).getProfile();
@@ -81,7 +82,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthState>> {
   }
 
   Future<void> updateProfile({required String name, File? image}) async {
-    final current = state.valueOrNull?.agent;
+    final current = state.value?.agent;
     if (current == null) return;
 
     final trimmedName = name.trim();

@@ -16,6 +16,17 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
         _propertyKind == _CreatePropertyKind.coLiving;
 
     if (isPgCoLiving) {
+      // Rooms is a stepper (like Sharing/Bathrooms/Parking) so it always holds
+      // a concrete value. Seed a default of 1 for new listings so the displayed
+      // value matches what is stored/validated.
+      if (_rooms.text.trim().isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          if (_rooms.text.trim().isEmpty) {
+            setState(() => _rooms.text = '1');
+          }
+        });
+      }
       return Column(
         children: [
           // _buildChoiceChipRow(
@@ -79,7 +90,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           ),
           const SizedBox(height: 12),
           _buildSectionLabel('Food Availability'),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Align(
             alignment: Alignment.centerLeft,
             child: Wrap(
@@ -214,7 +225,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           ),
           const SizedBox(height: 12),
           _buildSectionLabel('Nearby'),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Align(
             alignment: Alignment.centerLeft,
 
@@ -270,48 +281,46 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             Icons.apartment_outlined,
           ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _plotArea,
+          _buildTextField(
+            _plotArea,
+            'Plot Area',
+            'Area',
+            Icons.terrain,
             keyboardType: TextInputType.number,
             onChanged: (_) => _scheduleSaveDraft(),
-            decoration: InputDecoration(
-              labelText: 'Plot Area',
-              hintText: 'Area',
-              prefixIcon: const Icon(Icons.terrain, size: 18),
-              suffixIcon: Container(
-                margin: const EdgeInsets.only(right: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _plotAreaUnit,
-                    isDense: true,
-                    dropdownColor: Colors.white,
-                    iconEnabledColor: Colors.black,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 13,
-                    ),
-                    items:
-                        (_landType == 'agricultural'
-                                ? _PropertyCreateScreenState._areaUnits
-                                : _PropertyCreateScreenState._areaUnits.where(
-                                    (u) => u != 'acre',
-                                  ))
-                            .map(
-                              (u) => DropdownMenuItem<String>(
-                                value: u,
-                                child: Text(
-                                  toTitleCase(u),
-                                  style: const TextStyle(color: AppColors.dark),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged: (v) {
-                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
-                      _scheduleSaveDraft();
-                    },
+            suffixIcon: Container(
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _plotAreaUnit,
+                  isDense: true,
+                  dropdownColor: Colors.white,
+                  iconEnabledColor: Colors.black,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
                   ),
+                  items:
+                      (_landType == 'agricultural'
+                              ? _PropertyCreateScreenState._areaUnits
+                              : _PropertyCreateScreenState._areaUnits.where(
+                                  (u) => u != 'acre',
+                                ))
+                          .map(
+                            (u) => DropdownMenuItem<String>(
+                              value: u,
+                              child: Text(
+                                toTitleCase(u),
+                                style: const TextStyle(color: AppColors.dark),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (v) {
+                    setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
+                    _scheduleSaveDraft();
+                  },
                 ),
               ),
             ),
@@ -467,7 +476,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
           ),
           const SizedBox(height: 12),
           _buildSectionLabel('House Rules & Policies'),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Align(
             alignment: Alignment.centerLeft,
 
@@ -588,19 +597,21 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               ),
             ],
           ),
+          const SizedBox(height: 12),
           _buildStepper('Sharing', _pgSharing, 1, 6, (v) {
             setState(() => _pgSharing = v);
             _scheduleSaveDraft();
           }),
           const SizedBox(height: 12),
-          _buildIntDropdownField(
-            label: 'Rooms',
-            controller: _rooms,
-            min: 1,
-            max: 200,
-            hint: 'Select rooms',
-            icon: Icons.bedroom_parent_outlined,
-            allowEmpty: false,
+          _buildStepper(
+            'Rooms',
+            int.tryParse(_rooms.text.trim()) ?? 1,
+            1,
+            200,
+            (v) {
+              setState(() => _rooms.text = v.toString());
+              _scheduleSaveDraft();
+            },
           ),
           const SizedBox(height: 12),
           _buildStepper('Bathrooms', _bathrooms, 1, 50, (v) {
@@ -653,48 +664,46 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
             ),
           ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _plotArea,
+          _buildTextField(
+            _plotArea,
+            'Plot Area',
+            'Area',
+            Icons.terrain,
             keyboardType: TextInputType.number,
             onChanged: (_) => _scheduleSaveDraft(),
-            decoration: InputDecoration(
-              labelText: 'Plot Area',
-              hintText: 'Area',
-              prefixIcon: const Icon(Icons.terrain, size: 18),
-              suffixIcon: Container(
-                margin: const EdgeInsets.only(right: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _plotAreaUnit,
-                    isDense: true,
-                    dropdownColor: Colors.white,
-                    iconEnabledColor: Colors.black,
-                    style: const TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize: 13,
-                    ),
-                    items:
-                        (_landType == 'agricultural'
-                                ? _PropertyCreateScreenState._areaUnits
-                                : _PropertyCreateScreenState._areaUnits.where(
-                                    (u) => u != 'acre',
-                                  ))
-                            .map(
-                              (u) => DropdownMenuItem<String>(
-                                value: u,
-                                child: Text(
-                                  toTitleCase(u),
-                                  style: const TextStyle(color: AppColors.dark),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged: (v) {
-                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
-                      _scheduleSaveDraft();
-                    },
+            suffixIcon: Container(
+              margin: const EdgeInsets.only(right: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _plotAreaUnit,
+                  isDense: true,
+                  dropdownColor: Colors.white,
+                  iconEnabledColor: Colors.black,
+                  style: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
                   ),
+                  items:
+                      (_landType == 'agricultural'
+                              ? _PropertyCreateScreenState._areaUnits
+                              : _PropertyCreateScreenState._areaUnits.where(
+                                  (u) => u != 'acre',
+                                ))
+                          .map(
+                            (u) => DropdownMenuItem<String>(
+                              value: u,
+                              child: Text(
+                                toTitleCase(u),
+                                style: const TextStyle(color: AppColors.dark),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (v) {
+                    setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
+                    _scheduleSaveDraft();
+                  },
                 ),
               ),
             ),
@@ -924,7 +933,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   child: _buildIntDropdownField(
                     label: 'Max Seats',
                     controller: _maxSeats,
-                    min: 0,
+                    min: int.tryParse(_seats.text.trim()) ?? 0,
                     max: 500,
                     hint: 'Select max',
                     icon: Icons.event_seat_outlined,
@@ -1136,47 +1145,45 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               },
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _warehousePlotArea,
+            _buildTextField(
+              _warehousePlotArea,
+              'Plot Area',
+              'Area',
+              Icons.terrain,
               keyboardType: TextInputType.number,
               onChanged: (_) => _scheduleSaveDraft(),
-              decoration: InputDecoration(
-                labelText: 'Plot Area',
-                hintText: 'Area',
-                prefixIcon: const Icon(Icons.terrain, size: 18),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.only(right: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _warehousePlotAreaUnit,
-                      isDense: true,
-                      dropdownColor: Colors.white,
-                      iconEnabledColor: Colors.black,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                      ),
-                      items: _PropertyCreateScreenState._areaUnits
-                          .where((u) => u != 'acre')
-                          .map(
-                            (u) => DropdownMenuItem<String>(
-                              value: u,
-                              child: Text(
-                                toTitleCase(u),
-                                style: const TextStyle(color: AppColors.dark),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                      onChanged: (v) {
-                        setState(
-                          () => _warehousePlotAreaUnit =
-                              v ?? _warehousePlotAreaUnit,
-                        );
-                        _scheduleSaveDraft();
-                      },
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _warehousePlotAreaUnit,
+                    isDense: true,
+                    dropdownColor: Colors.white,
+                    iconEnabledColor: Colors.black,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
                     ),
+                    items: _PropertyCreateScreenState._areaUnits
+                        .where((u) => u != 'acre')
+                        .map(
+                          (u) => DropdownMenuItem<String>(
+                            value: u,
+                            child: Text(
+                              toTitleCase(u),
+                              style: const TextStyle(color: AppColors.dark),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      setState(
+                        () => _warehousePlotAreaUnit =
+                            v ?? _warehousePlotAreaUnit,
+                      );
+                      _scheduleSaveDraft();
+                    },
                   ),
                 ),
               ),
@@ -1319,43 +1326,41 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    controller: _shedPlotArea,
+                  child: _buildTextField(
+                    _shedPlotArea,
+                    'Plot Area',
+                    'e.g., 10000',
+                    Icons.terrain,
                     keyboardType: TextInputType.number,
                     onChanged: (_) => _scheduleSaveDraft(),
-                    decoration: InputDecoration(
-                      labelText: 'Plot Area',
-                      hintText: 'e.g., 10000',
-                      prefixIcon: const Icon(Icons.terrain, size: 18),
-                      suffixIcon: Container(
-                        margin: const EdgeInsets.only(right: 6),
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: _shedAreaUnit,
-                            isDense: true,
-                            dropdownColor: Colors.white,
-                            iconEnabledColor: Colors.black,
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 13,
-                            ),
-                            items: _PropertyCreateScreenState._areaUnits
-                                .map(
-                                  (u) => DropdownMenuItem<String>(
-                                    value: u,
-                                    child: Text(
-                                      toTitleCase(u),
-                                      style: const TextStyle(color: AppColors.dark),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (v) {
-                              setState(() => _shedAreaUnit = v ?? _shedAreaUnit);
-                              _scheduleSaveDraft();
-                            },
+                    suffixIcon: Container(
+                      margin: const EdgeInsets.only(right: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _shedAreaUnit,
+                          isDense: true,
+                          dropdownColor: Colors.white,
+                          iconEnabledColor: Colors.black,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 13,
                           ),
+                          items: _PropertyCreateScreenState._areaUnits
+                              .map(
+                                (u) => DropdownMenuItem<String>(
+                                  value: u,
+                                  child: Text(
+                                    toTitleCase(u),
+                                    style: const TextStyle(color: AppColors.dark),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (v) {
+                            setState(() => _shedAreaUnit = v ?? _shedAreaUnit);
+                            _scheduleSaveDraft();
+                          },
                         ),
                       ),
                     ),
@@ -2522,6 +2527,13 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                   : AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                             ),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            labelPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 0,
+                            ),
                             onSelected: (v) {
                               setState(() {
                                 v
@@ -2644,7 +2656,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
                   alignment: WrapAlignment.start,
                   runAlignment: WrapAlignment.start,
                   spacing: 8,
@@ -2666,6 +2680,10 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                             : AppColors.textPrimary,
                         fontWeight: FontWeight.w700,
                       ),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      labelPadding:
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                       onSelected: (v) {
                         setState(() {
                           v
@@ -2676,6 +2694,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                       },
                     );
                   }).toList(),
+                ),
                 ),
                 const SizedBox(height: 12),
                 _buildChoiceChipRow(
@@ -2764,15 +2783,13 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TextField(
-                  controller: _availableFrom,
+                _buildTextField(
+                  _availableFrom,
+                  'Available From',
+                  'YYYY-MM-DD',
+                  Icons.calendar_month_outlined,
                   readOnly: true,
                   onTap: _pickAvailableFrom,
-                  decoration: const InputDecoration(
-                    labelText: 'Available From',
-                    hintText: 'Select date',
-                    prefixIcon: Icon(Icons.calendar_month_outlined, size: 18),
-                  ),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -2905,7 +2922,9 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Wrap(
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
                   alignment: WrapAlignment.start,
                   runAlignment: WrapAlignment.start,
                   spacing: 8,
@@ -2939,6 +2958,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                         );
                       })
                       .toList(),
+                ),
                 ),
               ],
 
@@ -3507,6 +3527,13 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                   : AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                             ),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            labelPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 0,
+                            ),
                             onSelected: (v) {
                               setState(() {
                                 v
@@ -3787,6 +3814,13 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                                   : AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
                             ),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            labelPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 0,
+                            ),
                             onSelected: (v) {
                               setState(() {
                                 v
@@ -4017,7 +4051,7 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
                     child: _buildIntDropdownField(
                       label: 'Max Seats',
                       controller: _maxSeats,
-                      min: 0,
+                      min: int.tryParse(_seats.text.trim()) ?? 0,
                       max: 500,
                       hint: 'Select max',
                       icon: Icons.event_seat_outlined,
@@ -4362,50 +4396,48 @@ extension PropertyCreateScreenDetails on _PropertyCreateScreenState {
               ),
             ),
             const SizedBox(height: 12),
-            TextField(
-              controller: _plotArea,
+            _buildTextField(
+              _plotArea,
+              'Plot Area',
+              'Area',
+              Icons.terrain,
               keyboardType: TextInputType.number,
               onChanged: (_) => _scheduleSaveDraft(),
-              decoration: InputDecoration(
-                labelText: 'Plot Area',
-                hintText: 'Area',
-                prefixIcon: const Icon(Icons.terrain, size: 18),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.only(right: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      value: _plotAreaUnit,
-                      isDense: true,
-                      dropdownColor: Colors.white,
-                      iconEnabledColor: Colors.black,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 13,
-                      ),
-                      items:
-                          (_landType == 'agricultural'
-                                  ? _PropertyCreateScreenState._areaUnits
-                                  : _PropertyCreateScreenState._areaUnits.where(
-                                      (u) => u != 'acre',
-                                    ))
-                              .map(
-                                (u) => DropdownMenuItem<String>(
-                                  value: u,
-                                  child: Text(
-                                    toTitleCase(u),
-                                    style: const TextStyle(
-                                      color: AppColors.dark,
-                                    ),
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _plotAreaUnit,
+                    isDense: true,
+                    dropdownColor: Colors.white,
+                    iconEnabledColor: Colors.black,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 13,
+                    ),
+                    items:
+                        (_landType == 'agricultural'
+                                ? _PropertyCreateScreenState._areaUnits
+                                : _PropertyCreateScreenState._areaUnits.where(
+                                    (u) => u != 'acre',
+                                  ))
+                            .map(
+                              (u) => DropdownMenuItem<String>(
+                                value: u,
+                                child: Text(
+                                  toTitleCase(u),
+                                  style: const TextStyle(
+                                    color: AppColors.dark,
                                   ),
                                 ),
-                              )
-                              .toList(),
-                      onChanged: (v) {
-                        setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
-                        _scheduleSaveDraft();
-                      },
-                    ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (v) {
+                      setState(() => _plotAreaUnit = v ?? _plotAreaUnit);
+                      _scheduleSaveDraft();
+                    },
                   ),
                 ),
               ),

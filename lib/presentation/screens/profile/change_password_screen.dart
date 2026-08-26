@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_snackbar.dart';
 import '../../../core/validators/validators.dart';
 import '../../../providers/app_providers.dart';
@@ -19,6 +20,9 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   final _old = TextEditingController();
   final _nw = TextEditingController();
   final _confirm = TextEditingController();
+  final _oldFocus = FocusNode();
+  final _newFocus = FocusNode();
+  final _confirmFocus = FocusNode();
   bool _loading = false;
   bool _ob1 = true;
   bool _ob2 = true;
@@ -26,6 +30,31 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   String? _oldErr;
   String? _newErr;
   String? _confirmErr;
+  // A field's error is only surfaced once the user has left it (blurred) or
+  // attempted to submit — so no error flashes while they're still typing.
+  bool _oldTouched = false;
+  bool _newTouched = false;
+  bool _confirmTouched = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _oldFocus.addListener(() {
+      if (!_oldFocus.hasFocus && _old.text.isNotEmpty) {
+        setState(() => _oldTouched = true);
+      }
+    });
+    _newFocus.addListener(() {
+      if (!_newFocus.hasFocus && _nw.text.isNotEmpty) {
+        setState(() => _newTouched = true);
+      }
+    });
+    _confirmFocus.addListener(() {
+      if (!_confirmFocus.hasFocus && _confirm.text.isNotEmpty) {
+        setState(() => _confirmTouched = true);
+      }
+    });
+  }
 
   void _validate() {
     setState(() {
@@ -45,6 +74,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   Future<void> _save() async {
     FocusScope.of(context).unfocus();
+    setState(() {
+      _oldTouched = true;
+      _newTouched = true;
+      _confirmTouched = true;
+    });
     _validate();
     if (!_valid) return;
     setState(() => _loading = true);
@@ -70,85 +104,129 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     _old.dispose();
     _nw.dispose();
     _confirm.dispose();
+    _oldFocus.dispose();
+    _newFocus.dispose();
+    _confirmFocus.dispose();
     super.dispose();
+  }
+
+  // Field with a clear label above it. Uses the app's (light) theme for the
+  // input styling so it stays consistent with the rest of the app.
+  Widget _passwordField({
+    required String label,
+    required TextEditingController controller,
+    required bool obscure,
+    required VoidCallback onToggle,
+    FocusNode? focusNode,
+    String? hint,
+    String? helperText,
+    String? errorText,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              label,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const Text(' *', style: TextStyle(color: Colors.red)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          focusNode: focusNode,
+          obscureText: obscure,
+          onChanged: (_) => _validate(),
+          decoration: InputDecoration(
+            hintText: hint,
+            helperText: helperText,
+            errorText: errorText,
+            suffixIcon: IconButton(
+              onPressed: onToggle,
+              icon: Icon(
+                obscure
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Change password')),
-        body: ListView(
+    return Scaffold(
+      appBar: AppBar(
+        titleSpacing: 0,
+        title: const Text('Change password'),
+      ),
+      body: SafeArea(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           children: [
-            TextField(
+            _passwordField(
+              label: 'Current password',
               controller: _old,
-              obscureText: _ob1,
-              onChanged: (_) => _validate(),
-              decoration: InputDecoration(
-                labelText: 'Current password',
-                errorText: _oldErr,
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() => _ob1 = !_ob1),
-                  icon: Icon(
-                    _ob1
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 18,
-                  ),
-                ),
-              ),
+              focusNode: _oldFocus,
+              obscure: _ob1,
+              onToggle: () => setState(() => _ob1 = !_ob1),
+              hint: 'Enter current password',
+              errorText: _oldTouched ? _oldErr : null,
             ),
-            AppSpacing.vSm,
-            TextField(
+            const SizedBox(height: 16),
+            _passwordField(
+              label: 'New password',
               controller: _nw,
-              obscureText: _ob2,
-              onChanged: (_) => _validate(),
-              decoration: InputDecoration(
-                labelText: 'New password',
-                helperText: 'Min 6 characters',
-                errorText: _newErr,
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() => _ob2 = !_ob2),
-                  icon: Icon(
-                    _ob2
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 18,
-                  ),
-                ),
-              ),
+              focusNode: _newFocus,
+              obscure: _ob2,
+              onToggle: () => setState(() => _ob2 = !_ob2),
+              hint: 'Enter new password',
+              helperText: 'Min 6 characters',
+              errorText: _newTouched ? _newErr : null,
             ),
-            AppSpacing.vSm,
-            TextField(
+            const SizedBox(height: 16),
+            _passwordField(
+              label: 'Confirm new password',
               controller: _confirm,
-              obscureText: _ob3,
-              onChanged: (_) => _validate(),
-              decoration: InputDecoration(
-                labelText: 'Confirm new password',
-                errorText: _confirmErr,
-                suffixIcon: IconButton(
-                  onPressed: () => setState(() => _ob3 = !_ob3),
-                  icon: Icon(
-                    _ob3
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    size: 18,
-                  ),
-                ),
-              ),
+              focusNode: _confirmFocus,
+              obscure: _ob3,
+              onToggle: () => setState(() => _ob3 = !_ob3),
+              hint: 'Re-enter new password',
+              errorText: _confirmTouched ? _confirmErr : null,
             ),
             AppSpacing.vLg,
-            FilledButton.icon(
-              onPressed: _loading ? null : (_valid ? _save : null),
-              icon: _loading
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save_rounded, size: 18),
-              label: const Text('Update password'),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _loading ? null : (_valid ? _save : null),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.gold,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                icon: _loading
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.black,
+                        ),
+                      )
+                    : const Icon(Icons.save_rounded, size: 18),
+                label: Text(_loading ? 'Updating…' : 'Update password'),
+              ),
             ),
           ],
         ),

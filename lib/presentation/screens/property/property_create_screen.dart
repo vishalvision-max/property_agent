@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, compute;
+import 'package:flutter/services.dart'
+    show
+        FilteringTextInputFormatter,
+        LengthLimitingTextInputFormatter,
+        TextInputFormatter;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:property_agent/providers/property_form/address_suggestions_provider.dart';
 import 'package:property_agent/providers/property_form/form_submit_state_provider.dart';
@@ -21,6 +26,7 @@ import '../../../data/models/property.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/property_enums.dart';
 import '../../../data/models/property_furnishing_selection.dart';
+import '../../../data/models/media_type.dart';
 import '../../../providers/lookup_provider.dart';
 import '../../../providers/property_provider.dart';
 import '../../widgets/glass_container.dart';
@@ -69,6 +75,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   int? _selectedCategoryId;
   String? _selectedParentCategorySlug;
   String? _selectedCategorySlug;
+
+  // Photo/video tag options fetched from /property-categories/{id}/media-types
+  // for the currently selected subcategory. Populated during build from the
+  // mediaTypesProvider and consumed by the media section tag dropdowns so tags
+  // are dynamic per subcategory instead of a hardcoded list.
+  List<MediaTypeItem> _photoMediaTypes = const [];
+  List<MediaTypeItem> _videoMediaTypes = const [];
 
   // ==================== PROPERTY DETAILS ====================
   // Common
@@ -397,6 +410,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   final Set<int> _selectedFurnishingIds = <int>{};
   final Map<int, int> _furnishingQuantities = <int, int>{};
 
+  // Whether the inline amenities/furnishings picker containers are expanded.
+  bool _amenitiesExpanded = false;
+  bool _furnishingsExpanded = false;
+
   // ==================== LOCATION ====================
   final _address = TextEditingController();
   final _city = TextEditingController();
@@ -443,6 +460,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   bool _suppressAddressAutocomplete = false;
   bool _didAttemptAutoLocationFill = false;
   bool _didShowPlacesError = false;
+  // True while "Use current location" is fetching GPS + reverse-geocoding.
+  bool _fetchingLocation = false;
 
   // Static options
   static const _listingTypes = <String>['owner', 'builder', 'agent'];
@@ -1227,79 +1246,51 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     final targetId = _selectedCategoryId;
     if (targetId == null) return;
 
-    // Flatten: find which parent contains this child id, or if the id IS a
-    // parent (leaf parent with no children).
-    for (final parent in cats) {
-      // The target is the parent itself (no children / leaf parent).
-      if (parent.id == targetId) {
-        _categoryResolved = true;
-        setState(() {
-          _selectedParentCategoryId = parent.id;
-          _selectedParentCategorySlug = _normalizeParentSlug(
-            rawSlug: parent.slug,
-            name: parent.name,
+    final isPgCoLiving = _propertyKind == _CreatePropertyKind.pg ||
+        _propertyKind == _CreatePropertyKind.coLiving;
+
+    void apply({
+      required Category parentCategory,
+      required int leafId,
+      required String leafSlug,
+    }) {
+      _categoryResolved = true;
+      setState(() {
+        _selectedParentCategoryId = parentCategory.id;
+        _selectedParentCategorySlug = _normalizeParentSlug(
+          rawSlug: parentCategory.slug,
+          name: parentCategory.name,
+        );
+        _selectedCategoryId = leafId;
+        _selectedCategorySlug = isPgCoLiving && _pgGenderBased.isNotEmpty
+            ? _pgGenderBased
+            : leafSlug;
+        _syncDetailsFromSelectedCategorySlugs(
+          resetCaseSpecificSelections: false,
+        );
+      });
+    }
+
+    // The tree is: transaction kind (Sale/Rent/…) -> parent category
+    // (Commercial/Residential/Land-Plot) -> leaf sub-category. The saved
+    // category id can be either a parent category or a leaf.
+    for (final kindNode in cats) {
+      for (final parentCategory in kindNode.children) {
+        if (parentCategory.id == targetId) {
+          apply(
+            parentCategory: parentCategory,
+            leafId: parentCategory.id,
+            leafSlug: parentCategory.slug,
           );
-          _selectedCategoryId = parent.id;
-          if (_propertyKind == _CreatePropertyKind.pg ||
-              _propertyKind == _CreatePropertyKind.coLiving) {
-            _selectedCategorySlug =
-                _pgGenderBased.isNotEmpty ? _pgGenderBased : parent.slug;
-          } else {
-            _selectedCategorySlug = parent.slug;
-          }
-          _syncDetailsFromSelectedCategorySlugs(
-            resetCaseSpecificSelections: false,
-          );
-        });
-        return;
-      }
-      // Search children.
-      for (final child in parent.children) {
-        if (child.id == targetId) {
-          _categoryResolved = true;
-          setState(() {
-            _selectedParentCategoryId = parent.id;
-            _selectedParentCategorySlug = _normalizeParentSlug(
-              rawSlug: parent.slug,
-              name: parent.name,
-            );
-            _selectedCategoryId = child.id;
-            if (_propertyKind == _CreatePropertyKind.pg ||
-                _propertyKind == _CreatePropertyKind.coLiving) {
-              _selectedCategorySlug =
-                  _pgGenderBased.isNotEmpty ? _pgGenderBased : child.slug;
-            } else {
-              _selectedCategorySlug = child.slug;
-            }
-            _syncDetailsFromSelectedCategorySlugs(
-              resetCaseSpecificSelections: false,
-            );
-          });
           return;
         }
-        // Support one more level of nesting (grandchildren).
-        for (final grandchild in child.children) {
-          if (grandchild.id == targetId) {
-            _categoryResolved = true;
-            setState(() {
-              _selectedParentCategoryId = parent.id;
-              _selectedParentCategorySlug = _normalizeParentSlug(
-                rawSlug: parent.slug,
-                name: parent.name,
-              );
-              _selectedCategoryId = grandchild.id;
-              if (_propertyKind == _CreatePropertyKind.pg ||
-                  _propertyKind == _CreatePropertyKind.coLiving) {
-                _selectedCategorySlug = _pgGenderBased.isNotEmpty
-                    ? _pgGenderBased
-                    : grandchild.slug;
-              } else {
-                _selectedCategorySlug = grandchild.slug;
-              }
-              _syncDetailsFromSelectedCategorySlugs(
-                resetCaseSpecificSelections: false,
-              );
-            });
+        for (final leaf in parentCategory.children) {
+          if (leaf.id == targetId) {
+            apply(
+              parentCategory: parentCategory,
+              leafId: leaf.id,
+              leafSlug: leaf.slug,
+            );
             return;
           }
         }
@@ -1634,10 +1625,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                 .whereType<Map>()
                 .where((e) => e['type']?.toString() == 'amenity')
                 .map((e) {
-                  final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
-                  return idVal is num ? idVal.toInt() : int.tryParse(idVal?.toString() ?? '');
-                })
-                .whereType<int>(),
+              final idVal = e['id'] ?? (e['pivot'] as Map?)?['feature_id'];
+              return idVal is num
+                  ? idVal.toInt()
+                  : int.tryParse(idVal?.toString() ?? '');
+            }).whereType<int>(),
           );
         }
       }
@@ -1888,11 +1880,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       );
 
     // ── 5. Common detail fields from apiFields ──────────────────────────────
-    _carpetArea.text = p.carpetArea?.toString() ?? _fd(f, ['carpet_area'])?.toString() ?? '';
+    _carpetArea.text =
+        p.carpetArea?.toString() ?? _fd(f, ['carpet_area'])?.toString() ?? '';
     _builtUpArea.text = p.builtUpArea?.toString() ??
         _fd(f, ['built_up_area'])?.toString() ??
         '';
-    _superBuiltUpArea.text = p.superBuiltUpArea?.toString() ?? _fd(f, ['super_built_up_area'])?.toString() ?? '';
+    _superBuiltUpArea.text = p.superBuiltUpArea?.toString() ??
+        _fd(f, ['super_built_up_area'])?.toString() ??
+        '';
     _plotArea.text = p.plotArea?.toString() ??
         _fd(f, ['plot_area'])?.toString() ??
         _fd(plot, ['plot_area'])?.toString() ??
@@ -1904,7 +1899,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         '';
     _breadth.text = p.plotBreadth?.toString() ??
         _fd(f, ['plot_breadth_ft', 'plot_breadth', 'plot_width'])?.toString() ??
-        _fd(plot, ['plot_breadth_ft', 'plot_breadth', 'plot_width'])?.toString() ??
+        _fd(plot, ['plot_breadth_ft', 'plot_breadth', 'plot_width'])
+            ?.toString() ??
         _fd(plot, [
           'plot_breadth',
           'plot_breadth_ft',
@@ -2361,9 +2357,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _brokerage.text = _fd(f, ['brokerage'])?.toString() ?? '';
     _rentNegotiable = p.rentNegotiable ??
         _fbNullable(f, ['rent_negotiable', 'price_negotiable']);
-    _availableFrom.text = _f(f, ['available_from']) ??
-        _f(residential, ['available_from']) ??
-        '';
+    _availableFrom.text =
+        _f(f, ['available_from']) ?? _f(residential, ['available_from']) ?? '';
     _leaseDurationMonths.text = _fi(f, ['lease_duration_months'])?.toString() ??
         _leaseDurationMonths.text;
     _lockInMonths.text =
@@ -2462,10 +2457,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     _builderCornerProperty = p.builderCornerProperty ??
         (p.cornerProperty ??
             _fbNullable(f, ['builder_corner_property', 'corner_property']));
-    _builderGatedSociety = p.gatedCommunity ?? _fbNullable(f, [
-      'builder_gated_society',
-      'gated_society',
-    ]);
+    _builderGatedSociety = p.gatedCommunity ??
+        _fbNullable(f, [
+          'builder_gated_society',
+          'gated_society',
+        ]);
     _constructionAllowed =
         p.constructionAllowed ?? _fbNullable(f, ['construction_allowed']);
     _builderUtilities
@@ -3929,18 +3925,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   }
 
   void _handleTotalFloorsChanged() {
+    // Only rebuild so any dependent hints/validation refresh. Do NOT clear the
+    // floor field here: while the user types total floors digit-by-digit, an
+    // intermediate value (e.g. "1" before "12") would otherwise wipe an
+    // already-entered floor number. The floor <= totalFloors rule is enforced
+    // at submit time instead.
     final total = _totalFloorsValue;
     if (total != _lastTotalFloorsValue) {
       _lastTotalFloorsValue = total;
       setState(() {});
-    }
-    if (total == null) {
-      if (_floor.text.isNotEmpty) setState(() => _floor.clear());
-      return;
-    }
-    final current = int.tryParse(_floor.text.trim());
-    if (current != null && (current < 1 || current > total)) {
-      setState(() => _floor.clear());
     }
   }
 
@@ -3973,8 +3966,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     return '${picked.year}-$mm-$dd';
   }
 
-  Future<void> _autoFillLocation({bool showUserErrors = false}) async {
-    if (_didAttemptAutoLocationFill) return;
+  Future<void> _autoFillLocation({
+    bool showUserErrors = false,
+    bool overwrite = false,
+  }) async {
+    if (_didAttemptAutoLocationFill && !overwrite) return;
     try {
       var permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -3993,10 +3989,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         );
         if (!mounted) return;
         setState(() {
-          if (_latitudeController.text.trim().isEmpty) {
+          if (overwrite || _latitudeController.text.trim().isEmpty) {
             _latitudeController.text = pos.latitude.toStringAsFixed(6);
           }
-          if (_longitudeController.text.trim().isEmpty) {
+          if (overwrite || _longitudeController.text.trim().isEmpty) {
             _longitudeController.text = pos.longitude.toStringAsFixed(6);
           }
         });
@@ -4010,19 +4006,20 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           if (!mounted) return;
           setState(() {
             _suppressAddressAutocomplete = true;
-            if (_address.text.trim().isEmpty) {
+            if ((overwrite || _address.text.trim().isEmpty) &&
+                resolved.formattedAddress.trim().isNotEmpty) {
               _address.text = resolved.formattedAddress;
             }
             if ((resolved.locality ?? '').trim().isNotEmpty &&
-                _city.text.trim().isEmpty) {
+                (overwrite || _city.text.trim().isEmpty)) {
               _city.text = resolved.locality!.trim();
             }
             if ((resolved.administrativeAreaLevel1 ?? '').trim().isNotEmpty &&
-                _state.text.trim().isEmpty) {
+                (overwrite || _state.text.trim().isEmpty)) {
               _state.text = resolved.administrativeAreaLevel1!.trim();
             }
             if ((resolved.postalCode ?? '').trim().isNotEmpty &&
-                _pincode.text.trim().isEmpty) {
+                (overwrite || _pincode.text.trim().isEmpty)) {
               _pincode.text = resolved.postalCode!.trim();
             }
             _suppressAddressAutocomplete = false;
@@ -4032,11 +4029,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           _validateField('state');
           _validateField('pincode');
         } catch (e) {
-          if (showUserErrors &&
-              mounted &&
-              widget.initialProperty == null &&
-              !_didShowPlacesError) {
-            _didShowPlacesError = true;
+          // On an explicit "Use current location" tap (showUserErrors), always
+          // tell the user why the address couldn't be resolved.
+          if (showUserErrors && mounted) {
             AppSnackbar.show(
               context,
               'Could not auto-fill address. (${e.toString()})',
@@ -4052,8 +4047,16 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   }
 
   Future<void> _forceAutoFillLocation() async {
+    if (_fetchingLocation) return;
     _didAttemptAutoLocationFill = false;
-    await _autoFillLocation(showUserErrors: true);
+    setState(() => _fetchingLocation = true);
+    try {
+      // Explicit user action: overwrite existing values so tapping the button
+      // always refreshes the address from the current GPS position.
+      await _autoFillLocation(showUserErrors: true, overwrite: true);
+    } finally {
+      if (mounted) setState(() => _fetchingLocation = false);
+    }
     if (!mounted) return;
     FocusScope.of(context).unfocus();
   }
@@ -4302,9 +4305,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     final files = await picker.pickMultiImage(imageQuality: 85);
     if (files.isEmpty) return;
 
+    var reachedLimit = false;
     setState(() {
       for (final f in files) {
-        if (_images.length >= 20) break;
+        if (_images.length >= 20) {
+          reachedLimit = true;
+          break;
+        }
         _images.add(
           MediaItem(
             path: f.path,
@@ -4316,6 +4323,9 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       if (_primaryImageIndex >= _images.length && _images.isNotEmpty)
         _primaryImageIndex = 0;
     });
+    if (reachedLimit && mounted) {
+      AppSnackbar.show(context, 'You can add up to 20 photos only.');
+    }
     _scheduleSaveDraft();
   }
 
@@ -4326,16 +4336,20 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       imageQuality: 85,
     );
     if (file != null) {
-      setState(() {
-        if (_images.length < 20) {
-          _images.add(
-            MediaItem(
-              path: file.path,
-              type: MediaType.image,
-              tag: _getDefaultTagForIndex(_images.length),
-            ),
-          );
+      if (_images.length >= 20) {
+        if (mounted) {
+          AppSnackbar.show(context, 'You can add up to 20 photos only.');
         }
+        return;
+      }
+      setState(() {
+        _images.add(
+          MediaItem(
+            path: file.path,
+            type: MediaType.image,
+            tag: _getDefaultTagForIndex(_images.length),
+          ),
+        );
       });
       _scheduleSaveDraft();
     }
@@ -4358,7 +4372,11 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
         }
         if (_videos.length >= 5) break;
         _videos.add(
-          MediaItem(path: f.path, type: MediaType.video, tag: 'property_video'),
+          MediaItem(
+            path: f.path,
+            type: MediaType.video,
+            tag: _getDefaultVideoTag(),
+          ),
         );
       }
     });
@@ -4373,7 +4391,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           MediaItem(
             path: file.path,
             type: MediaType.video,
-            tag: 'property_video',
+            tag: _getDefaultVideoTag(),
           ),
         );
       });
@@ -4381,6 +4399,12 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
   }
 
   String _getDefaultTagForIndex(int index) {
+    // When dynamic photo tags are loaded for the selected subcategory, spread
+    // newly added photos across those tags by position instead of dumping them
+    // all under 'general' (which is what users were seeing after upload).
+    if (_photoMediaTypes.isNotEmpty) {
+      return _photoMediaTypes[index % _photoMediaTypes.length].name;
+    }
     if (index < _bedrooms) return 'Bedroom ${index + 1}';
     if (index < _bedrooms + _bathrooms)
       return 'Bathroom ${index - _bedrooms + 1}';
@@ -4389,30 +4413,55 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     return 'Exterior';
   }
 
+  /// Default tag for a newly added video: the first dynamic video media-type
+  /// for the subcategory when available, else the legacy 'property_video'.
+  String _getDefaultVideoTag() {
+    if (_videoMediaTypes.isNotEmpty) return _videoMediaTypes.first.name;
+    return 'property_video';
+  }
+
   List<String> _getAvailableTags() {
     final tags = <String>['general'];
-    for (var i = 1; i <= _bedrooms; i++) {
-      tags.add('Bedroom $i');
+    // Prefer the dynamic photo tags for the selected subcategory
+    // (/property-categories/{id}/media-types); fall back to the legacy static
+    // list when the API hasn't loaded yet or returned none.
+    if (_photoMediaTypes.isNotEmpty) {
+      tags.addAll(_photoMediaTypes.map((t) => t.name));
+    } else {
+      for (var i = 1; i <= _bedrooms; i++) {
+        tags.add('Bedroom $i');
+      }
+      for (var i = 1; i <= _bathrooms; i++) {
+        tags.add('Bathroom $i');
+      }
+      tags.addAll([
+        'Living Room',
+        'Kitchen',
+        'Balcony',
+        'Terrace',
+        'Garden',
+        'Parking',
+        'Drone',
+        'Swimming Pool',
+        'Gym',
+        'Clubhouse',
+        'Exterior',
+        'Entrance',
+      ]);
     }
-    for (var i = 1; i <= _bathrooms; i++) {
-      tags.add('Bathroom $i');
-    }
-    tags.addAll([
-      'Living Room',
-      'Kitchen',
-      'Balcony',
-      'Terrace',
-      'Garden',
-      'Parking',
-      'Drone',
-      'Swimming Pool',
-      'Gym',
-      'Clubhouse',
-      'Exterior',
-      'Entrance',
-    ]);
     // Ensure DropdownButton values are unique.
     return tags.toSet().toList(growable: false);
+  }
+
+  /// Available video tags for the selected subcategory, from the media-types
+  /// API. Falls back to a generic 'Video' tag when none are configured.
+  List<String> _getAvailableVideoTags() {
+    if (_videoMediaTypes.isNotEmpty) {
+      return ['general', ..._videoMediaTypes.map((t) => t.name)]
+          .toSet()
+          .toList(growable: false);
+    }
+    return const ['general', 'Video'];
   }
 
   void _updateImageTag(int index, String newTag) {
@@ -4508,7 +4557,8 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
       id: id,
       name: generatedTitle,
       ownerName: _ownerName.text.trim(),
-      ownerPhone: _ownerPhone.text.trim().isEmpty ? null : _ownerPhone.text.trim(),
+      ownerPhone:
+          _ownerPhone.text.trim().isEmpty ? null : _ownerPhone.text.trim(),
       location: '${_city.text.trim()}, ${_state.text.trim()}',
       price: price,
       type: _type,
@@ -4558,6 +4608,10 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                     : _isRentLeaseResidentialApartment
                         ? _rentAdditionalRooms
                         : <String>{})
+            // The API's allowed value is the misspelled 'servent_room';
+            // sending the corrected spelling fails validation. The read path
+            // maps it back to 'servant_room' for display.
+            .map((r) => r == 'servant_room' ? 'servent_room' : r)
             .toList(growable: false);
         return rooms.isNotEmpty ? rooms : null;
       }(),
@@ -4923,6 +4977,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             onPressed: () => Navigator.pop(context),
             icon: const Icon(Icons.arrow_back_rounded),
           ),
+          titleSpacing: 0,
           title: Text(isEdit ? 'Edit Property' : 'List Property'),
           actions: [
             Padding(
@@ -4998,14 +5053,15 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                       buildBasicInfo(),
                     ),
                     const SizedBox(height: 12),
-                    if (_propertyKind != null)
+                    if (_propertyKind != null) ...[
                       buildSection(
                         'Property Details',
                         'details',
                         Icons.apartment_outlined,
                         buildPropertyDetails(),
                       ),
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
+                    ],
                     buildSection(
                       'Pricing & Area',
                       'pricing',
@@ -5013,46 +5069,49 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
                       buildPricingAndArea(),
                     ),
                     const SizedBox(height: 12),
-                    if (!isLandPlot)
-                      buildSection(
-                        'Amenities',
-                        'amenities',
-                        Icons.checklist,
-                        buildAmenities(),
-                      ),
-                    const SizedBox(height: 12),
-                    if (!isLandPlot)
-                      buildSection(
-                        'Furnishings',
-                        'furnishings',
-                        Icons.chair_alt_outlined,
-                        buildFurnishings(),
-                      ),
-                    const SizedBox(height: 12),
-                    // if (_isSellResidentialApartment)
-                    //   buildSection(
-                    //     'Promotion',
-                    //     'promotion',
-                    //     Icons.campaign_outlined,
-                    //     _buildPromotion(),
-                    //   ),
-                    if (_isSellResidentialApartment) const SizedBox(height: 12),
+                    // Keep each conditional section's spacer inside its own
+                    // block so hidden sections (e.g. on land plot) don't leave
+                    // orphaned gaps — every visible section keeps one 12px gap.
+                    if (!isLandPlot) ...[
+                      // Hide the section entirely when the category's features
+                      // have loaded and are empty (e.g. a farmhouse with no
+                      // configured amenities/furnishings). Kept visible while
+                      // still loading so nothing flickers.
+                      if (_showAmenitiesSection()) ...[
+                        buildSection(
+                          'Amenities',
+                          'amenities',
+                          Icons.checklist,
+                          buildAmenities(),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      if (_showFurnishingsSection()) ...[
+                        buildSection(
+                          'Furnishings',
+                          'furnishings',
+                          Icons.chair_alt_outlined,
+                          buildFurnishings(),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ],
                     buildSection(
                       'Photos',
                       'media',
                       Icons.photo_library_outlined,
                       buildMediaSection(),
                     ),
+                    const SizedBox(height: 12),
                     if (_videos.isNotEmpty) ...[
-                      const SizedBox(height: 12),
                       buildSection(
                         'Videos',
                         'videos',
                         Icons.video_library_outlined,
                         buildVideoSection(),
                       ),
+                      const SizedBox(height: 12),
                     ],
-                    const SizedBox(height: 12),
                     buildSection(
                       'Location',
                       'location',
@@ -5656,11 +5715,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
     TextInputType keyboardType = TextInputType.text,
     int maxLines = 1,
     String? suffixText,
+    Widget? suffixIcon,
     String? errorText,
     String? helperText,
     bool readOnly = false,
     VoidCallback? onTap,
     void Function(String)? onChanged,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -5682,12 +5743,14 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           keyboardType: keyboardType,
           maxLines: maxLines,
           onChanged: onChanged,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hint,
             errorText: errorText,
             helperText: helperText,
             prefixIcon: Icon(icon, size: 18),
             suffixText: suffixText,
+            suffixIcon: suffixIcon,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -5725,7 +5788,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         SizedBox(
           width: double.infinity,
           child: Wrap(
@@ -5795,38 +5858,34 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
           child: Wrap(
             alignment: WrapAlignment.start,
             runAlignment: WrapAlignment.start,
-            spacing: 6,
+            spacing: 8,
+            runSpacing: 8,
             children: options
                 .map(
-                  (opt) => Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ChoiceChip(
-                      showCheckmark: false,
-                      label: Text(
-                        (displayFor != null)
-                            ? displayFor(opt)
-                            : toTitleCase(opt),
-                        maxLines: 2,
-                        softWrap: true,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: isSelected(opt)
-                              ? const Color(0xFF070B14)
-                              : AppColors.dark2,
-                        ),
+                  (opt) => ChoiceChip(
+                    showCheckmark: false,
+                    label: Text(
+                      (displayFor != null) ? displayFor(opt) : toTitleCase(opt),
+                      maxLines: 2,
+                      softWrap: true,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: isSelected(opt)
+                            ? const Color(0xFF070B14)
+                            : AppColors.dark2,
                       ),
-                      selected: isSelected(opt),
-                      onSelected: (_) => onChanged(opt),
-                      visualDensity: VisualDensity.compact,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      labelPadding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 0,
-                      ),
-                      selectedColor: AppTheme.gold,
-                      backgroundColor: Colors.white.withOpacity(0.08),
                     ),
+                    selected: isSelected(opt),
+                    onSelected: (_) => onChanged(opt),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    labelPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 0,
+                    ),
+                    selectedColor: AppTheme.gold,
+                    backgroundColor: Colors.white.withOpacity(0.08),
                   ),
                 )
                 .toList(),
@@ -5854,7 +5913,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
@@ -5928,7 +5987,7 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
@@ -6050,11 +6109,13 @@ class _PropertyCreateScreenState extends ConsumerState<PropertyCreateScreen> {
             ...values.map(
               (v) => DropdownMenuItem<int>(
                 value: v,
+                // White dropdown menu (dropdownColor above) — dark text so the
+                // options stay visible when the menu is open.
                 child: Text(
                   '$v ★',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: const TextStyle(color: AppColors.dark),
                 ),
               ),
             ),
@@ -6107,6 +6168,22 @@ extension _CreatePropertyKindX on _CreatePropertyKind {
         return 'PG';
       case _CreatePropertyKind.coLiving:
         return 'Co-Living';
+    }
+  }
+
+  /// The slug of the matching top-level node in the /property-categories tree.
+  String get categorySlug {
+    switch (this) {
+      case _CreatePropertyKind.sale:
+        return 'sale';
+      case _CreatePropertyKind.rent:
+        return 'rent';
+      case _CreatePropertyKind.lease:
+        return 'lease';
+      case _CreatePropertyKind.pg:
+        return 'pg';
+      case _CreatePropertyKind.coLiving:
+        return 'co-living';
     }
   }
 }

@@ -28,7 +28,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final agent = ref.read(authProvider).valueOrNull?.agent;
+    final agent = ref.read(authProvider).value?.agent;
     _nameController.text = agent?.name ?? '';
   }
 
@@ -117,7 +117,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final img = (ref.watch(authProvider).valueOrNull?.agent?.image ?? '')
+    final img = (ref.watch(authProvider).value?.agent?.image ?? '')
         .trim();
     final imageUrl = img.isEmpty
         ? null
@@ -216,7 +216,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gold,
-                  foregroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
